@@ -1,15 +1,13 @@
 package com.example.findingidealtypeapp;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-
+import androidx.appcompat.app.AppCompatActivity;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class profilePage extends AppCompatActivity {
 
     private ListView setList;
 
