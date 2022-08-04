@@ -1,33 +1,53 @@
 package com.example.findingidealtypeapp;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.os.Bundle;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
+import android.view.MenuItem;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.navigation.NavigationBarView;
 
 public class MainActivity extends AppCompatActivity {
 
-    private ListView setList;
+    private FragmentManager fragmentManager = getSupportFragmentManager();
+    private LoginPage loginPage = new LoginPage();
+    private JoinPage joinPage = new JoinPage();
+    private ProfilePage profilePage = new ProfilePage();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        setList = (ListView)findViewById(R.id.setList);
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.replace(R.id.menu_frame_layout, loginPage).commitAllowingStateLoss();
 
-        List<String> setData = new ArrayList<>();
-        ArrayAdapter<String> setAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1,setData);
-        setList.setAdapter(setAdapter);
+        BottomNavigationView bottomNavigationView = findViewById(R.id.menu_bottom_navigation);
+        bottomNavigationView.setOnNavigationItemSelectedListener(new ItemSelectedListener());
 
-        setData.add("연습");
-        setData.add("맞나");
-        setData.add("흠");
-        setAdapter.notifyDataSetChanged();// 이거 해줘야 저장이 된다.
+    }
 
+    class ItemSelectedListener implements BottomNavigationView.OnNavigationItemSelectedListener {
+        @Override
+        public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+            FragmentTransaction transaction = fragmentManager.beginTransaction();
+
+            switch (menuItem.getItemId()) {
+                case R.id.menu_home:
+                    transaction.replace(R.id.menu_frame_layout, profilePage).commitAllowingStateLoss();
+                    break;
+                case R.id.menu_dm:
+                    transaction.replace(R.id.menu_frame_layout, loginPage).commitAllowingStateLoss();
+                    break;
+                case R.id.menu_mypage:
+                    transaction.replace(R.id.menu_frame_layout, joinPage).commitAllowingStateLoss();
+                    break;
+            }
+            return true;
+        }
     }
 }
