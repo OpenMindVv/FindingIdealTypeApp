@@ -13,6 +13,7 @@ import com.google.android.material.navigation.NavigationBarView;
 
 public class MainActivity extends AppCompatActivity {
 
+    MainActivity mainActivity=this;
     private FragmentManager fragmentManager = getSupportFragmentManager();
     private LoginPage loginPage = new LoginPage();
     private JoinPage joinPage = new JoinPage();
@@ -24,7 +25,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.replace(R.id.menu_frame_layout, loginPage).commitAllowingStateLoss();
+        transaction.replace(R.id.menu_frame_layout, profilePage).commitAllowingStateLoss();
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.menu_bottom_navigation);
         bottomNavigationView.setOnNavigationItemSelectedListener(new ItemSelectedListener());
