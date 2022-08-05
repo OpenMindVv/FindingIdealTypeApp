@@ -33,7 +33,7 @@ public class LoginPage extends Fragment {
         loginButton.setOnClickListener(new View.OnClickListener() { // 로그인 버튼 눌렀을 때 이벤트
             @Override
             public void onClick(View v) {
-                validateCheck(); // 이메일, 비밀번호 유효성검사
+                loginValidateCheck(); // 이메일, 비밀번호 유효성검사
                 String userEmail = inputEmail.getText().toString();
                 String userPassword = inputPassword.getText().toString();
 
@@ -46,7 +46,7 @@ public class LoginPage extends Fragment {
         return rootView;
     }
 
-   public void validateCheck(){
+   public void loginValidateCheck(){
        if ( inputEmail.getText().toString().length() == 0 ) {
            Toast.makeText(rootView.getContext(), "Email 입력하세요", Toast.LENGTH_SHORT).show();
            inputEmail.requestFocus();
@@ -54,7 +54,7 @@ public class LoginPage extends Fragment {
        }
 
        if ( inputPassword.getText().toString().length() == 0 ) {
-           Toast.makeText(rootView.getContext(), "Password 입력하세요", Toast.LENGTH_SHORT).show();
+           Toast.makeText(rootView.getContext(), "비밀번호를 입력하세요", Toast.LENGTH_SHORT).show();
            inputPassword.requestFocus();
            return;
        }
