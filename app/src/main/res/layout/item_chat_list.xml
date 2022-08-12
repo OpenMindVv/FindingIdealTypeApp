@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="120dp"
+    android:padding="20dp">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/user_image"
+        android:layout_height="match_parent"
+        android:layout_width="80dp"
+        android:src="@drawable/jimin"
+        tools:ignore="MissingConstraints"
+        android:layout_marginRight="10dp"/>
+
+    <TextView
+        android:id="@+id/user_id"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="귤귤23"
+        tools:ignore="MissingConstraints"
+        app:layout_constraintLeft_toRightOf="@id/user_image"
+        tools:layout_editor_absoluteY="0dp" />
+
+    <TextView
+        android:id="@+id/content"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="만나서 반가워요!"
+        tools:ignore="MissingConstraints"
+        app:layout_constraintLeft_toRightOf="@id/user_image"
+        app:layout_constraintBottom_toBottomOf="@id/user_image"/>
+
+    <TextView
+        android:id="@+id/date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="오후 6:57"
+        app:layout_constraintRight_toRightOf="parent"
+        tools:layout_editor_absoluteY="0dp"
+        tools:ignore="MissingConstraints" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
