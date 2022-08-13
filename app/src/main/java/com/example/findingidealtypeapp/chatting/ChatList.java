@@ -8,7 +8,7 @@ import android.os.Bundle;
 
 import com.example.findingidealtypeapp.R;
 
-public class MainActivity extends AppCompatActivity {
+public class ChatList extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

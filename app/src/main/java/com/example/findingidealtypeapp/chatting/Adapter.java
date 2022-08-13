@@ -53,7 +53,6 @@ public class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         viewHolder.setOnViewHolderItemClickListener(new OnViewHolderItemClickListener() {
             @Override
             public void onViewHolderItemClick() {
-                Log.v("테테테테테ㅔ텥", "성공이야!");
                 Intent intent = new Intent(context, ChatRoomActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(intent);
