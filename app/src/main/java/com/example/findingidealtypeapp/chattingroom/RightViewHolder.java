@@ -1,4 +1,4 @@
-package com.example.findingidealtypeapp.chatting.chatting;
+package com.example.findingidealtypeapp.chattingroom;
 
 import android.view.View;
 import android.widget.TextView;

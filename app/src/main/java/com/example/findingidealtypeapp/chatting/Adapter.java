@@ -2,7 +2,6 @@ package com.example.findingidealtypeapp.chatting;
 
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,7 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.findingidealtypeapp.R;
-import com.example.findingidealtypeapp.chatting.chatting.ChatRoomActivity;
+import com.example.findingidealtypeapp.chattingroom.ChatRoomActivity;
 
 import java.util.ArrayList;
 

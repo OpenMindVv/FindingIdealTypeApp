@@ -12,6 +12,18 @@
         <entry key="..\:/Users/sec/AndroidStudioProjects/FindingIdealTypeApp/app/src/main/res/layout/item_chat_list.xml" value="0.264" />
         <entry key="..\:/Users/sec/AndroidStudioProjects/FindingIdealTypeApp/app/src/main/res/layout/item_left_content.xml" value="0.264" />
         <entry key="..\:/Users/sec/AndroidStudioProjects/FindingIdealTypeApp/app/src/main/res/layout/item_right_content.xml" value="0.264" />
+        <entry key="app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.3485" />
+        <entry key="app/src/main/res/drawable/ic_launcher_background.xml" value="0.3485" />
+        <entry key="app/src/main/res/drawable/listview_setting.xml" value="0.3485" />
+        <entry key="app/src/main/res/drawable/menu_color.xml" value="0.3485" />
+        <entry key="app/src/main/res/drawable/shape_circle_button.xml" value="0.3485" />
+        <entry key="app/src/main/res/drawable/shape_for_circle_button.xml" value="0.3485" />
+        <entry key="app/src/main/res/layout/activity_main.xml" value="0.37604166666666666" />
+        <entry key="app/src/main/res/layout/fragment_blank.xml" value="0.37604166666666666" />
+        <entry key="app/src/main/res/layout/join_page.xml" value="0.33" />
+        <entry key="app/src/main/res/layout/login_page.xml" value="0.33" />
+        <entry key="app/src/main/res/layout/profile_page.xml" value="0.33" />
+        <entry key="app/src/main/res/menu/bottom_menu.xml" value="0.375" />
       </map>
     </option>
   </component>

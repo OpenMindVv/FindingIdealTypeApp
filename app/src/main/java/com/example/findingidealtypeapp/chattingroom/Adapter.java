@@ -1,4 +1,4 @@
-package com.example.findingidealtypeapp.chatting.chatting;
+package com.example.findingidealtypeapp.chattingroom;
 
 import android.content.Context;
 import android.util.Log;
@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.findingidealtypeapp.R;
 import com.example.findingidealtypeapp.chatting.ViewHolder;
-import com.example.findingidealtypeapp.chatting.utility.Constants;
+import com.example.findingidealtypeapp.utility.Constants;
 
 import java.util.ArrayList;
 

@@ -1,4 +1,4 @@
-package com.example.findingidealtypeapp.chatting.chatting;
+package com.example.findingidealtypeapp.chattingroom;
 
 public class ChattingData {
 

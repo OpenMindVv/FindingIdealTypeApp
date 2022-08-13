@@ -1,7 +1,6 @@
-package com.example.findingidealtypeapp.chatting.chatting;
+package com.example.findingidealtypeapp.chattingroom;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -10,7 +9,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.findingidealtypeapp.R;
-import com.example.findingidealtypeapp.chatting.utility.Constants;
+import com.example.findingidealtypeapp.utility.Constants;
 
 import java.util.ArrayList;
 
