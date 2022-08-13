@@ -1,0 +1,16 @@
+package com.example.findingidealtypeapp.chatting.chatting;
+
+import android.os.Bundle;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.findingidealtypeapp.R;
+
+public class ChatRoomActivity extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_chat_room);
+    }
+}
