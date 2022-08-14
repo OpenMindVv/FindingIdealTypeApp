@@ -8,9 +8,8 @@ import androidx.fragment.app.FragmentTransaction;
 import android.os.Bundle;
 import android.view.MenuItem;
 
-import com.example.findingidealtypeapp.chatting.ChatList;
+import com.example.findingidealtypeapp.chatting.ChatListActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.navigation.NavigationBarView;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -19,7 +18,7 @@ public class MainActivity extends AppCompatActivity {
     private LoginPage loginPage = new LoginPage();
     private JoinPage joinPage = new JoinPage();
     private ProfilePage profilePage = new ProfilePage();
-    private ChatList chatListPage = new ChatList();
+    private ChatListActivity chatListPage = new ChatListActivity();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

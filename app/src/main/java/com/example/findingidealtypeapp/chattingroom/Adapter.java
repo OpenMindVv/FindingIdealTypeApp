@@ -10,17 +10,19 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.findingidealtypeapp.R;
+import com.example.findingidealtypeapp.chatting.ChatInformation;
 import com.example.findingidealtypeapp.chatting.ViewHolder;
 import com.example.findingidealtypeapp.utility.Constants;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 public class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private ArrayList<ChattingData> chattingDataList;
+    public ArrayList<ChattingData> chattingDataList;
 
-    public Adapter(ArrayList<ChattingData> chattingDataList){
-        this.chattingDataList = chattingDataList;
+    public Adapter(){
+        chattingDataList = new ArrayList<>();
     }
 
     @NonNull
@@ -31,8 +33,6 @@ public class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         View view;
-
-        Log.v("테테테테", viewType+"");
 
         switch (viewType){
             case Constants.LEFT_CONTENT:
@@ -50,6 +50,14 @@ public class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         return viewHolder;
     }
 
+    private String getTime(String date){
+        if(date.indexOf("오전") != -1){
+            return date.substring(date.indexOf("오전"));
+        }
+
+        return date.substring(date.indexOf("오후"));
+    }
+
     //각 뷰홀더에 데이터 연결
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
@@ -60,13 +68,13 @@ public class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             ((LeftViewHolder) holder).content
                     .setText(chattingDataList.get(position).getContent());
             ((LeftViewHolder) holder).time
-                    .setText(chattingDataList.get(position).getTime());
+                    .setText(getTime(chattingDataList.get(position).getTime()));
         }
         else{
             ((RightViewHolder) holder).content
                     .setText(chattingDataList.get(position).getContent());
             ((RightViewHolder) holder).time
-                    .setText(chattingDataList.get(position).getTime());
+                    .setText(getTime(chattingDataList.get(position).getTime()));
         }
     }
 
@@ -78,5 +86,9 @@ public class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     @Override
     public int getItemViewType(int position) {
         return chattingDataList.get(position).getViewType();
+    }
+
+    public void setChattingData(ChattingData chattingData){
+        chattingDataList.add(chattingData);
     }
 }

@@ -12,7 +12,7 @@ import android.view.ViewGroup;
 
 import com.example.findingidealtypeapp.R;
 
-public class ChatList extends Fragment {
+public class ChatListActivity extends Fragment {
 
     private ViewGroup rootView;
 
