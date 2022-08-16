@@ -18,6 +18,8 @@
         <entry key="app/src/main/res/drawable/menu_color.xml" value="0.3485" />
         <entry key="app/src/main/res/drawable/shape_circle_button.xml" value="0.3485" />
         <entry key="app/src/main/res/drawable/shape_for_circle_button.xml" value="0.3485" />
+        <entry key="app/src/main/res/layout/activity_join.xml" value="0.3591485507246377" />
+        <entry key="app/src/main/res/layout/activity_login.xml" value="0.3591485507246377" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.37604166666666666" />
         <entry key="app/src/main/res/layout/fragment_blank.xml" value="0.37604166666666666" />
         <entry key="app/src/main/res/layout/join_page.xml" value="0.33" />
