@@ -96,7 +96,7 @@ public class LoginFragment extends Fragment {
 
             @Override
             public void onFailure(Call<String> call, Throwable t) { // 이거는 걍 통신에서 실패
-                System.out.println("음");
+                System.out.println("실패");
             }
         });
     }
