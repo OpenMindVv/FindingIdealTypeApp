@@ -8,6 +8,7 @@ import androidx.fragment.app.FragmentTransaction;
 import android.os.Bundle;
 import android.view.MenuItem;
 
+import com.example.findingidealtypeapp.chatting.ChatList;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
@@ -17,6 +18,7 @@ public class MainActivity extends AppCompatActivity {
     private LoginFragment loginFragment = new LoginFragment();
     private JoinPage joinPage = new JoinPage();
     private ProfilePage profilePage = new ProfilePage();
+    private ChatList chatListPage = new ChatList();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
                     transaction.replace(R.id.menu_frame_layout, profilePage).commitAllowingStateLoss();
                     break;
                 case R.id.menu_dm:
-                    transaction.replace(R.id.menu_frame_layout, loginPage).commitAllowingStateLoss();
+                    transaction.replace(R.id.menu_frame_layout, chatListPage).commitAllowingStateLoss();
                     break;
                 case R.id.menu_mypage:
                     transaction.replace(R.id.menu_frame_layout, loginFragment).commitAllowingStateLoss();
