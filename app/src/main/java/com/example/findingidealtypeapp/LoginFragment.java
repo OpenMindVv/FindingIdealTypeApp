@@ -86,8 +86,7 @@ public class LoginFragment extends Fragment {
             public void onResponse(Call<String> call, Response<String> response) {
                 String pass = response.body();    // 웹서버로부터 응답받은 데이터가 들어있다.
 
-                if(pass == "200"){ // 여기에 서버에서 받아온 값으로 로그인 판단 --> 로그인
-                    System.out.println(pass);
+                if(pass != null){ // 여기에 서버에서 받아온 값으로 로그인 판단 --> 로그인
                     Intent intent = new Intent(getContext(), JoinActivity.class);
                     startActivity(intent);
                 }else{     // 로그인 실패
