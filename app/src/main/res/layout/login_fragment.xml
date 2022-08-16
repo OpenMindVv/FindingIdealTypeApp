@@ -33,6 +33,7 @@
             android:textSize="40px"></TextView>
 
         <TextView
+            android:id="@+id/JoinText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="회원가입"

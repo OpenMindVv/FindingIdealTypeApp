@@ -9,13 +9,12 @@ import android.os.Bundle;
 import android.view.MenuItem;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.navigation.NavigationBarView;
 
 public class MainActivity extends AppCompatActivity {
 
     MainActivity mainActivity=this;
     private FragmentManager fragmentManager = getSupportFragmentManager();
-    private LoginPage loginPage = new LoginPage();
+    private LoginFragment loginFragment = new LoginFragment();
     private JoinPage joinPage = new JoinPage();
     private ProfilePage profilePage = new ProfilePage();
 
@@ -45,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
                     transaction.replace(R.id.menu_frame_layout, loginPage).commitAllowingStateLoss();
                     break;
                 case R.id.menu_mypage:
-                    transaction.replace(R.id.menu_frame_layout, joinPage).commitAllowingStateLoss();
+                    transaction.replace(R.id.menu_frame_layout, loginFragment).commitAllowingStateLoss();
                     break;
             }
             return true;
