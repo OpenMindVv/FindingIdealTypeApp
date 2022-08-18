@@ -1,4 +1,5 @@
 package com.example.findingidealtypeapp;
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,6 +14,8 @@ import android.widget.Toast;
 import androidx.fragment.app.Fragment;
 
 import com.example.findingidealtypeapp.apiService.ApiService;
+
+import org.xmlpull.v1.XmlPullParser;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -39,6 +42,7 @@ public class LoginFragment extends Fragment {
         joinText = rootView.findViewById(R.id.JoinText);
         textSearchPassowrd = rootView.findViewById(R.id.textSearchPassowrd);
 
+
         //로그인 버튼 눌렀을 때 수행
         loginButton.setOnClickListener(new View.OnClickListener() { // 로그인 버튼 눌렀을 때 이벤트
             @Override
@@ -53,8 +57,13 @@ public class LoginFragment extends Fragment {
         joinText.setOnClickListener(new View.OnClickListener() {// 로그인 버튼 눌렀을 때 이벤트
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getContext(), JoinActivity.class);
-                startActivity(intent);
+                // 자신(플래그먼트)를 호출할 상위 액티비티
+                MainActivity activity = (MainActivity) getActivity();
+                // 액티비티에 플래그먼트를 변경하는 메소드 구현하여 호출
+                activity.onFragmentChange(0);
+
+                //Intent intent = new Intent(getContext(), JoinActivity.class);
+                //startActivity(intent);
             }
         });
 

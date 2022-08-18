@@ -14,7 +14,7 @@ import androidx.fragment.app.Fragment;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class JoinPage extends Fragment {
+public class JoinFragment extends Fragment {
 
     private EditText inputEmailOfJoin, inputName, inputPasswordOfJoin, inputPasswordCheck;
     private Button JoinButton;

@@ -16,8 +16,8 @@ public class MainActivity extends AppCompatActivity {
     MainActivity mainActivity=this;
     private FragmentManager fragmentManager = getSupportFragmentManager();
     private LoginFragment loginFragment = new LoginFragment();
-    private JoinPage joinPage = new JoinPage();
-    private ProfilePage profilePage = new ProfilePage();
+    private JoinFragment joinFragment = new JoinFragment();
+    public ProfileFragment profileFragment = new ProfileFragment();
     private ChatList chatListPage = new ChatList();
 
     @Override
@@ -26,11 +26,22 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.replace(R.id.menu_frame_layout, profilePage).commitAllowingStateLoss();
+        mainActivity.onFragmentChange(0);
+        //transaction.replace(R.id.menu_frame_layout, profileFragment).commitAllowingStateLoss();
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.menu_bottom_navigation);
         bottomNavigationView.setOnNavigationItemSelectedListener(new ItemSelectedListener());
+    }
 
+    public void onFragmentChange(int index){
+        switch(index){
+            case 0: getSupportFragmentManager().beginTransaction().replace(R.id.container, joinFragment).commit();
+            break;
+            case 1: getSupportFragmentManager().beginTransaction().replace(R.id.container, profileFragment).commit();
+            break;
+            case 2: getSupportFragmentManager().beginTransaction().replace(R.id.container, loginFragment).commit();
+            break;
+        }
     }
 
     class ItemSelectedListener implements BottomNavigationView.OnNavigationItemSelectedListener {
@@ -40,13 +51,16 @@ public class MainActivity extends AppCompatActivity {
 
             switch (menuItem.getItemId()) {
                 case R.id.menu_home:
-                    transaction.replace(R.id.menu_frame_layout, profilePage).commitAllowingStateLoss();
+                    mainActivity.onFragmentChange(0);
+                    //transaction.replace(R.id.menu_frame_layout, profileFragment).commitAllowingStateLoss();
                     break;
                 case R.id.menu_dm:
-                    transaction.replace(R.id.menu_frame_layout, chatListPage).commitAllowingStateLoss();
+                    mainActivity.onFragmentChange(1);
+                    //transaction.replace(R.id.menu_frame_layout, chatListPage).commitAllowingStateLoss();
                     break;
                 case R.id.menu_mypage:
-                    transaction.replace(R.id.menu_frame_layout, loginFragment).commitAllowingStateLoss();
+                    mainActivity.onFragmentChange(2);
+                    //transaction.replace(R.id.menu_frame_layout, loginFragment).commitAllowingStateLoss();
                     break;
             }
             return true;
