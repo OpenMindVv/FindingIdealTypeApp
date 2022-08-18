@@ -101,7 +101,7 @@
             android:textSize="10dp" />
 
         <TextView
-            android:id="@+id/textView8"
+            android:id="@+id/textSearchPassowrd"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginVertical="5dp"

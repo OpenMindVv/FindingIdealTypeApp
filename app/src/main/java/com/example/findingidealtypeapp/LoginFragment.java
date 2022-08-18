@@ -24,7 +24,7 @@ public class LoginFragment extends Fragment {
 
     private EditText inputEmail, inputPassword;
     private Button loginButton;
-    private TextView joinText;
+    private TextView joinText, textSearchPassowrd;
     private ViewGroup rootView;
     private Retrofit retrofit;
     private ApiService apiService;
@@ -37,6 +37,7 @@ public class LoginFragment extends Fragment {
         inputPassword = rootView.findViewById(R.id.inputPassword);
         loginButton = rootView.findViewById(R.id.loginButton);
         joinText = rootView.findViewById(R.id.JoinText);
+        textSearchPassowrd = rootView.findViewById(R.id.textSearchPassowrd);
 
         //로그인 버튼 눌렀을 때 수행
         loginButton.setOnClickListener(new View.OnClickListener() { // 로그인 버튼 눌렀을 때 이벤트
@@ -53,6 +54,14 @@ public class LoginFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getContext(), JoinActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        textSearchPassowrd.setOnClickListener(new View.OnClickListener() {// 로그인 버튼 눌렀을 때 이벤트
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(), idSearchActivity.class);
                 startActivity(intent);
             }
         });
