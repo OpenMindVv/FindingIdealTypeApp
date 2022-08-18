@@ -31,6 +31,7 @@ public class LoginFragment extends Fragment {
     private ViewGroup rootView;
     private Retrofit retrofit;
     private ApiService apiService;
+    private MainActivity activity;
 
 
     @Override
@@ -58,7 +59,7 @@ public class LoginFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 // 자신(플래그먼트)를 호출할 상위 액티비티
-                MainActivity activity = (MainActivity) getActivity();
+                activity = (MainActivity) getActivity();
                 // 액티비티에 플래그먼트를 변경하는 메소드 구현하여 호출
                 activity.onFragmentChange(0);
 
@@ -67,7 +68,7 @@ public class LoginFragment extends Fragment {
             }
         });
 
-        textSearchPassowrd.setOnClickListener(new View.OnClickListener() {// 로그인 버튼 눌렀을 때 이벤트
+        textSearchPassowrd.setOnClickListener(new View.OnClickListener() {// 비밀번호 찾기 눌렀을 때 이벤트
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getContext(), idSearchActivity.class);
@@ -105,8 +106,8 @@ public class LoginFragment extends Fragment {
                 String pass = response.body();    // 웹서버로부터 응답받은 데이터가 들어있다.
 
                 if(pass != null){ // 여기에 서버에서 받아온 값으로 로그인 판단 --> 로그인
-                    Intent intent = new Intent(getContext(), JoinActivity.class);
-                    startActivity(intent);
+                    // 액티비티에 플래그먼트를 변경하는 메소드 구현하여 호출
+                    activity.onFragmentChange(1);
                 }else{     // 로그인 실패
                     System.out.println("실패");
                 }

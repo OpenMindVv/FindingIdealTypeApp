@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
@@ -19,17 +20,19 @@ public class JoinFragment extends Fragment {
     private EditText inputEmailOfJoin, inputName, inputPasswordOfJoin, inputPasswordCheck;
     private Button JoinButton;
     private ViewGroup rootView;
+    private TextView loginText;
     private boolean isPassJoin;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        rootView = (ViewGroup)inflater.inflate(R.layout.join_page, container, false);
+        rootView = (ViewGroup)inflater.inflate(R.layout.join_fragment, container, false);
         inputEmailOfJoin = rootView.findViewById(R.id.inputEmailOfJoin); //
         inputName = rootView.findViewById(R.id.inputName);
         inputPasswordOfJoin = rootView.findViewById(R.id.inputPasswordOfJoin);
         inputPasswordCheck= rootView.findViewById(R.id.inputPasswordCheck);
         JoinButton = rootView.findViewById(R.id.joinButton);
+        loginText = rootView.findViewById(R.id.loginText);
 
 
         JoinButton.setOnClickListener(new View.OnClickListener() { // 회원가입 버튼 누를 때 이벤트
@@ -41,6 +44,15 @@ public class JoinFragment extends Fragment {
                 System.out.println("가입완료"); // 로직 만들면 될듯
             }
         });
+
+        loginText.setOnClickListener(new View.OnClickListener() { // 회원가입 버튼 누를 때 이벤트
+            @Override
+            public void onClick(View v) {
+                MainActivity activity = (MainActivity) getActivity();
+                activity.onFragmentChange(1); // 로그인 fragment
+            }
+        });
+
         return rootView;
     }
 

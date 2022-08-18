@@ -19,14 +19,16 @@ public class MainActivity extends AppCompatActivity {
     private JoinFragment joinFragment = new JoinFragment();
     public ProfileFragment profileFragment = new ProfileFragment();
     private ChatList chatListPage = new ChatList();
+    FragmentTransaction transaction;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction = fragmentManager.beginTransaction();
         mainActivity.onFragmentChange(0);
+        //transaction.replace(R.id.container, joinFragment).commitAllowingStateLoss();
         //transaction.replace(R.id.menu_frame_layout, profileFragment).commitAllowingStateLoss();
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.menu_bottom_navigation);
@@ -35,11 +37,11 @@ public class MainActivity extends AppCompatActivity {
 
     public void onFragmentChange(int index){
         switch(index){
-            case 0: getSupportFragmentManager().beginTransaction().replace(R.id.container, joinFragment).commit();
+            case 0: getSupportFragmentManager().beginTransaction().replace(R.id.menu_frame_layout, joinFragment).commitAllowingStateLoss();
             break;
-            case 1: getSupportFragmentManager().beginTransaction().replace(R.id.container, profileFragment).commit();
+            case 1: getSupportFragmentManager().beginTransaction().replace(R.id.menu_frame_layout, loginFragment).commitAllowingStateLoss();
             break;
-            case 2: getSupportFragmentManager().beginTransaction().replace(R.id.container, loginFragment).commit();
+            case 2: getSupportFragmentManager().beginTransaction().replace(R.id.menu_frame_layout, profileFragment).commitAllowingStateLoss();
             break;
         }
     }
@@ -51,16 +53,13 @@ public class MainActivity extends AppCompatActivity {
 
             switch (menuItem.getItemId()) {
                 case R.id.menu_home:
-                    mainActivity.onFragmentChange(0);
-                    //transaction.replace(R.id.menu_frame_layout, profileFragment).commitAllowingStateLoss();
+                    transaction.replace(R.id.menu_frame_layout, profileFragment).commitAllowingStateLoss();
                     break;
                 case R.id.menu_dm:
-                    mainActivity.onFragmentChange(1);
-                    //transaction.replace(R.id.menu_frame_layout, chatListPage).commitAllowingStateLoss();
+                    transaction.replace(R.id.menu_frame_layout, chatListPage).commitAllowingStateLoss();
                     break;
                 case R.id.menu_mypage:
-                    mainActivity.onFragmentChange(2);
-                    //transaction.replace(R.id.menu_frame_layout, loginFragment).commitAllowingStateLoss();
+                    transaction.replace(R.id.menu_frame_layout, loginFragment).commitAllowingStateLoss();
                     break;
             }
             return true;

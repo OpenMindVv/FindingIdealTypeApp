@@ -29,9 +29,6 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".JoinActivity"
-            android:exported="false" />
-        <activity
             android:name=".chattingroom.ChatRoomActivity"
             android:parentActivityName=".chatting.ChatList" />
     </application>
