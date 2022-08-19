@@ -10,6 +10,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.example.findingidealtypeapp.MainActivity;
 import com.example.findingidealtypeapp.R;
@@ -112,13 +113,13 @@ public class LoginFragment extends Fragment {
                 LoginResponse result = response.body();    // 웹서버로부터 응답받은 데이터가 들어있다.
 
                 if(result != null){ // 여기에 서버에서 받아온 값으로 로그인 판단 --> 로그인
-                    // 자신(플래그먼트)를 호출할 상위 액티비티
-                    activity = (MainActivity) getActivity();
-                    // 액티비티에 플래그먼트를 변경하는 메소드 구현하여 호출
-                    if(result.getResultCode().equals("200")){
-                        activity.onFragmentChange(Constants.PROFILE_PAGE);
-                        System.out.println("성공");
-                    }
+                    // 프래그먼트에 데이터 전달
+                    transData();
+
+                    //이건 그냥 페이지 변경
+                    //activity.onFragmentChange(Constants.PROFILE_PAGE);
+                    System.out.println("성공");
+
                     System.out.println(result.getResultCode());
                     System.out.println(result.getTestCode());
                 }else{     // 로그인 실패
@@ -134,6 +135,16 @@ public class LoginFragment extends Fragment {
                 System.out.println(t);
             }
         });
+    }
+
+    private void transData(){
+        Bundle bundle = new Bundle(); // 번들을 통해 값 전달
+        bundle.putString("email",inputEmail.getText().toString());//번들에 넘길 값 저장
+        FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+        ProfileFragment profileFragment = new ProfileFragment();//프래그먼트2 선언
+        profileFragment.setArguments(bundle);//번들을 프래그먼트2로 보낼 준비
+        transaction.replace(R.id.menu_frame_layout, profileFragment);
+        transaction.commit();
     }
 
     private void setRetrofit() {

@@ -14,13 +14,18 @@ public interface UserService {
     @GET("user/all")
     Call<MemberDTO> getProfileList();
 
+    @GET("user/{email}")
+    Call<MyPageResponse> getProfile(
+      @Query("email") String email
+    );
+
     @POST("user/login")
     Call<LoginResponse> login(
             @Query("email") String email, @Query("password") String password);
 
     @PUT("user/create")
     Call<String> createUser(
-            @Query("email") String email, @Query("password") String password, @Query("name") String name
+            @Query("email") String email, @Query("password") String password, @Query("name") String name, @Query("follow") String follow, @Query("following") String following
             //@Body MemberDTO memberDTO
     );
 }

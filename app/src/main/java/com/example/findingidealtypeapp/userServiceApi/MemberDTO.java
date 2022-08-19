@@ -17,10 +17,21 @@ public class MemberDTO {
     @Expose
     public String name;
 
-    public MemberDTO(String email, String password, String name){
+    @SerializedName("follow")
+    @Expose
+    public String follow;
+
+    @SerializedName("following")
+    @Expose
+    public String following;
+
+    public MemberDTO(String email, String password, String name, String follow, String following){
         this.email = email;
         this.password = password;
         this.name = name;
+        this.follow = follow;
+        this.following = following;
+
     }
 
     // @SerializedName()로 변수명을 입치시켜주면 클래스 변수명이 달라도 알아서 매핑시켜줌
@@ -44,5 +55,20 @@ public class MemberDTO {
     }
     public String getName(){
         return name;
+    }
+    public String getFollow() {
+        return follow;
+    }
+
+    public void setFollow(String follow) {
+        this.follow = follow;
+    }
+
+    public String getFollowing() {
+        return following;
+    }
+
+    public void setFollowing(String following) {
+        this.following = following;
     }
 }

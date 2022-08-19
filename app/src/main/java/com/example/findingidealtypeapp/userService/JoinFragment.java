@@ -35,6 +35,7 @@ public class JoinFragment extends Fragment {
     private MainActivity activity;
     private Retrofit retrofit;
     private boolean isPassJoin;
+    private String follow="0", following="0";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -77,21 +78,22 @@ public class JoinFragment extends Fragment {
         String name = inputName.getText().toString();
         String password = inputPasswordOfJoin.getText().toString();
 
-        MemberDTO memberDTO = new MemberDTO(email, password, name);
+        MemberDTO memberDTO = new MemberDTO(email, password, name, "0", "0");
 
-        Call<String> call = userService.createUser(memberDTO.getEmail(), memberDTO.getPassword(), memberDTO.getName());
+        Call<String> call = userService.createUser(memberDTO.getEmail(), memberDTO.getPassword(), memberDTO.getName(), memberDTO.getFollowing(), memberDTO.getFollowing());
 
         call.enqueue(new Callback<String>() {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
                 String result= response.body();    // 웹서버로부터 응답받은 데이터가 들어있다.
-
-                if(result!= null){ // 여기에 서버에서 받아온 값으로 로그인 판단 --> 회원가입
+                if(result.equals("1")){ // 여기에 서버에서 받아온 값으로 로그인 판단 --> 회원가입
                     // 액티비티에 플래그먼트를 변경하는 메소드 구현하여 호출
                     Toast.makeText(rootView.getContext(), "회원가입이 완료되었습니다. 로그인 해주세요", Toast.LENGTH_SHORT).show();
+                    activity = (MainActivity) getActivity();
                     activity.onFragmentChange(Constants.LOGIN_PAGE);
                     System.out.println(result);
                 }else{     // 회원가입 실패
+                    Toast.makeText(rootView.getContext(), "이미 존재하는 이메일입니다.", Toast.LENGTH_SHORT).show();
                     System.out.println("실패");
                 }
             }
