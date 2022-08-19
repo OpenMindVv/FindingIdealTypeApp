@@ -1,4 +1,4 @@
-package com.example.findingidealtypeapp;
+package com.example.findingidealtypeapp.userService;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -11,8 +11,11 @@ import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 
-import com.example.findingidealtypeapp.apiService.ApiService;
-import com.example.findingidealtypeapp.apiService.MemberDTO;
+import com.example.findingidealtypeapp.MainActivity;
+import com.example.findingidealtypeapp.R;
+import com.example.findingidealtypeapp.userServiceApi.UserService;
+import com.example.findingidealtypeapp.userServiceApi.MemberDTO;
+import com.example.findingidealtypeapp.utility.Constants;
 
 import java.util.regex.Pattern;
 
@@ -28,7 +31,7 @@ public class JoinFragment extends Fragment {
     private Button JoinButton;
     private ViewGroup rootView;
     private TextView loginText;
-    private ApiService apiService;
+    private UserService userService;
     private MainActivity activity;
     private Retrofit retrofit;
     private boolean isPassJoin;
@@ -76,7 +79,7 @@ public class JoinFragment extends Fragment {
 
         MemberDTO memberDTO = new MemberDTO(email, password, name);
 
-        Call<String> call = apiService.createUser(memberDTO.getEmail(), memberDTO.getPassword(), memberDTO.getName());
+        Call<String> call = userService.createUser(memberDTO.getEmail(), memberDTO.getPassword(), memberDTO.getName());
 
         call.enqueue(new Callback<String>() {
             @Override
@@ -85,8 +88,9 @@ public class JoinFragment extends Fragment {
 
                 if(result!= null){ // 여기에 서버에서 받아온 값으로 로그인 판단 --> 회원가입
                     // 액티비티에 플래그먼트를 변경하는 메소드 구현하여 호출
+                    Toast.makeText(rootView.getContext(), "회원가입이 완료되었습니다. 로그인 해주세요", Toast.LENGTH_SHORT).show();
+                    activity.onFragmentChange(Constants.LOGIN_PAGE);
                     System.out.println(result);
-                    activity.onFragmentChange(1);
                 }else{     // 회원가입 실패
                     System.out.println("실패");
                 }
@@ -105,7 +109,7 @@ public class JoinFragment extends Fragment {
                 .baseUrl("http://10.0.2.2:8080/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
-        apiService = retrofit.create(ApiService.class);
+        userService = retrofit.create(UserService.class);
     }
 
 

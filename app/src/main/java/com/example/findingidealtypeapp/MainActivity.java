@@ -9,6 +9,10 @@ import android.os.Bundle;
 import android.view.MenuItem;
 
 import com.example.findingidealtypeapp.chatting.ChatList;
+import com.example.findingidealtypeapp.userService.JoinFragment;
+import com.example.findingidealtypeapp.userService.LoginFragment;
+import com.example.findingidealtypeapp.userService.ProfileFragment;
+import com.example.findingidealtypeapp.utility.Constants;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
@@ -37,11 +41,11 @@ public class MainActivity extends AppCompatActivity {
 
     public void onFragmentChange(int index){
         switch(index){
-            case 0: getSupportFragmentManager().beginTransaction().replace(R.id.menu_frame_layout, joinFragment).commitAllowingStateLoss();
+            case Constants.JOIN_PAGE: getSupportFragmentManager().beginTransaction().replace(R.id.menu_frame_layout, joinFragment).commitAllowingStateLoss();
             break;
-            case 1: getSupportFragmentManager().beginTransaction().replace(R.id.menu_frame_layout, loginFragment).commitAllowingStateLoss();
+            case Constants.LOGIN_PAGE: getSupportFragmentManager().beginTransaction().replace(R.id.menu_frame_layout, loginFragment).commitAllowingStateLoss();
             break;
-            case 2: getSupportFragmentManager().beginTransaction().replace(R.id.menu_frame_layout, profileFragment).commitAllowingStateLoss();
+            case Constants.PROFILE_PAGE: getSupportFragmentManager().beginTransaction().replace(R.id.menu_frame_layout, profileFragment).commitAllowingStateLoss();
             break;
         }
     }

@@ -1,4 +1,4 @@
-package com.example.findingidealtypeapp;
+package com.example.findingidealtypeapp.userService;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -7,6 +7,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import com.example.findingidealtypeapp.R;
 
 public class idSearchActivity extends AppCompatActivity {
 

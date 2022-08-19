@@ -1,8 +1,6 @@
-package com.example.findingidealtypeapp;
-import android.annotation.SuppressLint;
+package com.example.findingidealtypeapp.userService;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,9 +11,12 @@ import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 
-import com.example.findingidealtypeapp.apiService.ApiService;
-
-import org.xmlpull.v1.XmlPullParser;
+import com.example.findingidealtypeapp.MainActivity;
+import com.example.findingidealtypeapp.R;
+import com.example.findingidealtypeapp.userServiceApi.UserService;
+import com.example.findingidealtypeapp.userServiceApi.loginService.LoginRequest;
+import com.example.findingidealtypeapp.userServiceApi.loginService.LoginResponse;
+import com.example.findingidealtypeapp.utility.Constants;
 
 import java.util.concurrent.TimeUnit;
 
@@ -33,7 +34,7 @@ public class LoginFragment extends Fragment {
     private TextView joinText, textSearchPassowrd;
     private ViewGroup rootView;
     private Retrofit retrofit;
-    private ApiService apiService;
+    private UserService userService;
     private MainActivity activity;
 
 
@@ -101,26 +102,34 @@ public class LoginFragment extends Fragment {
         String email = inputEmail.getText().toString();
         String password = inputPassword.getText().toString();
 
-        Call<String> call = apiService.login(email, password);
+        LoginRequest loginRequest = new LoginRequest(email, password);
 
+        Call<LoginResponse> call = userService.login(email, password);
 
-        call.enqueue(new Callback<String>() {
+        call.enqueue(new Callback<LoginResponse>() {
             @Override
-            public void onResponse(Call<String> call, Response<String> response) {
-                String pass = response.body();    // 웹서버로부터 응답받은 데이터가 들어있다.
+            public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
+                LoginResponse result = response.body();    // 웹서버로부터 응답받은 데이터가 들어있다.
 
-                if(pass != null){ // 여기에 서버에서 받아온 값으로 로그인 판단 --> 로그인
+                if(result != null){ // 여기에 서버에서 받아온 값으로 로그인 판단 --> 로그인
+                    // 자신(플래그먼트)를 호출할 상위 액티비티
+                    activity = (MainActivity) getActivity();
                     // 액티비티에 플래그먼트를 변경하는 메소드 구현하여 호출
-                    activity.onFragmentChange(1);
-                    System.out.println("성공");
+                    if(result.getResultCode().equals("200")){
+                        activity.onFragmentChange(Constants.PROFILE_PAGE);
+                        System.out.println("성공");
+                    }
+                    System.out.println(result.getResultCode());
+                    System.out.println(result.getTestCode());
                 }else{     // 로그인 실패
+                    Toast.makeText(rootView.getContext(), "회원정보가 일치하지 않습니다.", Toast.LENGTH_SHORT).show();
                     System.out.println("실패");
-                    System.out.println(pass);
+                    System.out.println(result);
                 }
             }
 
             @Override
-            public void onFailure(Call<String> call, Throwable t) { // 이거는 걍 통신에서 실패
+            public void onFailure(Call<LoginResponse> call, Throwable t) { // 이거는 걍 통신에서 실패
                 System.out.println("통신실패");
                 System.out.println(t);
             }
@@ -136,9 +145,10 @@ public class LoginFragment extends Fragment {
 
         retrofit = new Retrofit.Builder()
                 //.baseUrl("https://2fc39d2c-748a-42b0-8fda-cc926df84d08.mock.pstmn.io/")
+                //.client(okHttpClient)
                 .baseUrl("http://10.0.2.2:8080/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
-        apiService = retrofit.create(ApiService.class);
+        userService = retrofit.create(UserService.class);
     }
 }

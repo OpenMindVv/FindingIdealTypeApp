@@ -1,4 +1,4 @@
-package com.example.findingidealtypeapp;
+package com.example.findingidealtypeapp.userService;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -13,6 +13,7 @@ import androidx.core.app.BundleCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.example.findingidealtypeapp.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class ProfileFragment extends Fragment {
