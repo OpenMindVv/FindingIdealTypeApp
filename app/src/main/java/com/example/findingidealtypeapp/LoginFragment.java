@@ -17,6 +17,9 @@ import com.example.findingidealtypeapp.apiService.ApiService;
 
 import org.xmlpull.v1.XmlPullParser;
 
+import java.util.concurrent.TimeUnit;
+
+import okhttp3.OkHttpClient;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -100,6 +103,7 @@ public class LoginFragment extends Fragment {
 
         Call<String> call = apiService.login(email, password);
 
+
         call.enqueue(new Callback<String>() {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
@@ -108,21 +112,31 @@ public class LoginFragment extends Fragment {
                 if(pass != null){ // 여기에 서버에서 받아온 값으로 로그인 판단 --> 로그인
                     // 액티비티에 플래그먼트를 변경하는 메소드 구현하여 호출
                     activity.onFragmentChange(1);
+                    System.out.println("성공");
                 }else{     // 로그인 실패
                     System.out.println("실패");
+                    System.out.println(pass);
                 }
             }
 
             @Override
             public void onFailure(Call<String> call, Throwable t) { // 이거는 걍 통신에서 실패
-                System.out.println("실패");
+                System.out.println("통신실패");
+                System.out.println(t);
             }
         });
     }
 
     private void setRetrofit() {
+        OkHttpClient okHttpClient = new OkHttpClient().newBuilder()
+                .connectTimeout(1, TimeUnit.MINUTES)
+                .readTimeout(3, TimeUnit.SECONDS)
+                .writeTimeout(3, TimeUnit.SECONDS)
+                .build();
+
         retrofit = new Retrofit.Builder()
-                .baseUrl("https://2fc39d2c-748a-42b0-8fda-cc926df84d08.mock.pstmn.io/")
+                //.baseUrl("https://2fc39d2c-748a-42b0-8fda-cc926df84d08.mock.pstmn.io/")
+                .baseUrl("http://10.0.2.2:8080/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         apiService = retrofit.create(ApiService.class);

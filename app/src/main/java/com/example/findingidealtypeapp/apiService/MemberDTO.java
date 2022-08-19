@@ -6,18 +6,24 @@ import com.google.gson.annotations.SerializedName;
 public class MemberDTO {
     @SerializedName("email")
     @Expose
-    private String email;
+    public String email;
 
     @SerializedName("password")
     @Expose
-    private String password;
+    public String password;
 
     // @SerializedName으로 일치시켜 주지않을 경우엔 클래스 변수명이 일치해야함
     @SerializedName("name")
     @Expose
-    private String name;
-    // @SerializedName()로 변수명을 입치시켜주면 클래스 변수명이 달라도 알아서 매핑시켜줌
+    public String name;
 
+    public MemberDTO(String email, String password, String name){
+        this.email = email;
+        this.password = password;
+        this.name = name;
+    }
+
+    // @SerializedName()로 변수명을 입치시켜주면 클래스 변수명이 달라도 알아서 매핑시켜줌
     public void setEmail(String email) {
         this.email = email;
     }

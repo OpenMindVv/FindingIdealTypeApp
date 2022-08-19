@@ -27,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         transaction = fragmentManager.beginTransaction();
-        mainActivity.onFragmentChange(0);
+        mainActivity.onFragmentChange(2);
         //transaction.replace(R.id.container, joinFragment).commitAllowingStateLoss();
         //transaction.replace(R.id.menu_frame_layout, profileFragment).commitAllowingStateLoss();
 

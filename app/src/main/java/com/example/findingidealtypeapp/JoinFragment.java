@@ -1,7 +1,6 @@
 package com.example.findingidealtypeapp;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,8 +11,16 @@ import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 
-import java.util.regex.Matcher;
+import com.example.findingidealtypeapp.apiService.ApiService;
+import com.example.findingidealtypeapp.apiService.MemberDTO;
+
 import java.util.regex.Pattern;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class JoinFragment extends Fragment {
 
@@ -21,6 +28,9 @@ public class JoinFragment extends Fragment {
     private Button JoinButton;
     private ViewGroup rootView;
     private TextView loginText;
+    private ApiService apiService;
+    private MainActivity activity;
+    private Retrofit retrofit;
     private boolean isPassJoin;
 
     @Override
@@ -39,9 +49,11 @@ public class JoinFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 if(!emailValidateCheck()) return;
-                if(!nameValidateCheck()) return;
+                //if(!nameValidateCheck()) return;
                 if(!passwordValidateCheck()) return;
-                System.out.println("가입완료"); // 로직 만들면 될듯
+
+                setRetrofit();
+                join();
             }
         });
 
@@ -54,6 +66,46 @@ public class JoinFragment extends Fragment {
         });
 
         return rootView;
+    }
+
+    private void join() {
+
+        String email = inputEmailOfJoin.getText().toString();
+        String name = inputName.getText().toString();
+        String password = inputPasswordOfJoin.getText().toString();
+
+        MemberDTO memberDTO = new MemberDTO(email, password, name);
+
+        Call<String> call = apiService.createUser(memberDTO.getEmail(), memberDTO.getPassword(), memberDTO.getName());
+
+        call.enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+                String result= response.body();    // 웹서버로부터 응답받은 데이터가 들어있다.
+
+                if(result!= null){ // 여기에 서버에서 받아온 값으로 로그인 판단 --> 회원가입
+                    // 액티비티에 플래그먼트를 변경하는 메소드 구현하여 호출
+                    System.out.println(result);
+                    activity.onFragmentChange(1);
+                }else{     // 회원가입 실패
+                    System.out.println("실패");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+                System.out.println(t);
+            }
+        });
+    }
+
+    private void setRetrofit() {
+        retrofit = new Retrofit.Builder()
+                //.baseUrl("https://2fc39d2c-748a-42b0-8fda-cc926df84d08.mock.pstmn.io/")
+                .baseUrl("http://10.0.2.2:8080/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        apiService = retrofit.create(ApiService.class);
     }
 
 
