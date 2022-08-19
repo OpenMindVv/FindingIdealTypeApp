@@ -37,31 +37,28 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ProfileFragment extends Fragment {
 
-    private TextView profileName, textFollow, textFollowing, follow, following;
+    private TextView profileName, numberFollow, numberFollowing;
     private ImageButton profileImage;
     private UserService userService;
     private Button profileEditNutton;
     private MainActivity activity;
     private ViewGroup rootView;
     private Retrofit retrofit;
-    private String email;
+    private String email, name, follow, following;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         rootView = (ViewGroup)inflater.inflate(R.layout.profile_page, container, false);
         profileName = rootView.findViewById(R.id.profile_name);
+        setRetrofit();
         //createTextView();
 
         if (getArguments() != null)
         {
-            email = getArguments().getString("email"); // 프래그먼트1에서 받아온 값 넣기
-            profileName.setText(email);
+            email = getArguments().getString("email"); // 로그인에서 받아온 이메일
+            getUserProfile();
         }
-
-
-
-
 
         return rootView;
     }
