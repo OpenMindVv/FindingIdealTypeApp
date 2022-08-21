@@ -13,8 +13,8 @@ import androidx.fragment.app.Fragment;
 
 import com.example.findingidealtypeapp.MainActivity;
 import com.example.findingidealtypeapp.R;
+import com.example.findingidealtypeapp.userServiceApi.MyPageService.MyPageResponse;
 import com.example.findingidealtypeapp.userServiceApi.UserService;
-import com.example.findingidealtypeapp.userServiceApi.MemberDTO;
 import com.example.findingidealtypeapp.utility.Constants;
 
 import java.util.regex.Pattern;
@@ -78,9 +78,9 @@ public class JoinFragment extends Fragment {
         String name = inputName.getText().toString();
         String password = inputPasswordOfJoin.getText().toString();
 
-        MemberDTO memberDTO = new MemberDTO(email, password, name, "0", "0");
+        MyPageResponse myPageResponse = new MyPageResponse(email, password, name, "0", "0");
 
-        Call<String> call = userService.createUser(memberDTO.getEmail(), memberDTO.getPassword(), memberDTO.getName(), memberDTO.getFollowing(), memberDTO.getFollowing());
+        Call<String> call = userService.createUser(myPageResponse.getEmail(), myPageResponse.getPassword(), myPageResponse.getName(), myPageResponse.getFollowing(), myPageResponse.getFollowing());
 
         call.enqueue(new Callback<String>() {
             @Override

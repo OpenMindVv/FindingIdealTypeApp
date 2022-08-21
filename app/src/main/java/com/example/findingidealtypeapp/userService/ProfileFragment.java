@@ -1,30 +1,19 @@
 package com.example.findingidealtypeapp.userService;
 
-import android.graphics.Color;
-import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import androidx.core.app.BundleCompat;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 
 import com.example.findingidealtypeapp.MainActivity;
 import com.example.findingidealtypeapp.R;
-import com.example.findingidealtypeapp.userServiceApi.MyPageResponse;
+import com.example.findingidealtypeapp.userServiceApi.MyPageService.MyPageResponse;
 import com.example.findingidealtypeapp.userServiceApi.UserService;
-import com.example.findingidealtypeapp.userServiceApi.loginService.LoginRequest;
-import com.example.findingidealtypeapp.userServiceApi.loginService.LoginResponse;
-import com.example.findingidealtypeapp.utility.Constants;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.concurrent.TimeUnit;
 
@@ -72,7 +61,7 @@ public class ProfileFragment extends Fragment {
             public void onResponse(Call<MyPageResponse> call, Response<MyPageResponse> response) {
                 MyPageResponse result = response.body();    // 웹서버로부터 응답받은 데이터가 들어있다.
 
-                if(result != null){ // 여기에 서버에서 받아온 값으로 로그인 판단 --> 로그인
+                if(result != null){
                     profileName.setText(result.getName());
                 }
             }
@@ -83,6 +72,7 @@ public class ProfileFragment extends Fragment {
             }
         });
     }
+
     private void setRetrofit() {
         OkHttpClient okHttpClient = new OkHttpClient().newBuilder()
                 .connectTimeout(1, TimeUnit.MINUTES)
@@ -97,26 +87,6 @@ public class ProfileFragment extends Fragment {
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         userService = retrofit.create(UserService.class);
-    }
-
-    private void createTextView(){
-        //2. 텍스트뷰에 들어갈 문자설정
-        profileName.setText("텍스트 생성");
-
-        //3. 텍스트뷰 글자크기 설정
-        //profileName.setTextSize(12);//텍스트 크기
-        //4. 텍스트뷰 글자타입 설정
-        //profileName.setTypeface(null, Typeface.BOLD);
-        //5. 텍스트뷰 ID설정
-        //profileName.setId(0);
-        //6. 레이아웃 설정
-        //LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT
-        //        ,LinearLayout.LayoutParams.WRAP_CONTENT);
-       // param.leftMargin = 30;
-        // 7. 설정한 레이아웃 텍스트뷰에 적용
-        //profileName.setLayoutParams(param);
-        //8. 텍스트뷰 백그라운드색상 설정
-        ///profileName.setBackgroundColor(Color.rgb(184,236,184));
     }
 
 

@@ -25,6 +25,7 @@
         <entry key="app/src/main/res/layout/activity_join.xml" value="0.3591485507246377" />
         <entry key="app/src/main/res/layout/activity_login.xml" value="0.3591485507246377" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.37604166666666666" />
+        <entry key="app/src/main/res/layout/activity_password_dialog.xml" value="0.12771739130434784" />
         <entry key="app/src/main/res/layout/fragment_blank.xml" value="0.37604166666666666" />
         <entry key="app/src/main/res/layout/item_chat_list.xml" value="0.37604166666666666" />
         <entry key="app/src/main/res/layout/item_left_content.xml" value="0.37604166666666666" />
