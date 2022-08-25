@@ -12,8 +12,9 @@ import androidx.fragment.app.Fragment;
 
 import com.example.findingidealtypeapp.MainActivity;
 import com.example.findingidealtypeapp.R;
-import com.example.findingidealtypeapp.userServiceApi.MyPageService.MyPageResponse;
+import com.example.findingidealtypeapp.userServiceApi.myPageService.MyPageResponse;
 import com.example.findingidealtypeapp.userServiceApi.UserService;
+import com.example.findingidealtypeapp.utility.TokenDTO;
 
 import java.util.concurrent.TimeUnit;
 
@@ -23,6 +24,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.http.Header;
 
 public class ProfileFragment extends Fragment {
 
@@ -41,7 +43,6 @@ public class ProfileFragment extends Fragment {
         rootView = (ViewGroup)inflater.inflate(R.layout.profile_page, container, false);
         profileName = rootView.findViewById(R.id.profile_name);
         setRetrofit();
-        //createTextView();
 
         if (getArguments() != null)
         {
@@ -53,7 +54,7 @@ public class ProfileFragment extends Fragment {
     }
 
     private void getUserProfile() {
-
+/*
         Call<MyPageResponse> call = userService.getProfile(email);
 
         call.enqueue(new Callback<MyPageResponse>() {
@@ -69,6 +70,27 @@ public class ProfileFragment extends Fragment {
             public void onFailure(Call<MyPageResponse> call, Throwable t) { // 이거는 걍 통신에서 실패
                 System.out.println("통신실패");
                 System.out.println(t);
+            }
+        });
+ */
+        Call<MyPageResponse> call = userService.getProfile(TokenDTO.Token);
+
+        call.enqueue(new Callback<MyPageResponse>() {
+            @Override
+            public void onResponse(Call<MyPageResponse> call, Response<MyPageResponse> response) {
+                MyPageResponse result = response.body();    // 웹서버로부터 응답받은 데이터가 들어있다.
+                if(result != null){
+                    profileName.setText(result.getName());
+                    System.out.println(call);
+                }
+                System.out.println("call= "+call);
+                System.out.println("result= "+result);
+            }
+            @Override
+            public void onFailure(Call<MyPageResponse> call, Throwable t) { // 이거는 걍 통신에서 실패
+                System.out.println("통신실패");
+                System.out.println(t);
+                System.out.println(call);
             }
         });
     }

@@ -1,4 +1,4 @@
-package com.example.findingidealtypeapp.userServiceApi.MyPageService;
+package com.example.findingidealtypeapp.userServiceApi.myPageService;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;

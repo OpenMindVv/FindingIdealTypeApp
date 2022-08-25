@@ -1,4 +1,6 @@
 package com.example.findingidealtypeapp.userService;
+import static android.provider.Settings.System.getString;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -6,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -15,9 +18,16 @@ import androidx.fragment.app.FragmentTransaction;
 import com.example.findingidealtypeapp.MainActivity;
 import com.example.findingidealtypeapp.R;
 import com.example.findingidealtypeapp.userServiceApi.UserService;
+import com.example.findingidealtypeapp.userServiceApi.loginApi.GoogleLogin;
 import com.example.findingidealtypeapp.userServiceApi.loginService.LoginRequest;
 import com.example.findingidealtypeapp.userServiceApi.loginService.LoginResponse;
 import com.example.findingidealtypeapp.utility.Constants;
+import com.example.findingidealtypeapp.utility.TokenDTO;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import java.util.concurrent.TimeUnit;
 
@@ -37,6 +47,8 @@ public class LoginFragment extends Fragment {
     private Retrofit retrofit;
     private UserService userService;
     private MainActivity activity;
+    private ImageView googleLogin;
+    GoogleSignInClient mGoogleSignInClient;
 
 
     @Override
@@ -47,6 +59,9 @@ public class LoginFragment extends Fragment {
         loginButton = rootView.findViewById(R.id.loginButton);
         joinText = rootView.findViewById(R.id.JoinText);
         textSearchPassowrd = rootView.findViewById(R.id.textSearchPassowrd);
+        googleLogin = rootView.findViewById(R.id.googleLogin);
+
+        //TokenDTO.init(activity.getApplicationContext());
 
 
         //로그인 버튼 눌렀을 때 수행
@@ -81,11 +96,18 @@ public class LoginFragment extends Fragment {
             }
         });
 
+        googleLogin.setOnClickListener(new View.OnClickListener() {// 비밀번호 찾기 눌렀을 때 이벤트
+            @Override
+            public void onClick(View v) {
+                //googleSignIn();
+            }
+        });
+
         return rootView;
     }
 
    public void loginValidateCheck(){
-       if ( inputEmail.getText().toString().length() == 0 ) {
+       if (inputEmail.getText().toString().length() == 0 ) {
            Toast.makeText(rootView.getContext(), "Email 입력하세요", Toast.LENGTH_SHORT).show();
            inputEmail.requestFocus();
            return;
@@ -103,25 +125,23 @@ public class LoginFragment extends Fragment {
         String email = inputEmail.getText().toString();
         String password = inputPassword.getText().toString();
 
-        LoginRequest loginRequest = new LoginRequest(email, password);
+        //LoginRequest loginRequest = new LoginRequest(email, password);
 
-        Call<LoginResponse> call = userService.login(email, password);
+        Call<String> call = userService.login(email, password);
 
-        call.enqueue(new Callback<LoginResponse>() {
+        call.enqueue(new Callback<String>() {
             @Override
-            public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
-                LoginResponse result = response.body();    // 웹서버로부터 응답받은 데이터가 들어있다.
-
+            public void onResponse(Call<String> call, Response<String> response) {
+                String result = response.body();    // 웹서버로부터 응답받은 데이터가 들어있다.
                 if(result != null){ // 여기에 서버에서 받아온 값으로 로그인 판단 --> 로그인
                     // 프래그먼트에 데이터 전달
                     transData();
 
-                    //이건 그냥 페이지 변경
-                    //activity.onFragmentChange(Constants.PROFILE_PAGE);
+                    //토큰 저장
                     System.out.println("성공");
+                    //System.out.println(result);
+                    TokenDTO.Token = response.body();
 
-                    System.out.println(result.getResultCode());
-                    System.out.println(result.getTestCode());
                 }else{     // 로그인 실패
                     Toast.makeText(rootView.getContext(), "회원정보가 일치하지 않습니다.", Toast.LENGTH_SHORT).show();
                     System.out.println("실패");
@@ -130,7 +150,7 @@ public class LoginFragment extends Fragment {
             }
 
             @Override
-            public void onFailure(Call<LoginResponse> call, Throwable t) { // 이거는 걍 통신에서 실패
+            public void onFailure(Call<String> call, Throwable t) { // 이거는 걍 통신에서 실패
                 System.out.println("통신실패");
                 System.out.println(t);
             }
@@ -154,11 +174,15 @@ public class LoginFragment extends Fragment {
                 .writeTimeout(3, TimeUnit.SECONDS)
                 .build();
 
+        Gson gson = new GsonBuilder()
+                .setLenient()
+                .create();
+
         retrofit = new Retrofit.Builder()
                 //.baseUrl("https://2fc39d2c-748a-42b0-8fda-cc926df84d08.mock.pstmn.io/")
                 //.client(okHttpClient)
                 .baseUrl("http://10.0.2.2:8080/")
-                .addConverterFactory(GsonConverterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();
         userService = retrofit.create(UserService.class);
     }

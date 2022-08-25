@@ -13,7 +13,7 @@ import androidx.fragment.app.Fragment;
 
 import com.example.findingidealtypeapp.MainActivity;
 import com.example.findingidealtypeapp.R;
-import com.example.findingidealtypeapp.userServiceApi.MyPageService.MyPageResponse;
+import com.example.findingidealtypeapp.userServiceApi.myPageService.MyPageResponse;
 import com.example.findingidealtypeapp.userServiceApi.UserService;
 import com.example.findingidealtypeapp.utility.Constants;
 

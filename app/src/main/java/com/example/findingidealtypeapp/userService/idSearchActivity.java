@@ -11,9 +11,10 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.findingidealtypeapp.R;
-import com.example.findingidealtypeapp.userServiceApi.MyPageService.MyPageResponse;
+import com.example.findingidealtypeapp.userServiceApi.myPageService.MyPageResponse;
 import com.example.findingidealtypeapp.userServiceApi.UserService;
-import com.google.gson.GsonBuilder;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 
 import java.util.concurrent.TimeUnit;
 
