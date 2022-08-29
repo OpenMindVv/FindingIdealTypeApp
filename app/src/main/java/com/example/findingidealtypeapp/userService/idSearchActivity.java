@@ -49,13 +49,12 @@ public class idSearchActivity extends AppCompatActivity {
             setRetrofit();
             getUserPassword();
 
-            System.out.println("비밀번호 찾기 로직 여기에 넣어야함"); // 로직 만들면 될듯
         }
     });
 }
     private void getUserPassword() {
 
-        Call<MyPageResponse> call = userService.getProfile(email);
+        Call<MyPageResponse> call = userService.getPassword(email);
 
         call.enqueue(new Callback<MyPageResponse>() {
             @Override

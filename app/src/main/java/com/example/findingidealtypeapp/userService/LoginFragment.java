@@ -82,9 +82,6 @@ public class LoginFragment extends Fragment {
                 activity = (MainActivity) getActivity();
                 // 액티비티에 플래그먼트를 변경하는 메소드 구현하여 호출
                 activity.onFragmentChange(0);
-
-                //Intent intent = new Intent(getContext(), JoinActivity.class);
-                //startActivity(intent);
             }
         });
 
@@ -96,7 +93,7 @@ public class LoginFragment extends Fragment {
             }
         });
 
-        googleLogin.setOnClickListener(new View.OnClickListener() {// 비밀번호 찾기 눌렀을 때 이벤트
+        googleLogin.setOnClickListener(new View.OnClickListener() {// 구글로그인 눌렀을 때 이벤트
             @Override
             public void onClick(View v) {
                 //googleSignIn();
@@ -136,6 +133,8 @@ public class LoginFragment extends Fragment {
                 if(result != null){ // 여기에 서버에서 받아온 값으로 로그인 판단 --> 로그인
                     // 프래그먼트에 데이터 전달
                     transData();
+                    inputEmail.setText("");
+                    inputPassword.setText("");
 
                     //토큰 저장
                     System.out.println("성공");

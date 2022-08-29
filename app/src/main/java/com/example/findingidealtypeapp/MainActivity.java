@@ -13,6 +13,7 @@ import com.example.findingidealtypeapp.userService.JoinFragment;
 import com.example.findingidealtypeapp.userService.LoginFragment;
 import com.example.findingidealtypeapp.userService.ProfileFragment;
 import com.example.findingidealtypeapp.utility.Constants;
+import com.example.findingidealtypeapp.utility.TokenDTO;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
@@ -63,7 +64,12 @@ public class MainActivity extends AppCompatActivity {
                     transaction.replace(R.id.menu_frame_layout, chatListPage).commitAllowingStateLoss();
                     break;
                 case R.id.menu_mypage:
-                    transaction.replace(R.id.menu_frame_layout, loginFragment).commitAllowingStateLoss();
+                    if(TokenDTO.Token == null){
+                        transaction.replace(R.id.menu_frame_layout, loginFragment).commitAllowingStateLoss();
+                    }
+                    else{
+                        transaction.replace(R.id.menu_frame_layout, profileFragment).commitAllowingStateLoss();
+                    }
                     break;
             }
             return true;

@@ -15,12 +15,11 @@ public interface UserService {
     @GET("user/all")
     Call<MyPageResponse> getProfileList();
 
-    /*
-    @GET("user/getProfile")
-    Call<MyPageResponse> getProfile(
+    @GET("user/getPassword")
+    Call<MyPageResponse> getPassword(
       @Query("email") String email
     );
-     */
+
     @GET("user/getProfile")
     Call<MyPageResponse> getProfile(
             @Header("X-AUTH-TOKEN") String token

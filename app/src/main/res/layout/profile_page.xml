@@ -12,7 +12,7 @@
         android:layout_marginTop="20dp"
         android:orientation="horizontal">
 
-    <ImageButton
+    <ImageView
         android:id="@+id/profile_image"
         android:layout_marginHorizontal="20dp"
         android:layout_width="76dp"
@@ -93,7 +93,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="20dp"
             android:layout_marginVertical="10dp"
-            android:text="조준희"
+            android:text=""
             android:textColor="@color/black"
             tools:ignore="MissingConstraints"
             tools:layout_editor_absoluteX="29dp"
@@ -113,7 +113,7 @@
 
     <ListView
             android:id="@+id/setList"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
             tools:ignore="MissingConstraints">
         </ListView>

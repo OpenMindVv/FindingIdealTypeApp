@@ -24,7 +24,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="100dp"
-            android:text="비밀번호를 잃어버리셨나요?\n 오픈마인드에 가입한 이메일을 \n정확히 입력해 주세요.\n이메일을 통해 비밀번호 수정 링크가 전송됩니다."
+            android:text="비밀번호를 잃어버리셨나요?\n 오픈마인드에 가입한 이메일을 \n정확히 입력해 주세요."
             android:gravity="center"
             android:textColor="@color/black"
             android:textSize="16dp" />
