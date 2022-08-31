@@ -29,6 +29,10 @@ public interface UserService {
     Call<String> login(
             @Query("email") String email, @Query("password") String password);
 
+    @POST("user/editProfile")
+    Call<String> editProrfile(
+            @Query("name") String name, @Query("email") String email, @Query("password") String password);
+
     @PUT("user/create")
     Call<String> createUser(
             @Query("email") String email, @Query("password") String password, @Query("name") String name, @Query("follow") String follow, @Query("following") String following

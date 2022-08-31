@@ -53,15 +53,14 @@ public class JoinFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 if(!emailValidateCheck()) return;
-                //if(!nameValidateCheck()) return;
+                if(!nameValidateCheck()) return;
                 if(!passwordValidateCheck()) return;
-
                 setRetrofit();
                 join();
             }
         });
 
-        loginText.setOnClickListener(new View.OnClickListener() { // 회원가입 버튼 누를 때 이벤트
+        loginText.setOnClickListener(new View.OnClickListener() { // 로그인 버튼 누를 때 이벤트
             @Override
             public void onClick(View v) {
                 MainActivity activity = (MainActivity) getActivity();

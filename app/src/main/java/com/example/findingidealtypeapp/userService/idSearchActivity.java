@@ -48,7 +48,6 @@ public class idSearchActivity extends AppCompatActivity {
             email = inputEmail.getText().toString();
             setRetrofit();
             getUserPassword();
-
         }
     });
 }
