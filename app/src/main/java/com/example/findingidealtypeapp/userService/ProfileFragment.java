@@ -82,8 +82,8 @@ public class ProfileFragment extends Fragment {
     private Context mContext;
     private static final int REQUEST_IMAGE_CAPTURE = 672;
     private String imageFilePath;
-    private Uri photoUri;
     private ActivityResultLauncher<Intent> activityResultLauncher;
+    private boolean isCamera = true;
 
     private List<String> menus = Arrays.asList(
             "도움말","안내","로그아웃","로그아웃","로그아웃","로그아웃"
@@ -166,7 +166,6 @@ public class ProfileFragment extends Fragment {
                 PopupMenu pop = new PopupMenu(mContext, view);
                 //다른 메뉴들과 마찬가지로 inflate 시켜준다.
                 pop.getMenuInflater().inflate(R.menu.main_menu, pop.getMenu());
-
                 pop.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem menuItem) {
@@ -193,6 +192,7 @@ public class ProfileFragment extends Fragment {
 
 
 
+        /*
         activityResultLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 new ActivityResultCallback<ActivityResult>() {
@@ -207,24 +207,29 @@ public class ProfileFragment extends Fragment {
                     }
                 });
 
+         */
 
-
-        /*
         activityResultLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 new ActivityResultCallback<ActivityResult>() {
                     @Override
                     public void onActivityResult(ActivityResult result) {
                         if(result.getResultCode() == RESULT_OK) {
-                            Intent intent = result.getData();
-                            Uri uri = intent.getData();
-                            profileImage.setImageURI(uri);
+                            if(isCamera == true) {
+                                Bundle bundle = result.getData().getExtras();
+                                System.out.println("bundle = " + bundle);
+                                Bitmap bitmap = (Bitmap) bundle.get("data");
+                                profileImage.setImageBitmap(rotate(bitmap, 90));
+                            }
+                            else {
+                                Intent intent = result.getData();
+                                Uri uri = intent.getData();
+                                profileImage.setImageURI(uri);
+                            }
                         }
                     }
                 }
         );
-
-         */
 
 
         /*
@@ -287,22 +292,7 @@ public class ProfileFragment extends Fragment {
 
     // popup_menu에서 gallery를 클릭하면 getAlbum함수 호출
     private void getAlbum(){
-
-        //Intent intent = new Intent(Intent.ACTION_PICK);
-        //intent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
-        //intent.setAction(Intent.ACTION_PICK);
-        //activityResultLauncher.launch(intent);
-
-        //Intent intent = new Intent();
-        //intent.setType(android.provider.MediaStore.Images.Media.CONTENT_TYPE);
-        //intent.setAction(Intent.ACTION_GET_CONTENT);
-        //startActivityForResult(intent, 1); //PICK_IMAGE에는 본인이 원하는 상수넣으면된다.
-        // 앨범 호출
-
-        //Intent intent = new Intent(Intent.ACTION_PICK);
-        //intent.setType(android.provider.MediaStore.Images.Media.CONTENT_TYPE);
-        //startActivityForResult(intent, pickFromAlbum(intent));
-
+        isCamera = false;
         Intent intent = new Intent(Intent.ACTION_PICK);
         intent.setType("image/*");
         intent.setType(MediaStore.Images.Media.CONTENT_TYPE);
@@ -310,8 +300,8 @@ public class ProfileFragment extends Fragment {
     }
 
     private void sendTakePhotoIntent() {
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        if (takePictureIntent.resolveActivity(rootView.getContext().getPackageManager()) != null) {
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (intent.resolveActivity(rootView.getContext().getPackageManager()) != null) {
             File photoFile = null;
             try {
                 photoFile = createImageFile();
@@ -320,17 +310,17 @@ public class ProfileFragment extends Fragment {
             }
 
             if (photoFile != null) {
-                photoUri = FileProvider.getUriForFile(mContext, rootView.getContext().getPackageName(), photoFile);
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
-                activityResultLauncher.launch(takePictureIntent);
-
+                isCamera = true;
+                Uri photoUri = FileProvider.getUriForFile(mContext, rootView.getContext().getPackageName(), photoFile);
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
+                activityResultLauncher.launch(intent);
             }
         }
     }
 
     private File createImageFile() throws IOException {
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = "TEST_" + timeStamp + "_";
+        String imageFileName = "camera" + timeStamp + "_";
         File storageDir = rootView.getContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         File image = File.createTempFile(
                 imageFileName,      /* prefix */
