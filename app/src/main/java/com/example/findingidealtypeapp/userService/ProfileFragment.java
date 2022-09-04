@@ -125,10 +125,10 @@ public class ProfileFragment extends Fragment {
                 System.out.println(data);
                 switch(data) {
                     case "로그아웃":logoutDialog();
-                    break;
+                        break;
                 }
                 //if(data.equals("로그아웃")){
-                 //   logoutDialog();
+                //   logoutDialog();
                 //}
             }
         });
@@ -142,7 +142,6 @@ public class ProfileFragment extends Fragment {
                 //intent.setAction(Intent.ACTION_GET_CONTENT);
                 //startActivityForResult(intent, 1); //PICK_IMAGE에는 본인이 원하는 상수넣으면된다.
                 // 앨범 호출
-
                 Intent intent = new Intent(Intent.ACTION_PICK);
                 intent.setType(android.provider.MediaStore.Images.Media.CONTENT_TYPE);
                 startActivityForResult(intent, pickFromAlbum(intent));
@@ -206,7 +205,6 @@ public class ProfileFragment extends Fragment {
                         }
                     }
                 });
-
          */
 
         activityResultLauncher = registerForActivityResult(
@@ -266,10 +264,6 @@ public class ProfileFragment extends Fragment {
         if(permission == PackageManager.PERMISSION_DENIED){
             ActivityCompat.requestPermissions((Activity) mContext,new String[]{Manifest.permission.CAMERA},0);
         }
-        else {
-            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            activityResultLauncher.launch(intent);
-        }
     }
 
 
@@ -300,7 +294,10 @@ public class ProfileFragment extends Fragment {
     }
 
     private void sendTakePhotoIntent() {
+        isCamera = true;
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        activityResultLauncher.launch(intent);
+        /*
         if (intent.resolveActivity(rootView.getContext().getPackageManager()) != null) {
             File photoFile = null;
             try {
@@ -311,11 +308,13 @@ public class ProfileFragment extends Fragment {
 
             if (photoFile != null) {
                 isCamera = true;
+                System.out.println(photoFile);
                 Uri photoUri = FileProvider.getUriForFile(mContext, rootView.getContext().getPackageName(), photoFile);
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
                 activityResultLauncher.launch(intent);
             }
         }
+         */
     }
 
     private File createImageFile() throws IOException {
