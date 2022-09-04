@@ -188,31 +188,13 @@ public class ProfileFragment extends Fragment {
             }
         });
 
-
-
-
-        /*
-        activityResultLauncher = registerForActivityResult(
-                new ActivityResultContracts.StartActivityForResult(),
-                new ActivityResultCallback<ActivityResult>() {
-                    @Override
-                    public void onActivityResult(ActivityResult result) {
-                        if (result.getResultCode() == RESULT_OK && result.getData() != null) {
-                            Bundle bundle = result.getData().getExtras();
-                            System.out.println("bundle = " + bundle);
-                            Bitmap bitmap = (Bitmap) bundle.get("data");
-                            profileImage.setImageBitmap(bitmap);
-                        }
-                    }
-                });
-         */
-
         activityResultLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 new ActivityResultCallback<ActivityResult>() {
                     @Override
                     public void onActivityResult(ActivityResult result) {
                         if(result.getResultCode() == RESULT_OK) {
+                            Uri uri = null;
                             if(isCamera == true) {
                                 Bundle bundle = result.getData().getExtras();
                                 System.out.println("bundle = " + bundle);
@@ -221,7 +203,7 @@ public class ProfileFragment extends Fragment {
                             }
                             else {
                                 Intent intent = result.getData();
-                                Uri uri = intent.getData();
+                                uri = intent.getData();
                                 profileImage.setImageURI(uri);
                             }
                         }

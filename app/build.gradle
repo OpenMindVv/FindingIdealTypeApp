@@ -52,7 +52,7 @@ dependencies {
     // Gson 변환기 라이브러리
     implementation 'com.squareup.retrofit2:converter-gson:2.6.4'
 
-    // Scalars 변환기 라이브러리
-    implementation 'com.squareup.retrofit2:converter-scalars:2.6.4'
+    // 사진 원형 변환기 라이브러리
+    implementation 'de.hdodenhof:circleimageview:2.2.0'
 
 }
