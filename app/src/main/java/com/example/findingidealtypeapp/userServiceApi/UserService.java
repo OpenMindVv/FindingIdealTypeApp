@@ -3,6 +3,8 @@ package com.example.findingidealtypeapp.userServiceApi;
 import com.example.findingidealtypeapp.userServiceApi.myPageService.MyPageResponse;
 import com.example.findingidealtypeapp.userServiceApi.loginService.LoginResponse;
 
+import java.io.File;
+
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
@@ -37,4 +39,8 @@ public interface UserService {
     Call<String> createUser(
             @Query("email") String email, @Query("password") String password, @Query("name") String name, @Query("follow") String follow, @Query("following") String following
     );
+
+    @POST("user/ProfileImage")
+    Call<String> ProfileImage(
+            @Query("imageFile") File imageFile);
 }

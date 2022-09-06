@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -18,7 +19,10 @@ import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.DocumentsContract;
 import android.provider.MediaStore;
+import android.util.Base64;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -51,9 +55,11 @@ import com.example.findingidealtypeapp.userServiceApi.UserService;
 import com.example.findingidealtypeapp.utility.Constants;
 import com.example.findingidealtypeapp.utility.TokenDTO;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
@@ -84,6 +90,10 @@ public class ProfileFragment extends Fragment {
     private String imageFilePath;
     private ActivityResultLauncher<Intent> activityResultLauncher;
     private boolean isCamera = true;
+    private File destFile;
+    String mCurrentPhotoPath;
+    Uri imageURI;
+    Uri photoURI, albumURI;
 
     private List<String> menus = Arrays.asList(
             "도움말","안내","로그아웃","로그아웃","로그아웃","로그아웃"
@@ -133,22 +143,6 @@ public class ProfileFragment extends Fragment {
             }
         });
 
-        /*
-        profileImage.setOnClickListener(new View.OnClickListener() {// 프로필 이미지 눌렀을 때 이벤트
-            @Override
-            public void onClick(View v) {
-                //Intent intent = new Intent();
-                //intent.setType(android.provider.MediaStore.Images.Media.CONTENT_TYPE);
-                //intent.setAction(Intent.ACTION_GET_CONTENT);
-                //startActivityForResult(intent, 1); //PICK_IMAGE에는 본인이 원하는 상수넣으면된다.
-                // 앨범 호출
-                Intent intent = new Intent(Intent.ACTION_PICK);
-                intent.setType(android.provider.MediaStore.Images.Media.CONTENT_TYPE);
-                startActivityForResult(intent, pickFromAlbum(intent));
-            }
-        });
-         */
-
         profileEditButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -194,51 +188,37 @@ public class ProfileFragment extends Fragment {
                     @Override
                     public void onActivityResult(ActivityResult result) {
                         if(result.getResultCode() == RESULT_OK) {
+                            Bitmap bitMap = null;
                             Uri uri = null;
                             if(isCamera == true) {
                                 Bundle bundle = result.getData().getExtras();
                                 System.out.println("bundle = " + bundle);
                                 Bitmap bitmap = (Bitmap) bundle.get("data");
+                                System.out.println("---------------------result.getData() = " + result.getData());
+                                System.out.println("---------------------bundle = " + bundle);
+                                System.out.println("---------------------Bitmap = " + bitmap);
                                 profileImage.setImageBitmap(rotate(bitmap, 90));
+
+                                //sendImage(imageURI);
                             }
                             else {
                                 Intent intent = result.getData();
+                                System.out.println("---------------------result.getData()2 = " + result.getData());
                                 uri = intent.getData();
-                                profileImage.setImageURI(uri);
+
+                                try {
+                                    bitMap = MediaStore.Images.Media.getBitmap(mContext.getContentResolver(), uri);
+                                    profileImage.setImageBitmap(rotate(bitMap, 90));
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                                //sendImagePath(uri);
                             }
                         }
                     }
                 }
         );
-
-
-        /*
-        profileImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                if (intent.resolveActivity(mContext.getPackageManager()) != null) {
-                    activityResultLauncher.launch(intent);
-                } else {
-                    Toast.makeText(mContext, "There is no app that support this action",
-                            Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-         */
-
-
         return rootView;
-    }
-
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if(id==1){
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     public void checkPermission(){
@@ -247,8 +227,20 @@ public class ProfileFragment extends Fragment {
             ActivityCompat.requestPermissions((Activity) mContext,new String[]{Manifest.permission.CAMERA},0);
         }
     }
+    //Permission에 대한 승인 완료확인 코드
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        //super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if(requestCode==0){
+            if(grantResults[0]==0){
+                Toast.makeText(mContext,"카메라 권한 승인완료",Toast.LENGTH_SHORT).show();
+            }else{
+                Toast.makeText(mContext,"카메라 권한 승인 거절",Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
 
-
+    //사진 각도 알아내는 함수
     private int exifOrientationToDegrees(int exifOrientation) {
         if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_90) {
             return 90;
@@ -260,6 +252,7 @@ public class ProfileFragment extends Fragment {
         return 0;
     }
 
+    // 사진 회전하는 함수
     private Bitmap rotate(Bitmap bitmap, float degree) {
         Matrix matrix = new Matrix();
         matrix.postRotate(degree);
@@ -273,48 +266,93 @@ public class ProfileFragment extends Fragment {
         intent.setType("image/*");
         intent.setType(MediaStore.Images.Media.CONTENT_TYPE);
         activityResultLauncher.launch(intent);
+        createFile(intent);
     }
 
     private void sendTakePhotoIntent() {
         isCamera = true;
-        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        activityResultLauncher.launch(intent);
-        /*
-        if (intent.resolveActivity(rootView.getContext().getPackageManager()) != null) {
-            File photoFile = null;
-            try {
-                photoFile = createImageFile();
-            } catch (IOException ex) {
-                // Error occurred while creating the File
-            }
+        //Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        //activityResultLauncher.launch(intent);
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        activityResultLauncher.launch(takePictureIntent);
+        createFile(takePictureIntent);
+    }
 
-            if (photoFile != null) {
-                isCamera = true;
-                System.out.println(photoFile);
-                Uri photoUri = FileProvider.getUriForFile(mContext, rootView.getContext().getPackageName(), photoFile);
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
-                activityResultLauncher.launch(intent);
+    private void createFile(Intent intent){
+        String state = Environment.getExternalStorageState();
+        if(Environment.MEDIA_MOUNTED.equals(state)){
+
+            if(intent.resolveActivity(rootView.getContext().getPackageManager()) != null){
+                File photoFile = null;
+                try {
+                    photoFile = createImageFile();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                if(photoFile != null){
+                    Uri providerUri = FileProvider.getUriForFile(mContext,getContext().getPackageName(),photoFile);
+                    imageURI = providerUri;
+                    intent.putExtra(MediaStore.EXTRA_OUTPUT,providerUri);
+                }
+            }else{
+                Toast.makeText(mContext,"접근 불가능 합니다",Toast.LENGTH_SHORT).show();
+                return;
             }
         }
-         */
     }
 
     private File createImageFile() throws IOException {
+
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = "camera" + timeStamp + "_";
-        File storageDir = rootView.getContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        File image = File.createTempFile(
-                imageFileName,      /* prefix */
-                ".jpg",         /* suffix */
-                storageDir          /* directory */
-        );
-        imageFilePath = image.getAbsolutePath();
-        return image;
+        String imageFileName = "Image_" + timeStamp + ".jpg";
+        File imageFile = null;
+        File storageDir = new File(Environment.getExternalStorageDirectory() + "/Pictures");
+
+        if(!storageDir.exists()){
+            storageDir.mkdirs();
+        }
+        imageFile = new File(storageDir, imageFileName);
+        mCurrentPhotoPath = imageFile.getAbsolutePath();
+        storeImageToDatabase(imageFile);
+
+        System.out.println("imageFile=================="+imageFile);
+        System.out.println("mCurrentPhotoPath=================="+mCurrentPhotoPath);
+        return imageFile;
     }
 
+    //비트맵을 스트링으로 바꾸는 코드
+    private void BitMapToString(Bitmap bitmap){
+        ByteArrayOutputStream baos=new  ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG,100, baos);    //bitmap compress
+        byte [] arr=baos.toByteArray();
+        String image= Base64.encodeToString(arr, Base64.DEFAULT);
+        String temp="";
+        try{
+            temp="&imagedevice="+ URLEncoder.encode(image,"utf-8");
+        }catch (Exception e){
+            Log.e("exception",e.toString());
+        }
+    }
 
+    private void storeImageToDatabase(File imageFile) {
+        Call<String> call = userService.ProfileImage(imageFile);
 
+        call.enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+                String result = response.body();    // 웹서버로부터 응답받은 데이터가 들어있다.
+                if (result != null) {
+                    System.out.println("성공dd");
+                }
+            }
 
+            @Override
+            public void onFailure(Call<String> call, Throwable t) { // 이거는 걍 통신에서 실패
+                System.out.println("통신실패");
+                System.out.println(t);
+            }
+        });
+    }
 
     private void getUserProfile() {
         Call<MyPageResponse> call = userService.getProfile(TokenDTO.Token);
@@ -328,14 +366,11 @@ public class ProfileFragment extends Fragment {
                     numberFollow.setText(result.getFollow());
                     numberFollowing.setText(result.getFollowing());
                 }
-                System.out.println("call= "+call);
-                System.out.println("result= "+result);
             }
             @Override
             public void onFailure(Call<MyPageResponse> call, Throwable t) { // 이거는 걍 통신에서 실패
                 System.out.println("통신실패");
                 System.out.println(t);
-                System.out.println(call);
             }
         });
     }
@@ -385,7 +420,6 @@ public class ProfileFragment extends Fragment {
                 TokenDTO.Token = null;
             }
         });
-
         logout.show();
     }
 
