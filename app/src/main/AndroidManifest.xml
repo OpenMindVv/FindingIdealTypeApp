@@ -11,6 +11,8 @@
 
     <uses-feature android:name="android.hardware.camera2" />
 
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -31,6 +33,12 @@
             android:theme="@style/Theme.FindingIdealTypeApp.NoActionBar" />
         <activity
             android:name=".userService.idSearchActivity"
+            android:exported="false" />
+        <activity
+            android:name=".mainpage.MainPage"
+            android:exported="false" />
+        <activity
+            android:name=".mainpage.DetailImageActivity"
             android:exported="false" />
         <activity
             android:name=".MainActivity"
@@ -54,6 +62,7 @@
         <activity android:name=".chattingroom.ChatRoomActivity"
             android:parentActivityName=".chatting.ChatListFragment"
             android:windowSoftInputMode="adjustResize"/>
+
 
 
     </application>

@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.view.MenuItem;
 
 import com.example.findingidealtypeapp.chatting.ChatListFragment;
+import com.example.findingidealtypeapp.mainpage.MainPage;
 import com.example.findingidealtypeapp.userService.JoinFragment;
 import com.example.findingidealtypeapp.userService.LoginFragment;
 import com.example.findingidealtypeapp.userService.ProfileFragment;
@@ -24,6 +25,7 @@ public class MainActivity extends AppCompatActivity {
     private JoinFragment joinFragment = new JoinFragment();
     public ProfileFragment profileFragment = new ProfileFragment();
     private ChatListFragment chatListFragment = new ChatListFragment();
+    private MainPage mainPage = new MainPage();
     FragmentTransaction transaction;
 
     @Override
@@ -75,4 +77,5 @@ public class MainActivity extends AppCompatActivity {
             return true;
         }
     }
+
 }
