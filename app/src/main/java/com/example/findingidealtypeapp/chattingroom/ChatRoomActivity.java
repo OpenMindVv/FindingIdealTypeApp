@@ -1,6 +1,6 @@
 package com.example.findingidealtypeapp.chattingroom;
 
-import android.content.Intent;
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -10,44 +10,36 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.findingidealtypeapp.R;
 import com.example.findingidealtypeapp.utility.Constants;
-import com.google.firebase.database.ChildEventListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ServerValue;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.database.annotations.NotNull;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.net.ServerSocket;
-import java.net.Socket;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import okhttp3.MediaType;
+import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
-import okhttp3.ResponseBody;
 import okhttp3.WebSocket;
 import okhttp3.WebSocketListener;
-import okio.BufferedSource;
 import okio.ByteString;
-import ua.naiksoftware.stomp.Stomp;
-import ua.naiksoftware.stomp.StompClient;
-import ua.naiksoftware.stomp.dto.StompHeader;
-
 
 public class ChatRoomActivity extends AppCompatActivity {
 
@@ -55,29 +47,25 @@ public class ChatRoomActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private EditText input;  //message
 
-    private String userId;
-    private OkHttpClient client;
-    private WebSocket webSocket;
-    private Request request;
-    private Handler handler;
-
-    private WebSocketListener listener;
+    private String chatRoomId; //채팅방 id
+    private String myId;       //나의 id
+    private String receiverId; //상대방 id
+    private FirebaseDatabase firebaseDatabase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat_room);
 
-        adapter = new Adapter();
-        handler = new Handler();
-
-        setWebSocket();
-
         //입력 창
         input = findViewById(R.id.editText_input);
-
         //대화상자를 보여주는 뷰
         recyclerView = findViewById(R.id.recyclerview_chat_data);
+
+        init();
+
+        adapter = new Adapter(firebaseDatabase, myId, receiverId,
+                recyclerView);
         recyclerView.setAdapter(adapter);
 
         //답장 보내기 버튼
@@ -86,7 +74,7 @@ public class ChatRoomActivity extends AppCompatActivity {
         btnInput.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                sendText();
+                sendMessage();
             }
         });
 
@@ -94,7 +82,7 @@ public class ChatRoomActivity extends AppCompatActivity {
             @Override
             public boolean onKey(View view, int i, KeyEvent keyEvent) {
                 if(keyEvent.getKeyCode() == KeyEvent.KEYCODE_ENTER){
-                    sendText();
+                    sendMessage();
                     return true;
                 }
 
@@ -111,104 +99,65 @@ public class ChatRoomActivity extends AppCompatActivity {
                 finish();
             }
         });
-
     }
 
-    private void setWebSocket(){
-        client = new OkHttpClient();
-        request = new Request.Builder()
-                .url("ws://192.168.0.7:8080/websocket")
-                .build();
+    private void init(){
+        myId = "you";//FirebaseAuth.getInstance().getCurrentUser().getUid();
+        receiverId = "ming";//getIntent().getStringExtra("");
 
-        setWebSocketListener();
-        webSocket = client.newWebSocket(request, listener);
+        firebaseDatabase = FirebaseDatabase.getInstance();
+
+        checkChatRoom();
     }
 
-    private void setWebSocketListener(){
+    private void sendMessage(){
+        ChatModel chatModel = new ChatModel();
+        chatModel.users.put(myId, true);
+        chatModel.users.put(receiverId, true);
 
-        listener = new WebSocketListener() {
-
-            @Override
-            public void onClosed(@NotNull WebSocket webSocket, int code, @NotNull String reason) {
-                super.onClosed(webSocket, code, reason);
-                Log.d("TLOG","소켓 onClosing: " + reason);
-            }
-
-            @Override
-            public void onClosing(@NotNull WebSocket webSocket, int code, @NotNull String reason) {
-                super.onClosing(webSocket, code, reason);
-                Log.d("TLOG","소켓 onClosing");
-                webSocket.close(1000, null);
-                webSocket.cancel();
-            }
-
-            @Override
-            public void onFailure(@NotNull WebSocket webSocket, @NotNull Throwable t, @NotNull Response response) {
-                super.onFailure(webSocket, t, response);
-                Log.d("TLOG","소켓 onFailure : " + t.toString());
-            }
-
-            @Override
-            public void onMessage(@NotNull WebSocket webSocket, @NotNull String text) {
-                super.onMessage(webSocket, text);
-                Log.d("TLOG", "상대 : " + text.toString());
-                reflectChatContents(text, Constants.LEFT_CONTENT);
-            }
-
-            @Override
-            public void onMessage(@NotNull WebSocket webSocket, @NotNull ByteString bytes) {
-                super.onMessage(webSocket, bytes);
-                Log.d("TLOG", "ByteString 데이터 확인 : " + bytes.toString());
-            }
-
-            @Override
-            public void onOpen(@NotNull WebSocket webSocket, @NotNull Response response) {
-                super.onOpen(webSocket, response);
-                Log.d("TLOG", "전송 데이터 확인 : " + webSocket + " : " + response);
-                //webSocket.close(1000, null);
-            }
-
-        };
-    }
-
-    private void sendToServer(String inputText){
-        try {
-            webSocket.send(inputText);
-            client.dispatcher().executorService().shutdown();
+        if(chatRoomId == null){
+            Log.v("채팅방 생성 안내", "채팅방 생성");
+            firebaseDatabase.getReference()
+                    .child("chatrooms")
+                    .push()
+                    .setValue(chatModel)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void unused) {
+                            checkChatRoom();
+                        }
+                    });
         }
-        catch (Exception e){
-            Log.e("Exception", "MAIN 소켓 통신 오류 : " + e.toString());
+        else{
+            sendMessageToDatabase();
         }
     }
 
-    private void reflectChatContents(String text, int contentType){
-        //입력값 화면에 표시
-        adapter.setChattingData(new ChattingData(
-                userId, text,
-                getCurrentTime(), contentType));
+    private void checkChatRoom(){
+        firebaseDatabase.getReference().child("chatrooms")
+                .orderByChild("users/" + myId)
+                .equalTo(true)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        for(DataSnapshot dataSnapshot : snapshot.getChildren()){
+                            ChatModel chatModel = dataSnapshot.getValue(ChatModel.class);
 
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                adapter.notifyItemInserted(adapter.getItemCount());
-                //입력 후 최하단으로 이동
-                recyclerView.scrollToPosition(adapter.getItemCount() - 1);
-            }
-        });
-    }
+                            //상대방 id가 포함되어있는 채팅방 key를 가져옴
+                            if(chatModel.users.containsKey(receiverId)){
+                                chatRoomId = dataSnapshot.getKey();
 
-    private void sendText(){
-        String inputText = input.getText().toString();  //메세지 입력값
+                                sendMessageToDatabase();
+                                adapter.getMessageList(chatRoomId);
+                            }
+                        }
+                    }
 
-        if(inputText.trim().equals("")){
-            return;     //빈값 or 공백만 입력시 전송 불가
-        }
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
 
-        sendToServer(inputText);
-
-        reflectChatContents(inputText, Constants.RIGHT_CONTENT);
-
-        input.setText(""); //입력창 초기화
+                    }
+                });
     }
 
     //채팅 대화상자 옆에 현재 시각을 표시하기 위해 데이터 저장
@@ -223,15 +172,30 @@ public class ChatRoomActivity extends AppCompatActivity {
         return dateFormat.format(date);
     }
 
-    private void initData(){
+    private void sendMessageToDatabase(){
+        String inputText = input.getText().toString();  //메세지 입력값
 
-        adapter.setChattingData(new ChattingData(
-                "귤귤111", "안녕하세요 반가워요!",
-                getCurrentTime(), Constants.LEFT_CONTENT));
+        if(inputText.trim().equals("")){
+            return;     //빈값 or 공백만 입력시 전송 불가
+        }
 
-        adapter.setChattingData(new ChattingData(
-                "귤귤222", "반가워요ㅎㅎ",
-                getCurrentTime(), Constants.RIGHT_CONTENT));
+        ChatModel.Comment comment = new ChatModel.Comment();
+        comment.uid = myId;
+        comment.message = inputText;     //메세지 입력값
+        comment.date = getCurrentTime(); //날짜
+
+        firebaseDatabase.getReference()
+                .child("chatrooms").child(chatRoomId)
+                .child("comments").push().setValue(comment).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        adapter.setChattingData(new ChattingData(
+                                myId, comment.getMessage(),
+                                getCurrentTime(), Constants.RIGHT_CONTENT));
+
+                        input.setText(""); //입력창 초기화
+                        recyclerView.scrollToPosition(adapter.getItemCount() - 1);
+                    }
+                });
     }
-
 }
