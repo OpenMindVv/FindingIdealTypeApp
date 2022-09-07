@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.view.MenuItem;
 
 import com.example.findingidealtypeapp.chatting.ChatList;
+import com.example.findingidealtypeapp.mainpage.MainPage;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 
@@ -20,6 +21,7 @@ public class MainActivity extends AppCompatActivity {
     private JoinPage joinPage = new JoinPage();
     private ProfilePage profilePage = new ProfilePage();
     private ChatList chatListPage = new ChatList();
+    private MainPage mainPage = new MainPage();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,4 +55,5 @@ public class MainActivity extends AppCompatActivity {
             return true;
         }
     }
+
 }
