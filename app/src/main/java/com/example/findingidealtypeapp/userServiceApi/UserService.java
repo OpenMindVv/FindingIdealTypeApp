@@ -5,11 +5,14 @@ import com.example.findingidealtypeapp.userServiceApi.loginService.LoginResponse
 
 import java.io.File;
 
+import okhttp3.MultipartBody;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
+import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
+import retrofit2.http.Part;
 import retrofit2.http.Query;
 
 public interface UserService {
@@ -43,4 +46,9 @@ public interface UserService {
     @PUT("user/ProfileImage")
     Call<String> ProfileImage(
             @Query("imageFile") String imageFile);
+
+    @Multipart
+    @PUT("user/test")
+    Call<String> test(
+            @Part("imageFile") MultipartBody.Part imageFile);
 }
