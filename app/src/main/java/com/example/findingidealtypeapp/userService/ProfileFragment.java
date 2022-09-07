@@ -60,18 +60,24 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+
 
 public class ProfileFragment extends Fragment {
 
@@ -91,7 +97,7 @@ public class ProfileFragment extends Fragment {
     private ActivityResultLauncher<Intent> activityResultLauncher;
     private boolean isCamera = true;
     private File destFile;
-    String mCurrentPhotoPath;
+    String AbsolutePhotoPath;
     Uri imageURI;
     Uri photoURI, albumURI;
 
@@ -282,7 +288,7 @@ public class ProfileFragment extends Fragment {
             if(intent.resolveActivity(rootView.getContext().getPackageManager()) != null){
                 File photoFile = null;
                 try {
-                    photoFile = createImageFile();
+                    photoFile = createImageFile(); // 여기에 절대경로 있음?
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -308,13 +314,39 @@ public class ProfileFragment extends Fragment {
         if(!storageDir.exists()){
             storageDir.mkdirs();
         }
-        imageFile = new File(storageDir, imageFileName);
-        mCurrentPhotoPath = imageFile.getAbsolutePath();
+        imageFile = new File(storageDir, imageFileName); // 아래랑 출력이 같음
+        AbsolutePhotoPath = imageFile.getAbsolutePath(); // 절대 경로
         //storeImageToDatabase(imageFile);
 
+        RequestBody requestBody = RequestBody.create(MediaType.parse("image/jpeg"), imageFile);
+        MultipartBody.Part fileToUpload = MultipartBody.Part.createFormData("image", imageFile.getName(), requestBody);
+        test(fileToUpload);
+
+        //System.out.println("requestBody=================="+requestBody);
+        //System.out.println("fileToUpload=================="+fileToUpload);
         System.out.println("imageFile=================="+imageFile);
-        System.out.println("mCurrentPhotoPath=================="+mCurrentPhotoPath);
+        System.out.println("mCurrentPhotoPath=================="+AbsolutePhotoPath);
         return imageFile;
+
+    }
+    private void test(MultipartBody.Part temp) {
+        Call<String> call = userService.test(temp);
+
+        call.enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+                String result = response.body();    // 웹서버로부터 응답받은 데이터가 들어있다.
+                if (result != null) {
+                    System.out.println("성공ddd");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t) { // 이거는 걍 통신에서 실패
+                System.out.println("통신실패");
+                System.out.println(t);
+            }
+        });
     }
 
     //비트맵을 스트링으로 바꾸는 코드
@@ -322,17 +354,19 @@ public class ProfileFragment extends Fragment {
         ByteArrayOutputStream baos = new  ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG,10, baos);    //bitmap compress
         byte [] imageBytes = baos.toByteArray();
-        String image= Base64.encodeToString(imageBytes, Base64.DEFAULT);
+        // Sending side
+        String image= Base64.encodeToString(imageBytes, Base64.NO_WRAP);
         String temp="";
         try{
-            System.out.println("ddd");
-            temp="imagedevice="+ URLEncoder.encode(image,"utf-8");
+            //System.out.println("ddd");
+            temp=URLEncoder.encode(image,"utf-8");
+            //System.out.println(temp);
+            //System.out.println(image);
             storeImageToDatabase(image);
             //storeImageToDatabase(temp);
         }catch (Exception e){
             Log.e("exception",e.toString());
         }
-
     }
 
 
@@ -347,7 +381,6 @@ public class ProfileFragment extends Fragment {
                     System.out.println("성공ddd");
                 }
             }
-
             @Override
             public void onFailure(Call<String> call, Throwable t) { // 이거는 걍 통신에서 실패
                 System.out.println("통신실패");
@@ -369,6 +402,7 @@ public class ProfileFragment extends Fragment {
                     numberFollowing.setText(result.getFollowing());
                 }
             }
+
             @Override
             public void onFailure(Call<MyPageResponse> call, Throwable t) { // 이거는 걍 통신에서 실패
                 System.out.println("통신실패");
