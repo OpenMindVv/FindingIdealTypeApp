@@ -11,6 +11,8 @@
 
     <uses-feature android:name="android.hardware.camera2" />
 
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -32,6 +34,12 @@
             android:name=".userService.idSearchActivity"
             android:exported="false" />
         <activity
+            android:name=".MainPage"
+            android:exported="false" />
+        <activity
+            android:name=".DetailImageActivity"
+            android:exported="false" />
+        <activity
             android:name=".MainActivity"
             android:exported="true" >
             <intent-filter>
@@ -43,7 +51,6 @@
         <activity
             android:name=".chattingroom.ChatRoomActivity"
             android:parentActivityName=".chatting.ChatList" />
-
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="com.example.findingidealtypeapp"
@@ -53,6 +60,7 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
+
     </application>
 
 </manifest>
