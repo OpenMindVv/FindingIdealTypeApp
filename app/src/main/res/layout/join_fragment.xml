@@ -32,6 +32,7 @@
             android:textSize="40px"></TextView>
 
         <TextView
+            android:id="@+id/loginText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="로그인"

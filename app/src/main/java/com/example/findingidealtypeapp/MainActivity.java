@@ -9,29 +9,46 @@ import android.os.Bundle;
 import android.view.MenuItem;
 
 import com.example.findingidealtypeapp.chatting.ChatList;
+import com.example.findingidealtypeapp.userService.JoinFragment;
+import com.example.findingidealtypeapp.userService.LoginFragment;
+import com.example.findingidealtypeapp.userService.ProfileFragment;
+import com.example.findingidealtypeapp.utility.Constants;
+import com.example.findingidealtypeapp.utility.TokenDTO;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.navigation.NavigationBarView;
 
 public class MainActivity extends AppCompatActivity {
 
     MainActivity mainActivity=this;
     private FragmentManager fragmentManager = getSupportFragmentManager();
-    private LoginPage loginPage = new LoginPage();
-    private JoinPage joinPage = new JoinPage();
-    private ProfilePage profilePage = new ProfilePage();
+    private LoginFragment loginFragment = new LoginFragment();
+    private JoinFragment joinFragment = new JoinFragment();
+    public ProfileFragment profileFragment = new ProfileFragment();
     private ChatList chatListPage = new ChatList();
+    FragmentTransaction transaction;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.replace(R.id.menu_frame_layout, profilePage).commitAllowingStateLoss();
+        transaction = fragmentManager.beginTransaction();
+        mainActivity.onFragmentChange(2);
+        //transaction.replace(R.id.container, joinFragment).commitAllowingStateLoss();
+        //transaction.replace(R.id.menu_frame_layout, profileFragment).commitAllowingStateLoss();
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.menu_bottom_navigation);
         bottomNavigationView.setOnNavigationItemSelectedListener(new ItemSelectedListener());
+    }
 
+    public void onFragmentChange(int index){
+        switch(index){
+            case Constants.JOIN_PAGE: getSupportFragmentManager().beginTransaction().replace(R.id.menu_frame_layout, joinFragment).commitAllowingStateLoss();
+            break;
+            case Constants.LOGIN_PAGE: getSupportFragmentManager().beginTransaction().replace(R.id.menu_frame_layout, loginFragment).commitAllowingStateLoss();
+            break;
+            case Constants.PROFILE_PAGE: getSupportFragmentManager().beginTransaction().replace(R.id.menu_frame_layout, profileFragment).commitAllowingStateLoss();
+            break;
+        }
     }
 
     class ItemSelectedListener implements BottomNavigationView.OnNavigationItemSelectedListener {
@@ -41,13 +58,18 @@ public class MainActivity extends AppCompatActivity {
 
             switch (menuItem.getItemId()) {
                 case R.id.menu_home:
-                    transaction.replace(R.id.menu_frame_layout, profilePage).commitAllowingStateLoss();
+                    transaction.replace(R.id.menu_frame_layout, profileFragment).commitAllowingStateLoss();
                     break;
                 case R.id.menu_dm:
                     transaction.replace(R.id.menu_frame_layout, chatListPage).commitAllowingStateLoss();
                     break;
                 case R.id.menu_mypage:
-                    transaction.replace(R.id.menu_frame_layout, joinPage).commitAllowingStateLoss();
+                    if(TokenDTO.Token == null){
+                        transaction.replace(R.id.menu_frame_layout, loginFragment).commitAllowingStateLoss();
+                    }
+                    else{
+                        transaction.replace(R.id.menu_frame_layout, profileFragment).commitAllowingStateLoss();
+                    }
                     break;
             }
             return true;

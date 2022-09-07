@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/idSearchText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_marginTop="40dp"
+            android:textStyle="bold"
+            android:text="비밀번호 찾기"
+            android:textColor="@color/black"
+            android:textSize="30dp" />
+
+        <TextView
+            android:id="@+id/idDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="100dp"
+            android:text="비밀번호를 잃어버리셨나요?\n 오픈마인드에 가입한 이메일을 \n정확히 입력해 주세요."
+            android:gravity="center"
+            android:textColor="@color/black"
+            android:textSize="16dp" />
+
+
+        <EditText
+            android:id="@+id/inputEmail"
+            android:layout_height="40dp"
+            android:background="@drawable/edittext_rounded_corner_rectangle"
+            android:layout_marginTop="30dp"
+            android:layout_marginHorizontal="17dp"
+            android:layout_width="match_parent"
+            android:drawableLeft="@drawable/user"
+            android:ems="10"
+            android:hint=" 가입된 이메일을 정확히 입력해주세요."
+            android:textSize="15dp"
+            android:inputType="text" />
+
+        <Button
+            android:id="@+id/searchPasswordButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="#F33673"
+            android:text="비밀번호 찾기"
+            android:layout_marginTop="20dp"
+            android:layout_marginHorizontal="20dp"
+            />
+
+    </LinearLayout>
+</ScrollView>
