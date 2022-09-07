@@ -23,6 +23,7 @@
         android:theme="@style/Theme.FindingIdealTypeApp"
         android:usesCleartextTraffic="true"
         tools:targetApi="31" >
+
         <activity
             android:name=".userService.ProfileEditActivity"
             android:exported="false"
@@ -33,7 +34,7 @@
             android:exported="false" />
         <activity
             android:name=".MainActivity"
-            android:exported="true" >
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -53,6 +54,13 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
+        <activity android:name=".chattingroom.ChatRoomActivity"
+            android:parentActivityName=".chatting.ChatListActivity"
+            android:windowSoftInputMode="adjustResize"/>
+
+        <activity android:name=".chattingroom.EnterActivity"></activity>
+
+
     </application>
 
 </manifest>

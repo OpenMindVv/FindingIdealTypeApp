@@ -10,17 +10,17 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.findingidealtypeapp.R;
-import com.example.findingidealtypeapp.chattingroom.ChatRoomActivity;
+import com.example.findingidealtypeapp.chattingroom.EnterActivity;
 
 import java.util.ArrayList;
 
 public class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    private ArrayList<ChatInformation> chatInformationList;
-    private  Context context;
+    public ArrayList<ChatRoom> chatRoomList;
+    private Context context;
 
     public Adapter(Context context){
 
-        chatInformationList = new ArrayList<>();
+        chatRoomList = new ArrayList<>();
         this.context = context;
     }
 
@@ -43,16 +43,16 @@ public class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         ViewHolder viewHolder = (ViewHolder)holder;
 
-        ChatInformation chatInformation = chatInformationList.get(position);
+        ChatRoom chatRoom = chatRoomList.get(position);
 
-        viewHolder.userId.setText(chatInformation.getUserId());
-        viewHolder.content.setText(chatInformation.getContent());
-        viewHolder.date.setText(chatInformation.getDate());
+        viewHolder.userId.setText(chatRoom.getReceiverId());
+        viewHolder.content.setText(chatRoom.getLastMessage());
+        viewHolder.date.setText(chatRoom.getDate());
 
         viewHolder.setOnViewHolderItemClickListener(new OnViewHolderItemClickListener() {
             @Override
             public void onViewHolderItemClick() {
-                Intent intent = new Intent(context, ChatRoomActivity.class);
+                Intent intent = new Intent(context, EnterActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(intent);
             }
@@ -61,10 +61,10 @@ public class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     @Override
     public int getItemCount() {
-        return chatInformationList.size();
+        return chatRoomList.size();
     }
 
-    public void setChatInformations(ChatInformation chatInformation){
-        chatInformationList.add(chatInformation);
+    public void addChatRoom(ChatRoom chatRoom){
+        chatRoomList.add(chatRoom);
     }
 }
