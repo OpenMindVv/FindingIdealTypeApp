@@ -25,6 +25,7 @@
         android:theme="@style/Theme.FindingIdealTypeApp"
         android:usesCleartextTraffic="true"
         tools:targetApi="31" >
+
         <activity
             android:name=".userService.ProfileEditActivity"
             android:exported="false"
@@ -34,23 +35,21 @@
             android:name=".userService.idSearchActivity"
             android:exported="false" />
         <activity
-            android:name=".MainPage"
+            android:name=".mainpage.MainPage"
             android:exported="false" />
         <activity
-            android:name=".DetailImageActivity"
+            android:name=".mainpage.DetailImageActivity"
             android:exported="false" />
         <activity
             android:name=".MainActivity"
-            android:exported="true" >
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".chattingroom.ChatRoomActivity"
-            android:parentActivityName=".chatting.ChatList" />
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="com.example.findingidealtypeapp"
@@ -60,6 +59,11 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
+        <activity android:name=".chattingroom.ChatRoomActivity"
+            android:parentActivityName=".chatting.ChatListFragment"
+            android:windowSoftInputMode="adjustResize"/>
+
+
 
     </application>
 
