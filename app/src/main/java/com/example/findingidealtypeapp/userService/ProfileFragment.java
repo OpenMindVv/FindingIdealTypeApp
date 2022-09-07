@@ -192,28 +192,27 @@ public class ProfileFragment extends Fragment {
                             Uri uri = null;
                             if(isCamera == true) {
                                 Bundle bundle = result.getData().getExtras();
-                                System.out.println("bundle = " + bundle);
-                                Bitmap bitmap = (Bitmap) bundle.get("data");
-                                System.out.println("---------------------result.getData() = " + result.getData());
-                                System.out.println("---------------------bundle = " + bundle);
-                                System.out.println("---------------------Bitmap = " + bitmap);
-                                profileImage.setImageBitmap(rotate(bitmap, 90));
-
+                                bitMap = (Bitmap) bundle.get("data");
+                                profileImage.setImageBitmap(rotate(bitMap, 90));
                                 //sendImage(imageURI);
                             }
                             else {
                                 Intent intent = result.getData();
-                                System.out.println("---------------------result.getData()2 = " + result.getData());
                                 uri = intent.getData();
 
+                                // uri 비트맵으로 변경
                                 try {
                                     bitMap = MediaStore.Images.Media.getBitmap(mContext.getContentResolver(), uri);
-                                    profileImage.setImageBitmap(rotate(bitMap, 90));
+                                    profileImage.setImageBitmap(bitMap);
+
                                 } catch (IOException e) {
                                     e.printStackTrace();
                                 }
                                 //sendImagePath(uri);
                             }
+                            //bitmap -> base64 -> utf로 변경 후 서버로 통신
+                            System.out.println("확인");
+                            BitMapToString(bitMap);
                         }
                     }
                 }
@@ -271,8 +270,6 @@ public class ProfileFragment extends Fragment {
 
     private void sendTakePhotoIntent() {
         isCamera = true;
-        //Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        //activityResultLauncher.launch(intent);
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         activityResultLauncher.launch(takePictureIntent);
         createFile(takePictureIntent);
@@ -313,7 +310,7 @@ public class ProfileFragment extends Fragment {
         }
         imageFile = new File(storageDir, imageFileName);
         mCurrentPhotoPath = imageFile.getAbsolutePath();
-        storeImageToDatabase(imageFile);
+        //storeImageToDatabase(imageFile);
 
         System.out.println("imageFile=================="+imageFile);
         System.out.println("mCurrentPhotoPath=================="+mCurrentPhotoPath);
@@ -322,27 +319,32 @@ public class ProfileFragment extends Fragment {
 
     //비트맵을 스트링으로 바꾸는 코드
     private void BitMapToString(Bitmap bitmap){
-        ByteArrayOutputStream baos=new  ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG,100, baos);    //bitmap compress
-        byte [] arr=baos.toByteArray();
-        String image= Base64.encodeToString(arr, Base64.DEFAULT);
+        ByteArrayOutputStream baos = new  ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG,10, baos);    //bitmap compress
+        byte [] imageBytes = baos.toByteArray();
+        String image= Base64.encodeToString(imageBytes, Base64.DEFAULT);
         String temp="";
         try{
-            temp="&imagedevice="+ URLEncoder.encode(image,"utf-8");
+            System.out.println("ddd");
+            temp="imagedevice="+ URLEncoder.encode(image,"utf-8");
+            storeImageToDatabase(image);
+            //storeImageToDatabase(temp);
         }catch (Exception e){
             Log.e("exception",e.toString());
         }
+
     }
 
-    private void storeImageToDatabase(File imageFile) {
-        Call<String> call = userService.ProfileImage(imageFile);
+
+    private void storeImageToDatabase(String temp) {
+        Call<String> call = userService.ProfileImage(temp);
 
         call.enqueue(new Callback<String>() {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
                 String result = response.body();    // 웹서버로부터 응답받은 데이터가 들어있다.
                 if (result != null) {
-                    System.out.println("성공dd");
+                    System.out.println("성공ddd");
                 }
             }
 

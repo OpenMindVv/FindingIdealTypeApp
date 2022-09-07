@@ -40,7 +40,7 @@ public interface UserService {
             @Query("email") String email, @Query("password") String password, @Query("name") String name, @Query("follow") String follow, @Query("following") String following
     );
 
-    @POST("user/ProfileImage")
+    @PUT("user/ProfileImage")
     Call<String> ProfileImage(
-            @Query("imageFile") File imageFile);
+            @Query("imageFile") String imageFile);
 }
