@@ -12,17 +12,15 @@
         android:layout_marginTop="20dp"
         android:orientation="horizontal">
 
-    <ImageButton
+    <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/profile_image"
-        android:layout_marginHorizontal="20dp"
+
+        android:layout_marginTop="5dp"
+        android:layout_marginLeft="30dp"
         android:layout_width="76dp"
         android:layout_height="75dp"
-        android:background="@drawable/shape_circle_button"
         android:scaleType="centerCrop"
-        app:srcCompat="@drawable/defaultprofile"
-        tools:ignore="MissingConstraints"
-        tools:layout_editor_absoluteX="29dp"
-        tools:layout_editor_absoluteY="26dp" />
+        android:src="@drawable/profile_image"/>
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -93,7 +91,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="20dp"
             android:layout_marginVertical="10dp"
-            android:text="조준희"
+            android:text=""
             android:textColor="@color/black"
             tools:ignore="MissingConstraints"
             tools:layout_editor_absoluteX="29dp"
@@ -113,7 +111,7 @@
 
     <ListView
             android:id="@+id/setList"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
             tools:ignore="MissingConstraints">
         </ListView>
