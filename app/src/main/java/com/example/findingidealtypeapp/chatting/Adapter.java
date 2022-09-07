@@ -10,7 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.findingidealtypeapp.R;
-import com.example.findingidealtypeapp.chattingroom.EnterActivity;
+import com.example.findingidealtypeapp.chattingroom.ChatRoomActivity;
 
 import java.util.ArrayList;
 
@@ -52,7 +52,7 @@ public class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         viewHolder.setOnViewHolderItemClickListener(new OnViewHolderItemClickListener() {
             @Override
             public void onViewHolderItemClick() {
-                Intent intent = new Intent(context, EnterActivity.class);
+                Intent intent = new Intent(context, ChatRoomActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(intent);
             }

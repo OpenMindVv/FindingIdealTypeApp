@@ -25,7 +25,7 @@ import java.time.LocalDate;
 import java.util.Date;
 import java.util.Iterator;
 
-public class ChatListActivity extends Fragment {
+public class ChatListFragment extends Fragment {
 
     private ViewGroup rootView;
     private Adapter adapter;

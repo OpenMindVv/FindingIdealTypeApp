@@ -41,9 +41,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".chattingroom.ChatRoomActivity"
-            android:parentActivityName=".chatting.ChatList" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
@@ -55,10 +52,8 @@
                 android:resource="@xml/file_paths" />
         </provider>
         <activity android:name=".chattingroom.ChatRoomActivity"
-            android:parentActivityName=".chatting.ChatListActivity"
+            android:parentActivityName=".chatting.ChatListFragment"
             android:windowSoftInputMode="adjustResize"/>
-
-        <activity android:name=".chattingroom.EnterActivity"></activity>
 
 
     </application>
