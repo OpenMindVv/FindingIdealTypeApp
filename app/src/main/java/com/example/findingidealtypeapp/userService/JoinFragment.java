@@ -1,35 +1,52 @@
-package com.example.findingidealtypeapp;
+package com.example.findingidealtypeapp.userService;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 
-import java.util.regex.Matcher;
+import com.example.findingidealtypeapp.MainActivity;
+import com.example.findingidealtypeapp.R;
+import com.example.findingidealtypeapp.userServiceApi.myPageService.MyPageResponse;
+import com.example.findingidealtypeapp.userServiceApi.UserService;
+import com.example.findingidealtypeapp.utility.Constants;
+
 import java.util.regex.Pattern;
 
-public class JoinPage extends Fragment {
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+
+public class JoinFragment extends Fragment {
 
     private EditText inputEmailOfJoin, inputName, inputPasswordOfJoin, inputPasswordCheck;
     private Button JoinButton;
     private ViewGroup rootView;
+    private TextView loginText;
+    private UserService userService;
+    private MainActivity activity;
+    private Retrofit retrofit;
     private boolean isPassJoin;
+    private String follow="0", following="0";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        rootView = (ViewGroup)inflater.inflate(R.layout.join_page, container, false);
+        rootView = (ViewGroup)inflater.inflate(R.layout.join_fragment, container, false);
         inputEmailOfJoin = rootView.findViewById(R.id.inputEmailOfJoin); //
         inputName = rootView.findViewById(R.id.inputName);
         inputPasswordOfJoin = rootView.findViewById(R.id.inputPasswordOfJoin);
         inputPasswordCheck= rootView.findViewById(R.id.inputPasswordCheck);
         JoinButton = rootView.findViewById(R.id.joinButton);
+        loginText = rootView.findViewById(R.id.loginText);
 
 
         JoinButton.setOnClickListener(new View.OnClickListener() { // 회원가입 버튼 누를 때 이벤트
@@ -38,10 +55,62 @@ public class JoinPage extends Fragment {
                 if(!emailValidateCheck()) return;
                 if(!nameValidateCheck()) return;
                 if(!passwordValidateCheck()) return;
-                System.out.println("가입완료"); // 로직 만들면 될듯
+                setRetrofit();
+                join();
             }
         });
+
+        loginText.setOnClickListener(new View.OnClickListener() { // 로그인 버튼 누를 때 이벤트
+            @Override
+            public void onClick(View v) {
+                MainActivity activity = (MainActivity) getActivity();
+                activity.onFragmentChange(1); // 로그인 fragment
+            }
+        });
+
         return rootView;
+    }
+
+    private void join() {
+
+        String email = inputEmailOfJoin.getText().toString();
+        String name = inputName.getText().toString();
+        String password = inputPasswordOfJoin.getText().toString();
+
+        MyPageResponse myPageResponse = new MyPageResponse(email, password, name, "0", "0");
+
+        Call<String> call = userService.createUser(myPageResponse.getEmail(), myPageResponse.getPassword(), myPageResponse.getName(), myPageResponse.getFollowing(), myPageResponse.getFollowing());
+
+        call.enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+                String result= response.body();    // 웹서버로부터 응답받은 데이터가 들어있다.
+                if(result.equals("1")){ // 여기에 서버에서 받아온 값으로 로그인 판단 --> 회원가입
+                    // 액티비티에 플래그먼트를 변경하는 메소드 구현하여 호출
+                    Toast.makeText(rootView.getContext(), "회원가입이 완료되었습니다. 로그인 해주세요", Toast.LENGTH_SHORT).show();
+                    activity = (MainActivity) getActivity();
+                    activity.onFragmentChange(Constants.LOGIN_PAGE);
+                    System.out.println(result);
+                }else{     // 회원가입 실패
+                    Toast.makeText(rootView.getContext(), "이미 존재하는 이메일입니다.", Toast.LENGTH_SHORT).show();
+                    System.out.println("실패");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+                System.out.println(t);
+            }
+        });
+    }
+
+    private void setRetrofit() {
+        retrofit = new Retrofit.Builder()
+                //.baseUrl("https://2fc39d2c-748a-42b0-8fda-cc926df84d08.mock.pstmn.io/")
+                .baseUrl("http://10.0.2.2:8080/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        userService = retrofit.create(UserService.class);
     }
 
 
