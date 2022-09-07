@@ -47,6 +47,7 @@ public class ChatListFragment extends Fragment {
         TextView txNoChattingList = rootView.findViewById(R.id.no_chatting_list);
 
         adapter = new Adapter(getActivity());
+        recyclerView.setAdapter(adapter);
 
         firebaseDatabase = FirebaseDatabase.getInstance();
         firebaseDatabase.getReference().child("chatrooms")
