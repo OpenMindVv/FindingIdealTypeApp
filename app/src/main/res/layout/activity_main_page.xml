@@ -8,6 +8,9 @@
     <ListView
         android:id="@+id/listView_custom"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"></ListView>
+        android:layout_height="wrap_content"
+        android:divider="#FFF"
+        android:dividerHeight="10dp"
+        android:layout_margin="10dp"></ListView>
 
 </FrameLayout>

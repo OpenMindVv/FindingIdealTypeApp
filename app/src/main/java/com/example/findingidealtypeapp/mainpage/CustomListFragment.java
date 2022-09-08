@@ -28,11 +28,11 @@ public class CustomListFragment extends Fragment {
 
         //data를 가져와서 어답터와 연결해 준다. 서버에서 가져오는게 대부분 이다.
         userList = new ArrayList<>();
-        userList.add(new User("Robert Downey Jr.", "https://image.tmdb.org/t/p/w600_and_h900_bestv2/5qHNjhtjMD4YWH3UP0rm4tKwxCL.jpg"));
-        userList.add(new User("Scarlett Johansson", "https://image.tmdb.org/t/p/w600_and_h900_bestv2/6NsMbJXRlDZuDzatN2akFdGuTvx.jpg"));
-        userList.add(new User("Cho Yeo-jeong", "https://image.tmdb.org/t/p/w600_and_h900_bestv2/5MgWM8pkUiYkj9MEaEpO0Ir1FD9.jpg"));
-        userList.add(new User("Scarlett Johansson", "https://image.tmdb.org/t/p/w600_and_h900_bestv2/6NsMbJXRlDZuDzatN2akFdGuTvx.jpg"));
-        userList.add(new User("Robert Downey Jr.", "https://image.tmdb.org/t/p/w600_and_h900_bestv2/5qHNjhtjMD4YWH3UP0rm4tKwxCL.jpg"));
+        userList.add(new User("JENNIERUBYJANE", R.drawable.jennie));
+        userList.add(new User("SOOYAAA___", R.drawable.jisoo));
+        userList.add(new User("ROSES_ARE_ROSIE", R.drawable.rose));
+        userList.add(new User("LALALALISA_M", R.drawable.lisa));
+        userList.add(new User("_FOR_YXXNG", R.drawable.kiyong));
 
         customListView = (ListView) rootView.findViewById(R.id.listView_custom);
         customAdapter = new CustomAdapter(getContext(),userList);
@@ -54,9 +54,9 @@ public class CustomListFragment extends Fragment {
 //data class
 class User {
     private String name;
-    private String thumb_url;
+    private int thumb_url;
 
-    public User(String name, String thumb_url) {
+    public User(String name, int thumb_url) {
         this.name = name;
         this.thumb_url = thumb_url;
     }
@@ -65,7 +65,7 @@ class User {
         return name;
     }
 
-    public String getThumb_url() {
+    public int getThumb_url() {
         return thumb_url;
     }
 }
