@@ -15,4 +15,11 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
+    <style name="Theme.FindingIdealTypeApp.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+    <style name="Theme.FindingIdealTypeApp.AppBarOverlay"
+        parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+    <style name="Theme.FindingIdealTypeApp.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 </resources>

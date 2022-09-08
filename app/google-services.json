@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "3996657867",
+    "project_id": "findingidealtypeapp",
+    "storage_bucket": "findingidealtypeapp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:3996657867:android:7026f52caabc380f20134e",
+        "android_client_info": {
+          "package_name": "com.example.findingidealtypeapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "3996657867-0sue008spm08233l2n4cbd514shqihda.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.findingidealtypeapp",
+            "certificate_hash": "5a14ff71a9a96851180df69e6a1a9ce832f45ff0"
+          }
+        },
+        {
+          "client_id": "3996657867-mreq6ml0h5ob33tvjsl9bk2i4qkvh1jm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA0sky8aGbL5WXmKCxSu238tOre3eAQuIU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "3996657867-mreq6ml0h5ob33tvjsl9bk2i4qkvh1jm.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
