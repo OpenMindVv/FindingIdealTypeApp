@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -217,8 +218,10 @@ public class ProfileFragment extends Fragment {
                                 //sendImagePath(uri);
                             }
                             //bitmap -> base64 -> utf로 변경 후 서버로 통신
-                            System.out.println("확인");
-                            BitMapToString(bitMap);
+                            bitMap = resize(bitMap);
+                            String image = bitmapToByteArray(bitMap);
+                            storeImageToDatabase(image);
+                            //BitMapToString(bitMap);
                         }
                     }
                 }
@@ -245,18 +248,6 @@ public class ProfileFragment extends Fragment {
         }
     }
 
-    //사진 각도 알아내는 함수
-    private int exifOrientationToDegrees(int exifOrientation) {
-        if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_90) {
-            return 90;
-        } else if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_180) {
-            return 180;
-        } else if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_270) {
-            return 270;
-        }
-        return 0;
-    }
-
     // 사진 회전하는 함수
     private Bitmap rotate(Bitmap bitmap, float degree) {
         Matrix matrix = new Matrix();
@@ -271,116 +262,71 @@ public class ProfileFragment extends Fragment {
         intent.setType("image/*");
         intent.setType(MediaStore.Images.Media.CONTENT_TYPE);
         activityResultLauncher.launch(intent);
-        createFile(intent);
     }
 
     private void sendTakePhotoIntent() {
         isCamera = true;
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         activityResultLauncher.launch(takePictureIntent);
-        createFile(takePictureIntent);
     }
 
-    private void createFile(Intent intent){
-        String state = Environment.getExternalStorageState();
-        if(Environment.MEDIA_MOUNTED.equals(state)){
+    public String bitmapToByteArray(Bitmap bitmap) {
+        String image = "";
+        ByteArrayOutputStream stream = new ByteArrayOutputStream() ;
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream) ;
+        byte[] byteArray = stream.toByteArray() ;
+        image = byteArrayToBinaryString(byteArray);
+        return image;
+    }
 
-            if(intent.resolveActivity(rootView.getContext().getPackageManager()) != null){
-                File photoFile = null;
-                try {
-                    photoFile = createImageFile(); // 여기에 절대경로 있음?
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                if(photoFile != null){
-                    Uri providerUri = FileProvider.getUriForFile(mContext,getContext().getPackageName(),photoFile);
-                    imageURI = providerUri;
-                    intent.putExtra(MediaStore.EXTRA_OUTPUT,providerUri);
-                }
-            }else{
-                Toast.makeText(mContext,"접근 불가능 합니다",Toast.LENGTH_SHORT).show();
-                return;
+    /**바이너리 바이트 배열을 스트링으로 바꾸어주는 메서드 */
+    public static String byteArrayToBinaryString(byte[] b) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < b.length; ++i) {
+            sb.append(byteToBinaryString(b[i]));
+        }
+        return sb.toString();
+    }
+
+    /**바이너리 바이트를 스트링으로 바꾸어주는 메서드 */
+    public static String byteToBinaryString(byte n) {
+        StringBuilder sb = new StringBuilder("00000000");
+        for (int bit = 0; bit < 8; bit++) {
+            if (((n >> bit) & 1) > 0) {
+                sb.setCharAt(7 - bit, '1');
             }
         }
+        return sb.toString();
     }
 
-    private File createImageFile() throws IOException {
-
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = "Image_" + timeStamp + ".jpg";
-        File imageFile = null;
-        File storageDir = new File(Environment.getExternalStorageDirectory() + "/Pictures");
-
-        if(!storageDir.exists()){
-            storageDir.mkdirs();
-        }
-        imageFile = new File(storageDir, imageFileName); // 아래랑 출력이 같음
-        AbsolutePhotoPath = imageFile.getAbsolutePath(); // 절대 경로
-        //storeImageToDatabase(imageFile);
-
-        RequestBody requestBody = RequestBody.create(MediaType.parse("image/jpeg"), imageFile);
-        MultipartBody.Part fileToUpload = MultipartBody.Part.createFormData("image", imageFile.getName(), requestBody);
-        test(fileToUpload);
-
-        //System.out.println("requestBody=================="+requestBody);
-        //System.out.println("fileToUpload=================="+fileToUpload);
-        System.out.println("imageFile=================="+imageFile);
-        System.out.println("mCurrentPhotoPath=================="+AbsolutePhotoPath);
-        return imageFile;
-
+    //비트맵 사이즈 변경
+    private Bitmap resize(Bitmap bm){
+        Configuration config=getResources().getConfiguration();
+        if(config.smallestScreenWidthDp>=800)
+            bm = Bitmap.createScaledBitmap(bm, 400, 240, true);
+        else if(config.smallestScreenWidthDp>=600)
+            bm = Bitmap.createScaledBitmap(bm, 300, 180, true);
+        else if(config.smallestScreenWidthDp>=400)
+            bm = Bitmap.createScaledBitmap(bm, 200, 120, true);
+        else if(config.smallestScreenWidthDp>=360)
+            bm = Bitmap.createScaledBitmap(bm, 180, 108, true);
+        else
+            bm = Bitmap.createScaledBitmap(bm, 160, 96, true);
+        return bm;
     }
-    private void test(MultipartBody.Part temp) {
-        Call<String> call = userService.test(temp);
+
+    private void storeImageToDatabase(String image) {
+        Call<String> call = userService.insertImage(image);
 
         call.enqueue(new Callback<String>() {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
                 String result = response.body();    // 웹서버로부터 응답받은 데이터가 들어있다.
                 if (result != null) {
-                    System.out.println("성공ddd");
+                    System.out.println("성공");
                 }
             }
 
-            @Override
-            public void onFailure(Call<String> call, Throwable t) { // 이거는 걍 통신에서 실패
-                System.out.println("통신실패");
-                System.out.println(t);
-            }
-        });
-    }
-
-    //비트맵을 스트링으로 바꾸는 코드
-    private void BitMapToString(Bitmap bitmap){
-        ByteArrayOutputStream baos = new  ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG,10, baos);    //bitmap compress
-        byte [] imageBytes = baos.toByteArray();
-        // Sending side
-        String image= Base64.encodeToString(imageBytes, Base64.NO_WRAP);
-        String temp="";
-        try{
-            //System.out.println("ddd");
-            temp=URLEncoder.encode(image,"utf-8");
-            //System.out.println(temp);
-            //System.out.println(image);
-            storeImageToDatabase(image);
-            //storeImageToDatabase(temp);
-        }catch (Exception e){
-            Log.e("exception",e.toString());
-        }
-    }
-
-
-    private void storeImageToDatabase(String temp) {
-        Call<String> call = userService.ProfileImage(temp);
-
-        call.enqueue(new Callback<String>() {
-            @Override
-            public void onResponse(Call<String> call, Response<String> response) {
-                String result = response.body();    // 웹서버로부터 응답받은 데이터가 들어있다.
-                if (result != null) {
-                    System.out.println("성공ddd");
-                }
-            }
             @Override
             public void onFailure(Call<String> call, Throwable t) { // 이거는 걍 통신에서 실패
                 System.out.println("통신실패");

@@ -4,6 +4,11 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 public class MyPageResponse {
+
+    @SerializedName("Image")
+    @Expose
+    public String Image;
+
     @SerializedName("email")
     @Expose
     public String email;
@@ -25,12 +30,19 @@ public class MyPageResponse {
     @Expose
     public String following;
 
-    public MyPageResponse(String email, String password, String name, String follow, String following){
+
+    @SerializedName("animalFace")
+    @Expose
+    public String animalFace;
+
+    public MyPageResponse(String Image, String email, String password, String name, String follow, String following, String animalFace){
+        this.Image = Image;
         this.email = email;
         this.password = password;
         this.name = name;
         this.follow = follow;
         this.following = following;
+        this.animalFace = animalFace;
 
     }
 
@@ -70,5 +82,20 @@ public class MyPageResponse {
 
     public void setFollowing(String following) {
         this.following = following;
+    }
+    public String getImage() {
+        return Image;
+    }
+
+    public void setImage(String image) {
+        Image = image;
+    }
+
+    public String getAnimalFace() {
+        return animalFace;
+    }
+
+    public void setAnimalFace(String animalFace) {
+        this.animalFace = animalFace;
     }
 }

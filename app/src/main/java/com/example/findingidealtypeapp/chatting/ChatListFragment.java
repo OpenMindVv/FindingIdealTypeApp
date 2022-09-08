@@ -47,6 +47,7 @@ public class ChatListFragment extends Fragment {
         TextView txNoChattingList = rootView.findViewById(R.id.no_chatting_list);
 
         adapter = new Adapter(getActivity());
+        recyclerView.setAdapter(adapter);
 
         firebaseDatabase = FirebaseDatabase.getInstance();
         firebaseDatabase.getReference().child("chatrooms")
@@ -68,7 +69,6 @@ public class ChatListFragment extends Fragment {
                             user1 = keys.next();
                             user2 = keys.next();
                             receiverId = user1.equals(myId) ? user2 : user1;
-
                             //
                             if(chatModel.users.containsKey(receiverId)) {
                                 chatRoomId = dataSnapshot.getKey();

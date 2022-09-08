@@ -53,7 +53,7 @@ public class JoinFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 if(!emailValidateCheck()) return;
-                if(!nameValidateCheck()) return;
+                //if(!nameValidateCheck()) return;
                 if(!passwordValidateCheck()) return;
                 setRetrofit();
                 join();
@@ -77,9 +77,9 @@ public class JoinFragment extends Fragment {
         String name = inputName.getText().toString();
         String password = inputPasswordOfJoin.getText().toString();
 
-        MyPageResponse myPageResponse = new MyPageResponse(email, password, name, "0", "0");
+        MyPageResponse myPageResponse = new MyPageResponse("0", email, password, name, "0", "0", "0");
 
-        Call<String> call = userService.createUser(myPageResponse.getEmail(), myPageResponse.getPassword(), myPageResponse.getName(), myPageResponse.getFollowing(), myPageResponse.getFollowing());
+        Call<String> call = userService.createProfile(myPageResponse.getImage(), myPageResponse.getEmail(), myPageResponse.getPassword(), myPageResponse.getName(), myPageResponse.getFollowing(), myPageResponse.getFollowing(), myPageResponse.getAnimalFace());
 
         call.enqueue(new Callback<String>() {
             @Override
