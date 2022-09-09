@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
@@ -17,7 +18,7 @@ import com.example.findingidealtypeapp.R;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CustomAdapter extends ArrayAdapter implements AdapterView.OnItemClickListener {
+public class TodayAdapter extends ArrayAdapter implements AdapterView.OnItemClickListener {
     private Context context;
     private List list;
 
@@ -31,7 +32,7 @@ public class CustomAdapter extends ArrayAdapter implements AdapterView.OnItemCli
         public ImageView iv_thumb;
     }
 
-    public CustomAdapter(Context context, ArrayList list){
+    public TodayAdapter(Context context, ArrayList list){
         super(context, 0, list);
         this.context = context;
         this.list = list;
@@ -39,14 +40,14 @@ public class CustomAdapter extends ArrayAdapter implements AdapterView.OnItemCli
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        final ViewHolder viewHolder;
+        final TodayAdapter.ViewHolder viewHolder;
 
         if (convertView == null){
             LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
-            convertView = layoutInflater.inflate(R.layout.item_user_list, parent, false);
+            convertView = layoutInflater.inflate(R.layout.item_today_ideal, parent, false);
         }
 
-        viewHolder = new ViewHolder();
+        viewHolder = new TodayAdapter.ViewHolder();
         viewHolder.tv_name = (TextView) convertView.findViewById(R.id.textView_name);
         viewHolder.iv_thumb = (ImageView) convertView.findViewById(R.id.imageView_thumb);
 

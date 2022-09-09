@@ -15,7 +15,7 @@
     <Button
 
         android:background="@drawable/today_button_shape"
-        android:id="@+id/button8"
+        android:id="@+id/today_button"
         android:layout_width="match_parent"
         android:layout_height="120dp"
         android:layout_marginHorizontal="10dp"
@@ -74,7 +74,6 @@
             android:backgroundTint="#FFCAE3"
             android:layout_margin="10dp"/>
     </LinearLayout>
-
     <ListView
         android:id="@+id/listView_custom"
         android:layout_width="match_parent"
