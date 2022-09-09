@@ -280,7 +280,7 @@ public class ProfileFragment extends Fragment {
     }
 
     /**바이너리 바이트 배열을 스트링으로 바꾸어주는 메서드 */
-    public static String byteArrayToBinaryString(byte[] b) {
+    public String byteArrayToBinaryString(byte[] b) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < b.length; ++i) {
             sb.append(byteToBinaryString(b[i]));
@@ -289,7 +289,7 @@ public class ProfileFragment extends Fragment {
     }
 
     /**바이너리 바이트를 스트링으로 바꾸어주는 메서드 */
-    public static String byteToBinaryString(byte n) {
+    public String byteToBinaryString(byte n) {
         StringBuilder sb = new StringBuilder("00000000");
         for (int bit = 0; bit < 8; bit++) {
             if (((n >> bit) & 1) > 0) {
@@ -297,6 +297,33 @@ public class ProfileFragment extends Fragment {
             }
         }
         return sb.toString();
+    }
+
+    /** 바이너리 스트링을 바이트로 변환*/
+    public byte[] binaryStringToByteArray(String s) {
+        int count = s.length() / 8;
+        byte[] b = new byte[count];
+        for (int i = 1; i < count; ++i) {
+            String t = s.substring((i - 1) * 8, i * 8);
+            b[i - 1] = binaryStringToByte(t);
+        }
+        return b;
+    }
+    /** 바이너리 스트링을 바이트로 변환*/
+    public byte binaryStringToByte(String s) {
+        byte ret = 0, total = 0;
+        for (int i = 0; i < 8; ++i) {
+            ret = (s.charAt(7 - i) == '1') ? (byte) (1 << i) : 0;
+            total = (byte) (ret | total);
+        }
+        return total;
+    }
+
+    /**  Byte를 Bitmap으로 변환*/
+    public Bitmap byteArrayToBitmap( byte[] byteArray ) {
+        Bitmap bitmap = BitmapFactory.decodeByteArray( byteArray, 0, byteArray.length ) ;
+        profileImage.setImageBitmap(bitmap);
+        return bitmap ;
     }
 
     //비트맵 사이즈 변경
@@ -343,6 +370,10 @@ public class ProfileFragment extends Fragment {
             public void onResponse(Call<MyPageResponse> call, Response<MyPageResponse> response) {
                 MyPageResponse result = response.body();    // 웹서버로부터 응답받은 데이터가 들어있다.
                 if(result != null){
+                    byte[] Image = null;
+                    System.out.println("Image======" + result.getImage());
+                    Image = binaryStringToByteArray(result.getImage());
+                    byteArrayToBitmap(Image);
                     profileName.setText(result.getName());
                     numberFollow.setText(result.getFollow());
                     numberFollowing.setText(result.getFollowing());
