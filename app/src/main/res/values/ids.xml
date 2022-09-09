@@ -4,4 +4,8 @@
     <item name="user_detail_name" type="id" />
     <item name="user_detail_image" type="id" />
     <item name="user_listView" type="id" />
+    <item name="rabbit_button" type="id" />
+    <item name="dog_button" type="id" />
+    <item name="cat_button" type="id" />
+    <item name="dinosaur_button" type="id" />
 </resources>
