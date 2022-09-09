@@ -93,14 +93,8 @@ public class ProfileFragment extends Fragment {
     private String email, name, follow, following;
     private ArrayAdapter arrayAdapter;
     private Context mContext;
-    private static final int REQUEST_IMAGE_CAPTURE = 672;
-    private String imageFilePath;
     private ActivityResultLauncher<Intent> activityResultLauncher;
     private boolean isCamera = true;
-    private File destFile;
-    String AbsolutePhotoPath;
-    Uri imageURI;
-    Uri photoURI, albumURI;
 
     private List<String> menus = Arrays.asList(
             "도움말","안내","로그아웃","로그아웃","로그아웃","로그아웃"
@@ -221,7 +215,6 @@ public class ProfileFragment extends Fragment {
                             bitMap = resize(bitMap);
                             String image = bitmapToByteArray(bitMap);
                             storeImageToDatabase(image);
-                            //BitMapToString(bitMap);
                         }
                     }
                 }
@@ -373,7 +366,7 @@ public class ProfileFragment extends Fragment {
                     byte[] Image = null;
                     System.out.println("Image======" + result.getImage());
                     Image = binaryStringToByteArray(result.getImage());
-                    byteArrayToBitmap(Image);
+                    if(!result.getImage().equals("0")) byteArrayToBitmap(Image);
                     profileName.setText(result.getName());
                     numberFollow.setText(result.getFollow());
                     numberFollowing.setText(result.getFollowing());
