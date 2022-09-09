@@ -53,7 +53,7 @@ public class JoinFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 if(!emailValidateCheck()) return;
-                //if(!nameValidateCheck()) return;
+                if(!nameValidateCheck()) return;
                 if(!passwordValidateCheck()) return;
                 setRetrofit();
                 join();
@@ -91,11 +91,9 @@ public class JoinFragment extends Fragment {
                     Toast.makeText(rootView.getContext(), "회원가입이 완료되었습니다. 로그인 해주세요", Toast.LENGTH_SHORT).show();
                     activity = (MainActivity) getActivity();
                     activity.onFragmentChange(Constants.LOGIN_PAGE);
-                    System.out.println(result);
                 }else{     // 회원가입 실패
                     Toast.makeText(rootView.getContext(), "이미 존재하는 이메일입니다.", Toast.LENGTH_SHORT).show();
-                    System.out.println(result);
-                    System.out.println("실패");
+                    System.out.println("fail");
                 }
             }
 
@@ -167,8 +165,6 @@ public class JoinFragment extends Fragment {
         }
         else if(!inputPasswordOfJoin.getText().toString().equals(inputPasswordCheck.getText().toString())){
             Toast.makeText(rootView.getContext(), "비밀번호가 일치하지 않습니다", Toast.LENGTH_SHORT).show();
-            System.out.println(inputPasswordOfJoin.getText().toString());
-            System.out.println(inputPasswordCheck.getText().toString());
             inputPasswordCheck.requestFocus();
             return false;
         }

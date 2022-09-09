@@ -61,13 +61,11 @@ public class idSearchActivity extends AppCompatActivity {
                 MyPageResponse result = response.body();    // 웹서버로부터 응답받은 데이터가 들어있다.
 
                 if(result != null){
-                    System.out.println(result.getPassword());
                     dialog(result.getPassword());
                 }
             }
             @Override
             public void onFailure(Call<MyPageResponse> call, Throwable t) { // 이거는 걍 통신에서 실패
-                System.out.println("통신실패");
                 System.out.println(t);
             }
         });

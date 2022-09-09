@@ -54,6 +54,7 @@ import com.example.findingidealtypeapp.R;
 import com.example.findingidealtypeapp.userServiceApi.myPageService.MyPageResponse;
 import com.example.findingidealtypeapp.userServiceApi.UserService;
 import com.example.findingidealtypeapp.utility.Constants;
+import com.example.findingidealtypeapp.utility.DataProcessing;
 import com.example.findingidealtypeapp.utility.TokenDTO;
 
 import java.io.ByteArrayOutputStream;
@@ -94,10 +95,11 @@ public class ProfileFragment extends Fragment {
     private ArrayAdapter arrayAdapter;
     private Context mContext;
     private ActivityResultLauncher<Intent> activityResultLauncher;
+    private DataProcessing processing = new DataProcessing();
     private boolean isCamera = true;
 
     private List<String> menus = Arrays.asList(
-            "도움말","안내","로그아웃","로그아웃","로그아웃","로그아웃"
+            "도움말","안내","로그아웃"
     );
 
     @Override
@@ -133,7 +135,6 @@ public class ProfileFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 String data = (String) adapterView.getItemAtPosition(position); // 데이터에 클릭 정보가 담김
-                System.out.println(data);
                 switch(data) {
                     case "로그아웃":logoutDialog();
                         break;
@@ -194,7 +195,7 @@ public class ProfileFragment extends Fragment {
                             if(isCamera == true) {
                                 Bundle bundle = result.getData().getExtras();
                                 bitMap = (Bitmap) bundle.get("data");
-                                profileImage.setImageBitmap(rotate(bitMap, 90));
+                                profileImage.setImageBitmap(processing.rotate(bitMap, 90));
                                 //sendImage(imageURI);
                             }
                             else {
@@ -213,7 +214,7 @@ public class ProfileFragment extends Fragment {
                             }
                             //bitmap -> base64 -> utf로 변경 후 서버로 통신
                             bitMap = resize(bitMap);
-                            String image = bitmapToByteArray(bitMap);
+                            String image = processing.bitmapToByteArray(bitMap);
                             storeImageToDatabase(image);
                         }
                     }
@@ -227,25 +228,6 @@ public class ProfileFragment extends Fragment {
         if(permission == PackageManager.PERMISSION_DENIED){
             ActivityCompat.requestPermissions((Activity) mContext,new String[]{Manifest.permission.CAMERA},0);
         }
-    }
-    //Permission에 대한 승인 완료확인 코드
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        //super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if(requestCode==0){
-            if(grantResults[0]==0){
-                Toast.makeText(mContext,"카메라 권한 승인완료",Toast.LENGTH_SHORT).show();
-            }else{
-                Toast.makeText(mContext,"카메라 권한 승인 거절",Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
-
-    // 사진 회전하는 함수
-    private Bitmap rotate(Bitmap bitmap, float degree) {
-        Matrix matrix = new Matrix();
-        matrix.postRotate(degree);
-        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
     }
 
     // popup_menu에서 gallery를 클릭하면 getAlbum함수 호출
@@ -263,60 +245,18 @@ public class ProfileFragment extends Fragment {
         activityResultLauncher.launch(takePictureIntent);
     }
 
-    public String bitmapToByteArray(Bitmap bitmap) {
-        String image = "";
-        ByteArrayOutputStream stream = new ByteArrayOutputStream() ;
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream) ;
-        byte[] byteArray = stream.toByteArray() ;
-        image = byteArrayToBinaryString(byteArray);
-        return image;
-    }
 
-    /**바이너리 바이트 배열을 스트링으로 바꾸어주는 메서드 */
-    public String byteArrayToBinaryString(byte[] b) {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < b.length; ++i) {
-            sb.append(byteToBinaryString(b[i]));
-        }
-        return sb.toString();
-    }
-
-    /**바이너리 바이트를 스트링으로 바꾸어주는 메서드 */
-    public String byteToBinaryString(byte n) {
-        StringBuilder sb = new StringBuilder("00000000");
-        for (int bit = 0; bit < 8; bit++) {
-            if (((n >> bit) & 1) > 0) {
-                sb.setCharAt(7 - bit, '1');
+    //Permission에 대한 승인 완료확인 코드
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        //super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if(requestCode==0){
+            if(grantResults[0]==0){
+                Toast.makeText(mContext,"카메라 권한 승인완료",Toast.LENGTH_SHORT).show();
+            }else{
+                Toast.makeText(mContext,"카메라 권한 승인 거절",Toast.LENGTH_SHORT).show();
             }
         }
-        return sb.toString();
-    }
-
-    /** 바이너리 스트링을 바이트로 변환*/
-    public byte[] binaryStringToByteArray(String s) {
-        int count = s.length() / 8;
-        byte[] b = new byte[count];
-        for (int i = 1; i < count; ++i) {
-            String t = s.substring((i - 1) * 8, i * 8);
-            b[i - 1] = binaryStringToByte(t);
-        }
-        return b;
-    }
-    /** 바이너리 스트링을 바이트로 변환*/
-    public byte binaryStringToByte(String s) {
-        byte ret = 0, total = 0;
-        for (int i = 0; i < 8; ++i) {
-            ret = (s.charAt(7 - i) == '1') ? (byte) (1 << i) : 0;
-            total = (byte) (ret | total);
-        }
-        return total;
-    }
-
-    /**  Byte를 Bitmap으로 변환*/
-    public Bitmap byteArrayToBitmap( byte[] byteArray ) {
-        Bitmap bitmap = BitmapFactory.decodeByteArray( byteArray, 0, byteArray.length ) ;
-        profileImage.setImageBitmap(bitmap);
-        return bitmap ;
     }
 
     //비트맵 사이즈 변경
@@ -343,13 +283,12 @@ public class ProfileFragment extends Fragment {
             public void onResponse(Call<String> call, Response<String> response) {
                 String result = response.body();    // 웹서버로부터 응답받은 데이터가 들어있다.
                 if (result != null) {
-                    System.out.println("성공");
+                    System.out.println("Sucess");
                 }
             }
 
             @Override
             public void onFailure(Call<String> call, Throwable t) { // 이거는 걍 통신에서 실패
-                System.out.println("통신실패");
                 System.out.println(t);
             }
         });
@@ -364,9 +303,8 @@ public class ProfileFragment extends Fragment {
                 MyPageResponse result = response.body();    // 웹서버로부터 응답받은 데이터가 들어있다.
                 if(result != null){
                     byte[] Image = null;
-                    System.out.println("Image======" + result.getImage());
-                    Image = binaryStringToByteArray(result.getImage());
-                    if(!result.getImage().equals("0")) byteArrayToBitmap(Image);
+                    Image = processing.binaryStringToByteArray(result.getImage()); //이미지 바이트로 가져오기
+                    if(!result.getImage().equals("0")) profileImage.setImageBitmap(processing.byteArrayToBitmap(Image)); // 프로필 이미지 비트맵으로 가져와서 저장
                     profileName.setText(result.getName());
                     numberFollow.setText(result.getFollow());
                     numberFollowing.setText(result.getFollowing());
@@ -375,7 +313,6 @@ public class ProfileFragment extends Fragment {
 
             @Override
             public void onFailure(Call<MyPageResponse> call, Throwable t) { // 이거는 걍 통신에서 실패
-                System.out.println("통신실패");
                 System.out.println(t);
             }
         });

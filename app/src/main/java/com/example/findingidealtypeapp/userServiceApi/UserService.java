@@ -38,7 +38,7 @@ public interface UserService {
 
     @POST("user/editProfile")
     Call<String> editProrfile(
-            @Query("name") String name, @Query("email") String email, @Query("password") String password);
+            @Query("image") String image, @Query("name") String name, @Query("email") String email, @Query("password") String password);
 
     @PUT("user/create")
     Call<String> createUser(

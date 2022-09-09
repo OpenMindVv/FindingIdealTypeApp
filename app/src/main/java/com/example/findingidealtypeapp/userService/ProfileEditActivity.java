@@ -33,6 +33,7 @@ import com.example.findingidealtypeapp.R;
 import com.example.findingidealtypeapp.userServiceApi.UserService;
 import com.example.findingidealtypeapp.userServiceApi.myPageService.MyPageResponse;
 import com.example.findingidealtypeapp.utility.Constants;
+import com.example.findingidealtypeapp.utility.DataProcessing;
 import com.example.findingidealtypeapp.utility.TokenDTO;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -56,7 +57,9 @@ public class ProfileEditActivity extends AppCompatActivity {
     private UserService userService;
     private ImageView profileImage;
     private ActivityResultLauncher<Intent> activityResultLauncher;
+    private String image;
     private boolean isCamera = true;
+    private DataProcessing processing = new DataProcessing();
     MainActivity mainActivity = new MainActivity();
 
     @Override
@@ -133,8 +136,7 @@ public class ProfileEditActivity extends AppCompatActivity {
                             if(isCamera == true) {
                                 Bundle bundle = result.getData().getExtras();
                                 bitMap = (Bitmap) bundle.get("data");
-                                profileImage.setImageBitmap(rotate(bitMap, 90));
-                                //sendImage(imageURI);
+                                profileImage.setImageBitmap(processing.rotate(bitMap, 90));
                             }
                             else {
                                 Intent intent = result.getData();
@@ -148,19 +150,17 @@ public class ProfileEditActivity extends AppCompatActivity {
                                 } catch (IOException e) {
                                     e.printStackTrace();
                                 }
-                                //sendImagePath(uri);
                             }
                             //bitmap -> base64 -> utf로 변경 후 서버로 통신
                             bitMap = resize(bitMap);
-                            String image = bitmapToByteArray(bitMap);
-                            storeImageToDatabase(image);
+                            image = processing.bitmapToByteArray(bitMap);
                         }
                     }
                 }
         );
     }
 
-    public void checkPermission(){
+    private void checkPermission(){
         int permission = ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.CAMERA);
         if(permission == PackageManager.PERMISSION_DENIED){
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA},0);
@@ -198,94 +198,32 @@ public class ProfileEditActivity extends AppCompatActivity {
         activityResultLauncher.launch(takePictureIntent);
     }
 
-    // 사진 회전하는 함수
-    private Bitmap rotate(Bitmap bitmap, float degree) {
-        Matrix matrix = new Matrix();
-        matrix.postRotate(degree);
-        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
-    }
-
-    public String bitmapToByteArray(Bitmap bitmap) {
-        String image = "";
-        ByteArrayOutputStream stream = new ByteArrayOutputStream() ;
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream) ;
-        byte[] byteArray = stream.toByteArray() ;
-        image = byteArrayToBinaryString(byteArray);
-        return image;
-    }
-
-    /**바이너리 바이트 배열을 스트링으로 바꾸어주는 메서드 */
-    public String byteArrayToBinaryString(byte[] b) {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < b.length; ++i) {
-            sb.append(byteToBinaryString(b[i]));
-        }
-        return sb.toString();
-    }
-
-    /**바이너리 바이트를 스트링으로 바꾸어주는 메서드 */
-    public String byteToBinaryString(byte n) {
-        StringBuilder sb = new StringBuilder("00000000");
-        for (int bit = 0; bit < 8; bit++) {
-            if (((n >> bit) & 1) > 0) {
-                sb.setCharAt(7 - bit, '1');
-            }
-        }
-        return sb.toString();
-    }
 
     private void editFinishProfile() {
-
         String name = nameEditText.getText().toString();
         String email = emailEditText.getText().toString();
         String password = passwordEditText.getText().toString();
 
-        Call<String> call = userService.editProrfile(name, email, password);
-
+        Call<String> call = userService.editProrfile(image, name, email, password);
         call.enqueue(new Callback<String>() {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
                 String result = response.body();    // 웹서버로부터 응답받은 데이터가 들어있다.
                 if(result != null){ //
-                    System.out.println("성공");
-                    System.out.println(result);
                     Toast.makeText(getApplicationContext(), "회원정보가 수정되었습니다.", Toast.LENGTH_SHORT).show();
                 }else{     // 로그인 실패
-                    System.out.println("실패");
-                    System.out.println(result);
+                    System.out.println("fail");
                 }
             }
 
             @Override
             public void onFailure(Call<String> call, Throwable t) { // 이거는 걍 통신에서 실패
-                System.out.println("통신실패");
-                System.out.println(t);
-            }
-        });
-    }
-
-    private void storeImageToDatabase(String image) {
-        Call<String> call = userService.insertImage(image);
-
-        call.enqueue(new Callback<String>() {
-            @Override
-            public void onResponse(Call<String> call, Response<String> response) {
-                String result = response.body();    // 웹서버로부터 응답받은 데이터가 들어있다.
-                if (result != null) {
-                    System.out.println("성공");
-                }
-            }
-
-            @Override
-            public void onFailure(Call<String> call, Throwable t) { // 이거는 걍 통신에서 실패
-                System.out.println("통신실패");
                 System.out.println(t);
             }
         });
     }
 
     private void getUserProfile() {
-        System.out.println(TokenDTO.Token);
         Call<MyPageResponse> call = userService.getProfile(TokenDTO.Token);
 
         call.enqueue(new Callback<MyPageResponse>() {
@@ -294,48 +232,19 @@ public class ProfileEditActivity extends AppCompatActivity {
                 MyPageResponse result = response.body();    // 웹서버로부터 응답받은 데이터가 들어있다.
                 if(result != null){
                     byte[] Image = null;
-                    Image = binaryStringToByteArray(result.getImage());
-                    byteArrayToBitmap(Image);
+                    Image = processing.binaryStringToByteArray(result.getImage()); //이미지 바이트로 가져오기
+                    if(!result.getImage().equals("0")) profileImage.setImageBitmap(processing.byteArrayToBitmap(Image)); // 프로필 이미지 비트맵으로 가져와서 저장
+                    processing.byteArrayToBitmap(Image);
                     nameEditText.setText(result.getName());
                     emailEditText.setText(result.getEmail());
                     passwordEditText.setText(result.getPassword());
                 }
-                System.out.println("call= "+call);
-                System.out.println("result= "+result);
             }
             @Override
             public void onFailure(Call<MyPageResponse> call, Throwable t) { // 이거는 걍 통신에서 실패
-                System.out.println("통신실패");
                 System.out.println(t);
-                System.out.println(call);
             }
         });
-    }
-    /** 바이너리 스트링을 바이트로 변환*/
-    public byte[] binaryStringToByteArray(String s) {
-        int count = s.length() / 8;
-        byte[] b = new byte[count];
-        for (int i = 1; i < count; ++i) {
-            String t = s.substring((i - 1) * 8, i * 8);
-            b[i - 1] = binaryStringToByte(t);
-        }
-        return b;
-    }
-    /** 바이너리 스트링을 바이트로 변환*/
-    public byte binaryStringToByte(String s) {
-        byte ret = 0, total = 0;
-        for (int i = 0; i < 8; ++i) {
-            ret = (s.charAt(7 - i) == '1') ? (byte) (1 << i) : 0;
-            total = (byte) (ret | total);
-        }
-        return total;
-    }
-
-    /**  Byte를 Bitmap으로 변환*/
-    public Bitmap byteArrayToBitmap(byte[] byteArray ) {
-        Bitmap bitmap = BitmapFactory.decodeByteArray( byteArray, 0, byteArray.length ) ;
-        profileImage.setImageBitmap(bitmap);
-        return bitmap ;
     }
 
     private void setRetrofit() {
