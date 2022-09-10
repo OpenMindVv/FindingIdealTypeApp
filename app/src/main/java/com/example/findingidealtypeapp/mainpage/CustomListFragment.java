@@ -5,7 +5,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
@@ -14,10 +16,15 @@ import com.example.findingidealtypeapp.R;
 
 import java.util.ArrayList;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 public class CustomListFragment extends Fragment {
 
     ArrayList<User> userList;
     ListView customListView;
+    Button todayButton;
+    TextView todayId;
+    CircleImageView todayImage;
     private static CustomAdapter customAdapter;
 
     @Override
@@ -45,6 +52,13 @@ public class CustomListFragment extends Fragment {
                 Toast.makeText(getContext(), "Clicked: " + position +" " + selectedItem, Toast.LENGTH_SHORT).show();
             }
         });
+
+        todayButton = (Button) rootView.findViewById(R.id.today_button);
+        todayId = (TextView) rootView.findViewById(R.id.today_id);
+        todayImage = (CircleImageView) rootView.findViewById(R.id.today_image);
+
+        todayId.setText("JENNIERUBYJANE");
+        todayImage.setImageResource(R.drawable.jennie);
 
         return rootView;
     }

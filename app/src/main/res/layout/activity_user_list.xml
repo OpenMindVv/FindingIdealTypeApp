@@ -10,19 +10,56 @@
 
     <SearchView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content">
 
-    <Button
+    </SearchView>
 
-        android:background="@drawable/today_button_shape"
-        android:id="@+id/today_button"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="120dp"
-        android:layout_marginHorizontal="10dp"
-        android:text="오늘의 이상형"
-        android:textColor="#FFF"
-        android:padding="25dp"
-        android:gravity="top"/>
+        android:layout_height="120dp">
+
+        <Button
+            android:id="@+id/today_button"
+            android:layout_width="match_parent"
+            android:layout_height="120dp"
+            android:layout_marginHorizontal="10dp"
+            android:background="@drawable/today_button_shape"
+            android:gravity="top"
+            android:padding="22dp"
+            android:text="오늘의 이상형"
+            android:textColor="#FFF" />
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/today_image"
+            android:layout_width="match_parent"
+            android:layout_height="79dp"
+            android:layout_marginStart="320dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="41dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/textView"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:srcCompat="@tools:sample/avatars" />
+
+        <TextView
+            android:id="@+id/today_id"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="47dp"
+            android:layout_marginTop="55dp"
+            android:layout_marginEnd="157dp"
+            android:text="JENNIERUBYJANE"
+            android:textColor="#FFF"
+            android:textSize="24dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/imageView_thumb"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.245" />
+
+    </FrameLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
