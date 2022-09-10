@@ -56,24 +56,11 @@ import com.example.findingidealtypeapp.userServiceApi.UserService;
 import com.example.findingidealtypeapp.utility.Constants;
 import com.example.findingidealtypeapp.utility.DataProcessing;
 import com.example.findingidealtypeapp.utility.TokenDTO;
-
-import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-
-
-import okhttp3.MediaType;
-import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
-import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -91,7 +78,6 @@ public class ProfileFragment extends Fragment {
     private MainActivity activity;
     private ViewGroup rootView;
     private Retrofit retrofit;
-    private String email, name, follow, following;
     private ArrayAdapter arrayAdapter;
     private Context mContext;
     private ActivityResultLauncher<Intent> activityResultLauncher;
