@@ -50,6 +50,7 @@ public class ChatListFragment extends Fragment {
         recyclerView.setAdapter(adapter);
 
         firebaseDatabase = FirebaseDatabase.getInstance();
+
         firebaseDatabase.getReference().child("chatrooms")
                 .orderByChild("users/" + myId)
                 .equalTo(true)
@@ -63,16 +64,15 @@ public class ChatListFragment extends Fragment {
                         for(DataSnapshot dataSnapshot : snapshot.getChildren()){
                             ChatModel chatModel = dataSnapshot.getValue(ChatModel.class);
 
-                            String user1, user2;
                             Iterator<String> keys = chatModel.users.keySet().iterator();
 
-                            user1 = keys.next();
-                            user2 = keys.next();
-                            receiverId = user1.equals(myId) ? user2 : user1;
-                            //
+
+                            receiverId = keys.next();
+                            receiverId = receiverId.equals(myId) ? keys.next() : receiverId;
+
                             if(chatModel.users.containsKey(receiverId)) {
                                 chatRoomId = dataSnapshot.getKey();
-                                chatRoom = new ChatRoom(chatRoomId, receiverId,
+                                chatRoom = new ChatRoom(chatRoomId, myId, receiverId,
                                         "", "");
                                 adapter.addChatRoom(chatRoom);
                             }
@@ -141,13 +141,5 @@ public class ChatListFragment extends Fragment {
                 new SimpleDateFormat(formate);//"yyyy-MM-dd aa hh:mm");
 
         return dateFormat.format(date);
-    }
-
-    private void getDate(){
-        LocalDate nowDate = LocalDate.now();
-
-        String year = getFormattedDate("yyyy");
-        String month = getFormattedDate("MM");
-        String day = getFormattedDate("dd");
     }
 }
