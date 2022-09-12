@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "3996657867",
+    "firebase_url": "https://findingidealtypeapp-default-rtdb.firebaseio.com",
     "project_id": "findingidealtypeapp",
     "storage_bucket": "findingidealtypeapp.appspot.com"
   },
@@ -19,6 +20,14 @@
           "android_info": {
             "package_name": "com.example.findingidealtypeapp",
             "certificate_hash": "5a14ff71a9a96851180df69e6a1a9ce832f45ff0"
+          }
+        },
+        {
+          "client_id": "3996657867-9hhg51dooi5nmjk5ojs6slfjv2bgekbm.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.findingidealtypeapp",
+            "certificate_hash": "657df05c3985681b010cfd56f12782f70fa48fbb"
           }
         },
         {
