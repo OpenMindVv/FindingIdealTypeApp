@@ -6,6 +6,8 @@ import com.example.findingidealtypeapp.userServiceApi.loginService.LoginResponse
 import java.io.File;
 
 import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
@@ -36,19 +38,20 @@ public interface UserService {
 
     @POST("user/editProfile")
     Call<String> editProrfile(
-            @Query("name") String name, @Query("email") String email, @Query("password") String password);
+            @Query("image") String image, @Query("name") String name, @Query("email") String email, @Query("password") String password);
 
     @PUT("user/create")
     Call<String> createUser(
             @Query("email") String email, @Query("password") String password, @Query("name") String name, @Query("follow") String follow, @Query("following") String following
     );
 
-    @PUT("user/ProfileImage")
-    Call<String> ProfileImage(
+    @POST("user/insertImage")
+    Call<String> insertImage(
             @Query("imageFile") String imageFile);
 
-    @Multipart
-    @PUT("user/test")
-    Call<String> test(
-            @Part("imageFile") MultipartBody.Part imageFile);
+    @PUT("user/insert")
+    Call<String> createProfile(
+            @Query("Image") String Image, @Query("email") String email, @Query("password") String password, @Query("name") String name, @Query("follow") String follow, @Query("following") String following, @Query("animalFace") String animalFace
+    );
+
 }

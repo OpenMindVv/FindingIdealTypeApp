@@ -66,6 +66,7 @@ public class ChatListFragment extends Fragment {
 
                             Iterator<String> keys = chatModel.users.keySet().iterator();
 
+
                             receiverId = keys.next();
                             receiverId = receiverId.equals(myId) ? keys.next() : receiverId;
 

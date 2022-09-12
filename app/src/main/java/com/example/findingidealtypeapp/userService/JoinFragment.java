@@ -77,23 +77,23 @@ public class JoinFragment extends Fragment {
         String name = inputName.getText().toString();
         String password = inputPasswordOfJoin.getText().toString();
 
-        MyPageResponse myPageResponse = new MyPageResponse(email, password, name, "0", "0");
+        MyPageResponse myPageResponse = new MyPageResponse("0", email, password, name, "0", "0", "0");
 
-        Call<String> call = userService.createUser(myPageResponse.getEmail(), myPageResponse.getPassword(), myPageResponse.getName(), myPageResponse.getFollowing(), myPageResponse.getFollowing());
+        Call<String> call = userService.createProfile(myPageResponse.getImage(), myPageResponse.getEmail(), myPageResponse.getPassword(), myPageResponse.getName(), myPageResponse.getFollowing(), myPageResponse.getFollowing(), myPageResponse.getAnimalFace());
 
         call.enqueue(new Callback<String>() {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
-                String result= response.body();    // 웹서버로부터 응답받은 데이터가 들어있다.
+                String result=response.body();
+                if(result==null) result = "0";// 이미 존재하는 아이디로 로그인 에러 막아줌
                 if(result.equals("1")){ // 여기에 서버에서 받아온 값으로 로그인 판단 --> 회원가입
                     // 액티비티에 플래그먼트를 변경하는 메소드 구현하여 호출
                     Toast.makeText(rootView.getContext(), "회원가입이 완료되었습니다. 로그인 해주세요", Toast.LENGTH_SHORT).show();
                     activity = (MainActivity) getActivity();
                     activity.onFragmentChange(Constants.LOGIN_PAGE);
-                    System.out.println(result);
                 }else{     // 회원가입 실패
                     Toast.makeText(rootView.getContext(), "이미 존재하는 이메일입니다.", Toast.LENGTH_SHORT).show();
-                    System.out.println("실패");
+                    System.out.println("fail");
                 }
             }
 
@@ -165,8 +165,6 @@ public class JoinFragment extends Fragment {
         }
         else if(!inputPasswordOfJoin.getText().toString().equals(inputPasswordCheck.getText().toString())){
             Toast.makeText(rootView.getContext(), "비밀번호가 일치하지 않습니다", Toast.LENGTH_SHORT).show();
-            System.out.println(inputPasswordOfJoin.getText().toString());
-            System.out.println(inputPasswordCheck.getText().toString());
             inputPasswordCheck.requestFocus();
             return false;
         }
