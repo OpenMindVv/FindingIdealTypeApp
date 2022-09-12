@@ -79,7 +79,9 @@ public class JoinFragment extends Fragment {
 
         MyPageResponse myPageResponse = new MyPageResponse(email, password, name, "0", "0");
 
-        Call<String> call = userService.createUser(myPageResponse.getEmail(), myPageResponse.getPassword(), myPageResponse.getName(), myPageResponse.getFollowing(), myPageResponse.getFollowing());
+        Call<String> call = userService.createProfile(
+                myPageResponse.getEmail(), myPageResponse.getPassword(),
+                myPageResponse.getName(), "0", "0", "");
 
         call.enqueue(new Callback<String>() {
             @Override

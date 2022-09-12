@@ -12,31 +12,51 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.findingidealtypeapp.R;
 import com.example.findingidealtypeapp.chattingroom.ChatModel;
+import com.example.findingidealtypeapp.userServiceApi.UserService;
+import com.example.findingidealtypeapp.userServiceApi.myPageService.MyPageResponse;
+import com.example.findingidealtypeapp.utility.TokenDTO;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.concurrent.TimeUnit;
+
+import okhttp3.OkHttpClient;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ChatListFragment extends Fragment {
 
     private ViewGroup rootView;
     private Adapter adapter;
-    private String myId = "you";
+    private String myId;
+    private String receiverName;
     private FirebaseDatabase firebaseDatabase;
     private Handler handler = new Handler();
+    private Retrofit retrofit;
+    private UserService userService;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         rootView = (ViewGroup)inflater.inflate(R.layout.activity_chat_list, container, false);
+
+        setRetrofit();
+        getMyId();
 
         //채팅 목록을 보여주는 view
         RecyclerView recyclerView = rootView.findViewById(R.id.chat_list);
@@ -68,11 +88,12 @@ public class ChatListFragment extends Fragment {
 
                             receiverId = keys.next();
                             receiverId = receiverId.equals(myId) ? keys.next() : receiverId;
+                            setReceiverName(receiverId);
 
                             if(chatModel.users.containsKey(receiverId)) {
                                 chatRoomId = dataSnapshot.getKey();
                                 chatRoom = new ChatRoom(chatRoomId, myId, receiverId,
-                                        "", "");
+                                        receiverName,"", "");
                                 adapter.addChatRoom(chatRoom);
                             }
                         }
@@ -91,6 +112,68 @@ public class ChatListFragment extends Fragment {
                 });
 
         return rootView;
+    }
+
+    private void setRetrofit() {
+        OkHttpClient okHttpClient = new OkHttpClient().newBuilder()
+                .connectTimeout(1, TimeUnit.MINUTES)
+                .readTimeout(3, TimeUnit.SECONDS)
+                .writeTimeout(3, TimeUnit.SECONDS)
+                .build();
+
+        Gson gson = new GsonBuilder()
+                .setLenient()
+                .create();
+
+        retrofit = new Retrofit.Builder()
+                //.baseUrl("https://2fc39d2c-748a-42b0-8fda-cc926df84d08.mock.pstmn.io/")
+                //.client(okHttpClient)
+                .baseUrl("http://10.0.2.2:8080/")
+                .addConverterFactory(GsonConverterFactory.create(gson))
+                .build();
+        userService = retrofit.create(UserService.class);
+    }
+
+    private void getMyId(){
+        System.out.println(TokenDTO.Token);
+        Call<MyPageResponse> call = userService.getProfile(TokenDTO.Token);
+
+        call.enqueue(new Callback<MyPageResponse>() {
+            @Override
+            public void onResponse(Call<MyPageResponse> call, Response<MyPageResponse> response) {
+                MyPageResponse result = response.body();    // 웹서버로부터 응답받은 데이터가 들어있다.
+                if(result != null){
+                    myId = result.getEmail();
+                }
+            }
+            @Override
+            public void onFailure(Call<MyPageResponse> call, Throwable t) { // 이거는 걍 통신에서 실패
+                System.out.println("통신실패");
+            }
+        });
+    }
+
+    private void setReceiverName(String email){
+        Call<String> call = userService.getName(email);
+
+        call.enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+                String result = response.body();    // 웹서버로부터 응답받은 데이터가 들어있다.
+                if(result != null){ //
+                    receiverName = result;
+                }else{     // 로그인 실패
+                    System.out.println("상대방 이름을 불러오는데 오류가 발생했습니다.");
+                    System.out.println(result);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t) { // 이거는 걍 통신에서 실패
+                System.out.println("통신실패");
+                System.out.println(t);
+            }
+        });
     }
 
     private void setLastMessageComment(ChatRoom chatRoom){

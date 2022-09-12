@@ -38,10 +38,21 @@ public interface UserService {
     Call<String> editProrfile(
             @Query("name") String name, @Query("email") String email, @Query("password") String password);
 
+    @POST("user/editProfile")
+    Call<String> getName(@Query("email") String email);
+
+
     @PUT("user/create")
     Call<String> createUser(
             @Query("email") String email, @Query("password") String password, @Query("name") String name, @Query("follow") String follow, @Query("following") String following
     );
+
+    @PUT("user/insert")
+    Call<String> createProfile(
+            @Query("email") String email,
+            @Query("password") String password, @Query("name") String name,
+            @Query("follow") String follow, @Query("following") String following,
+            @Query("animalFace") String animalFace);
 
     @PUT("user/ProfileImage")
     Call<String> ProfileImage(
