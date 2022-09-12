@@ -1,6 +1,7 @@
 package com.example.findingidealtypeapp.mainpage;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,7 +11,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.findingidealtypeapp.R;
 
@@ -22,7 +25,7 @@ public class CustomListFragment extends Fragment {
 
     ArrayList<User> userList;
     ListView customListView;
-    Button todayButton;
+    ConstraintLayout todayLayout;
     TextView todayId;
     CircleImageView todayImage;
     private static CustomAdapter customAdapter;
@@ -53,12 +56,19 @@ public class CustomListFragment extends Fragment {
             }
         });
 
-        todayButton = (Button) rootView.findViewById(R.id.today_button);
+        todayLayout = (ConstraintLayout) rootView.findViewById(R.id.today_layout);
         todayId = (TextView) rootView.findViewById(R.id.today_id);
         todayImage = (CircleImageView) rootView.findViewById(R.id.today_image);
 
         todayId.setText("JENNIERUBYJANE");
         todayImage.setImageResource(R.drawable.jennie);
+
+        todayLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.v("오늘의 이상형", todayId.toString());
+            }
+        });
 
         return rootView;
     }

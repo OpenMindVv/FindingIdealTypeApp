@@ -7,4 +7,6 @@ public class Constants {
     public static final int JOIN_PAGE = 0;
     public static final int LOGIN_PAGE = 1;
     public static final int PROFILE_PAGE = 2;
+
+    public static final boolean MESSAGE_RECEIVED_ON_SAME_DAY = true;
 }
