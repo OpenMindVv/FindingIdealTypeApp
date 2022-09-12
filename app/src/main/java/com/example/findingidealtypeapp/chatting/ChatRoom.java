@@ -1,16 +1,24 @@
 package com.example.findingidealtypeapp.chatting;
 
-public class ChatRoom {
+import java.io.Serializable;
+
+public class ChatRoom implements Serializable {
     String chatRoomId;
+    String myId;
     String receiverId;
     String lastMessage;   //마지막 대화내용
     String date;
 
-    public ChatRoom(String chatRoomId, String receiverId, String lastMessage, String date){
+    public ChatRoom(String chatRoomId, String myId, String receiverId, String lastMessage, String date){
         this.chatRoomId = chatRoomId;
+        this.myId = myId;
         this.receiverId = receiverId;
         this.lastMessage = lastMessage;
         this.date = date;
+    }
+
+    public String getMyId() {
+        return myId;
     }
 
     public String getChatRoomId() {

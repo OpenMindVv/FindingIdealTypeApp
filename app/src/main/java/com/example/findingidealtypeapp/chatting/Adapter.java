@@ -11,7 +11,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.findingidealtypeapp.R;
 import com.example.findingidealtypeapp.chattingroom.ChatRoomActivity;
+import com.google.firebase.database.FirebaseDatabase;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 public class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -52,7 +54,10 @@ public class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         viewHolder.setOnViewHolderItemClickListener(new OnViewHolderItemClickListener() {
             @Override
             public void onViewHolderItemClick() {
+                FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+
                 Intent intent = new Intent(context, ChatRoomActivity.class);
+                intent.putExtra("chatRoom", chatRoom);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(intent);
             }
