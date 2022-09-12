@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.view.MenuItem;
 
 import com.example.findingidealtypeapp.chatting.ChatListFragment;
+import com.example.findingidealtypeapp.mainpage.CustomListFragment;
 import com.example.findingidealtypeapp.mainpage.MainPage;
 import com.example.findingidealtypeapp.userService.JoinFragment;
 import com.example.findingidealtypeapp.userService.LoginFragment;
@@ -25,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
     private JoinFragment joinFragment = new JoinFragment();
     public ProfileFragment profileFragment = new ProfileFragment();
     private ChatListFragment chatListFragment = new ChatListFragment();
-    private MainPage mainPage = new MainPage();
+    private CustomListFragment customListFragment = new CustomListFragment();
     FragmentTransaction transaction;
 
     @Override
@@ -60,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
 
             switch (menuItem.getItemId()) {
                 case R.id.menu_home:
-                    transaction.replace(R.id.menu_frame_layout, profileFragment).commitAllowingStateLoss();
+                    transaction.replace(R.id.menu_frame_layout, customListFragment).commitAllowingStateLoss();
                     break;
                 case R.id.menu_dm:
                     transaction.replace(R.id.menu_frame_layout, chatListFragment).commitAllowingStateLoss();

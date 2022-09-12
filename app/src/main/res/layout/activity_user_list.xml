@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="mainpage.">
+
+
+    <SearchView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+    </SearchView>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="120dp">
+
+        <Button
+            android:id="@+id/today_button"
+            android:layout_width="match_parent"
+            android:layout_height="120dp"
+            android:layout_marginHorizontal="10dp"
+            android:background="@drawable/today_button_shape"
+            android:gravity="top"
+            android:padding="22dp"
+            android:text="오늘의 이상형"
+            android:textColor="#FFF" />
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/today_image"
+            android:layout_width="match_parent"
+            android:layout_height="79dp"
+            android:layout_marginStart="320dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="41dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/textView"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:srcCompat="@tools:sample/avatars" />
+
+        <TextView
+            android:id="@+id/today_id"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="47dp"
+            android:layout_marginTop="55dp"
+            android:layout_marginEnd="157dp"
+            android:text="JENNIERUBYJANE"
+            android:textColor="#FFF"
+            android:textSize="24dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/imageView_thumb"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.245" />
+
+    </FrameLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:orientation="horizontal"
+        android:layout_marginStart="5dp">
+
+        <Button
+            android:background="@drawable/animal_button_shape"
+            android:id="@+id/rabbit_button"
+            android:layout_width="80dp"
+            android:layout_height="40dp"
+            android:text="토끼상"
+            android:textSize="13dp"
+            android:textColor="@color/black"
+            android:backgroundTint="#FFCAE3"
+            android:layout_margin="10dp"/>
+
+        <Button
+            android:background="@drawable/animal_button_shape"
+            android:id="@+id/dog_button"
+            android:layout_width="80dp"
+            android:layout_height="40dp"
+            android:text="강아지상"
+            android:textSize="13dp"
+            android:textColor="@color/black"
+            android:backgroundTint="#FFCAE3"
+            android:layout_margin="10dp"/>
+
+        <Button
+            android:background="@drawable/animal_button_shape"
+            android:id="@+id/cat_button"
+            android:layout_width="80dp"
+            android:layout_height="40dp"
+            android:text="고양이상"
+            android:textSize="13dp"
+            android:textColor="@color/black"
+            android:backgroundTint="#FFCAE3"
+            android:layout_margin="10dp"/>
+
+        <Button
+            android:background="@drawable/animal_button_shape"
+            android:id="@+id/dinosaur_button"
+            android:layout_width="80dp"
+            android:layout_height="40dp"
+            android:text="공룡상"
+            android:textColor="@color/black"
+            android:textSize="13dp"
+            android:backgroundTint="#FFCAE3"
+            android:layout_margin="10dp"/>
+    </LinearLayout>
+    <ListView
+        android:id="@+id/listView_custom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:divider="#FFF"
+        android:dividerHeight="10dp"></ListView>
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:src="@drawable/defaultprofile" />
+
+</LinearLayout>
