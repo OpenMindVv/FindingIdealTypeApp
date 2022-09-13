@@ -37,7 +37,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class CustomListFragment extends Fragment {
 
-    ArrayList<User> userList;
+    ArrayList<MyPageResponse> userList;
     ListView customListView;
     ConstraintLayout todayLayout;
     TextView todayId;
@@ -111,8 +111,14 @@ public class CustomListFragment extends Fragment {
         userService = retrofit.create(UserService.class);
     }
 
-    private void setUserList(){
+    private void getListOfMembersExceptMe(){
         setRetrofit();
+
+        Call<List<MyPageResponse>> call = userService.getProfileList();
+
+    }
+
+    private void setUserList(){
 
         Call<List<MyPageResponse>> call = userService.getProfileList();
 
@@ -120,9 +126,14 @@ public class CustomListFragment extends Fragment {
             @Override
             public void onResponse(Call<List<MyPageResponse>> call, Response<List<MyPageResponse>> response) {
                 List<MyPageResponse> result = response.body();    // 웹서버로부터 응답받은 데이터가 들어있다.
+                MyPageResponse user;
+
                 if(result != null){ //
                     for(int index = 0; index < result.size(); index++){
-                        userList.add(new User(result.get(index).getName(), R.drawable.jennie));
+                        user = result.get(index);
+                        userList.add(new MyPageResponse(user.getImage(), user.getEmail(),
+                                user.getPassword(), user.getName(), user.getFollowing(),
+                                user.getFollowing(), user.getAnimalFace()));
                     }
 
                     handler.post(new Runnable() {
@@ -144,25 +155,5 @@ public class CustomListFragment extends Fragment {
                 System.out.println(t);
             }
         });
-    }
-}
-
-
-//data class
-class User {
-    private String name;
-    private int thumb_url;
-
-    public User(String name, int thumb_url) {
-        this.name = name;
-        this.thumb_url = thumb_url;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public int getThumb_url() {
-        return thumb_url;
     }
 }

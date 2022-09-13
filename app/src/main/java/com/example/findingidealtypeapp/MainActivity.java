@@ -104,7 +104,7 @@ public class MainActivity extends AppCompatActivity {
                         else if(TokenDTO.Token != null && TokenDTO.isImage == true) transaction.replace(R.id.menu_frame_layout, profileFragment).commitAllowingStateLoss();
                         break;
                     case R.id.menu_dm:
-                        transaction.replace(R.id.menu_frame_layout, chatListFragment).commitAllowingStateLoss();
+                        transaction.replace(R.id.menu_frame_layout, customListFragment).commitAllowingStateLoss();
                         break;
                     case R.id.menu_mypage:
                         if(TokenDTO.Token == null){
