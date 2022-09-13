@@ -26,19 +26,24 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="top"
-            android:padding="22dp"
+            android:paddingTop="30dp"
+            android:paddingStart="44dp"
             android:text="오늘의 이상형"
             android:textColor="#ffffff"
-            tools:ignore="MissingConstraints" />
+            tools:ignore="MissingConstraints"
+             />
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/today_image"
+            android:background="@drawable/today_image_side"
             android:layout_width="79dp"
             android:layout_height="79dp"
             android:layout_marginStart="320dp"
-            android:layout_marginTop="20dp"
-            android:layout_marginEnd="41dp"
+            android:layout_marginTop="23dp"
+            android:layout_marginEnd="35dp"
+            android:outlineAmbientShadowColor="@color/white"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.977"
             app:layout_constraintStart_toEndOf="@+id/today_id"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -48,20 +53,20 @@
             android:id="@+id/today_id"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="47dp"
-            android:layout_marginTop="55dp"
+            android:layout_marginStart="43dp"
+            android:layout_marginTop="49dp"
             android:layout_marginEnd="157dp"
             android:text="JENNIERUBYJANE"
             android:textColor="#FFFFFF"
             android:textSize="24dp"
+            android:textStyle="bold"
             android:visibility="visible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/today_image"
-            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintHorizontal_bias="0.009"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.245" />
-
+            app:layout_constraintVertical_bias="0.0" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -118,6 +123,7 @@
             android:backgroundTint="#FFCAE3"
             android:layout_margin="10dp"/>
     </LinearLayout>
+
     <ListView
         android:id="@+id/listView_custom"
         android:layout_width="match_parent"
@@ -130,6 +136,6 @@
         android:id="@+id/imageView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:src="@drawable/defaultprofile" />
+        android:src="@drawable/jennie" />
 
 </LinearLayout>

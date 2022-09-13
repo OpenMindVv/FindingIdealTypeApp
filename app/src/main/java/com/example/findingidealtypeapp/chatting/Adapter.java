@@ -47,15 +47,13 @@ public class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         ChatRoom chatRoom = chatRoomList.get(position);
 
-        viewHolder.userId.setText(chatRoom.getReceiverId());
+        viewHolder.userId.setText(chatRoom.getReceiverName());
         viewHolder.content.setText(chatRoom.getLastMessage());
         viewHolder.date.setText(chatRoom.getDate());
 
         viewHolder.setOnViewHolderItemClickListener(new OnViewHolderItemClickListener() {
             @Override
             public void onViewHolderItemClick() {
-                FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-
                 Intent intent = new Intent(context, ChatRoomActivity.class);
                 intent.putExtra("chatRoom", chatRoom);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

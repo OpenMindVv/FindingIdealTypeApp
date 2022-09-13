@@ -37,6 +37,30 @@ public class MainPage extends Fragment {
             }
         });
 
+        dogButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getContext(), CustomListFragment.class);
+                startActivity(intent);
+            }
+        });
+
+        catButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getContext(), CustomListFragment.class);
+                startActivity(intent);
+            }
+        });
+
+        dinosaurButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getContext(), CustomListFragment.class);
+                startActivity(intent);
+            }
+        });
+
         return view;
     }
 }

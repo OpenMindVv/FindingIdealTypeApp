@@ -8,4 +8,7 @@
     <item name="dog_button" type="id" />
     <item name="cat_button" type="id" />
     <item name="dinosaur_button" type="id" />
+    <item name="button_1" type="id" />
+    <item name="image" type="id" />
+    <item name="tv_output" type="id" />
 </resources>
