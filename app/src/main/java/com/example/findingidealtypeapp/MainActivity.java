@@ -88,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
 
                 switch (menuItem.getItemId()) {
                     case R.id.menu_home:
-                        transaction.replace(R.id.menu_frame_layout, profileFragment).commitAllowingStateLoss();
+                        transaction.replace(R.id.menu_frame_layout, customListFragment).commitAllowingStateLoss();
                         break;
                     case R.id.menu_dm:
                         transaction.replace(R.id.menu_frame_layout, chatListFragment).commitAllowingStateLoss();
