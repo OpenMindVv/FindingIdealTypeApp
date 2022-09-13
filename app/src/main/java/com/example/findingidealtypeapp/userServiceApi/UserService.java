@@ -4,6 +4,7 @@ import com.example.findingidealtypeapp.userServiceApi.myPageService.MyPageRespon
 import com.example.findingidealtypeapp.userServiceApi.loginService.LoginResponse;
 
 import java.io.File;
+import java.util.List;
 
 import okhttp3.MultipartBody;
 import retrofit2.Call;
@@ -18,7 +19,7 @@ import retrofit2.http.Query;
 public interface UserService {
     // @GET( EndPoint-자원위치(URI) )
     @GET("user/all")
-    Call<MyPageResponse> getProfileList();
+    Call<List<MyPageResponse>> getProfileList();
 
     @GET("user/getPassword")
     Call<MyPageResponse> getPassword(
