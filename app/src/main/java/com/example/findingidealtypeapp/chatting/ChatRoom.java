@@ -51,6 +51,10 @@ public class ChatRoom implements Serializable {
         this.date = date;
     }
 
+    public void setReceiverName(String receiverName) {
+        this.receiverName = receiverName;
+    }
+
     @Override
     public String toString() {
         return "ChatRoom{" +

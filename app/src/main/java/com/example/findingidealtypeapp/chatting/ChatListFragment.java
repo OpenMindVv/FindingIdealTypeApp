@@ -19,6 +19,7 @@ import com.example.findingidealtypeapp.chattingroom.ChatModel;
 import com.example.findingidealtypeapp.userServiceApi.UserService;
 import com.example.findingidealtypeapp.userServiceApi.myPageService.MyPageResponse;
 import com.example.findingidealtypeapp.utility.TokenDTO;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
@@ -50,25 +51,35 @@ public class ChatListFragment extends Fragment {
     private Retrofit retrofit;
     private UserService userService;
 
+    private RecyclerView recyclerView;
+    private TextView txNoChattingList;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         rootView = (ViewGroup)inflater.inflate(R.layout.activity_chat_list, container, false);
 
         setRetrofit();
-        getMyId();
+
+
 
         //채팅 목록을 보여주는 view
-        RecyclerView recyclerView = rootView.findViewById(R.id.chat_list);
+        recyclerView = rootView.findViewById(R.id.chat_list);
         recyclerView.setLayoutManager(new LinearLayoutManager
                 (getActivity(), RecyclerView.VERTICAL, false)) ;
 
         //채팅목록이 없을 경우 '채팅 방 없음' 문구를 보여줌
-        TextView txNoChattingList = rootView.findViewById(R.id.no_chatting_list);
+        txNoChattingList = rootView.findViewById(R.id.no_chatting_list);
 
         adapter = new Adapter(getActivity());
         recyclerView.setAdapter(adapter);
 
+        setMyId();
+
+        return rootView;
+    }
+
+    private void setChattingListView(RecyclerView recyclerView, TextView txNoChattingList){
         firebaseDatabase = FirebaseDatabase.getInstance();
 
         firebaseDatabase.getReference().child("chatrooms")
@@ -88,13 +99,15 @@ public class ChatListFragment extends Fragment {
 
                             receiverId = keys.next();
                             receiverId = receiverId.equals(myId) ? keys.next() : receiverId;
-                            setReceiverName(receiverId);
 
                             if(chatModel.users.containsKey(receiverId)) {
                                 chatRoomId = dataSnapshot.getKey();
                                 chatRoom = new ChatRoom(chatRoomId, myId, receiverId,
-                                        receiverName,"", "");
+                                        "","", "");
                                 adapter.addChatRoom(chatRoom);
+
+                                int index = adapter.getItemCount() - 1;
+                                setReceiverName(receiverId, adapter.chatRoomList.get(index));
                             }
                         }
 
@@ -110,8 +123,6 @@ public class ChatListFragment extends Fragment {
 
                     }
                 });
-
-        return rootView;
     }
 
     private void setRetrofit() {
@@ -134,7 +145,7 @@ public class ChatListFragment extends Fragment {
         userService = retrofit.create(UserService.class);
     }
 
-    private void getMyId(){
+    private void setMyId(){
         System.out.println(TokenDTO.Token);
         Call<MyPageResponse> call = userService.getProfile(TokenDTO.Token);
 
@@ -144,6 +155,10 @@ public class ChatListFragment extends Fragment {
                 MyPageResponse result = response.body();    // 웹서버로부터 응답받은 데이터가 들어있다.
                 if(result != null){
                     myId = result.getEmail();
+                    myId = myId.replace("@", "-");
+                    myId = myId.replace(".", "-");
+                    Log.v("ㅌㅌㅌㅌ", myId);
+                    setChattingListView(recyclerView, txNoChattingList);
                 }
             }
             @Override
@@ -153,8 +168,22 @@ public class ChatListFragment extends Fragment {
         });
     }
 
-    private void setReceiverName(String email){
-        Call<String> call = userService.getName(email);
+    private String getEmail(String email){
+        StringBuilder builder = new StringBuilder(email);
+        int index;
+
+        index = email.indexOf("-");
+        builder.setCharAt(index, '@');
+
+        index = email.lastIndexOf("-");
+        builder.setCharAt(index, '.');
+
+        return builder.toString();
+    }
+
+    private void setReceiverName(String email, ChatRoom chatRoom){
+        Call<String> call = userService.getName(getEmail(email));
+        Log.v("ㅌㅌㅌ", getEmail(email));
 
         call.enqueue(new Callback<String>() {
             @Override
@@ -162,6 +191,15 @@ public class ChatListFragment extends Fragment {
                 String result = response.body();    // 웹서버로부터 응답받은 데이터가 들어있다.
                 if(result != null){ //
                     receiverName = result;
+                    Log.v("ㅌㅌㅌㅌㅌㅌㅌㅌ", receiverName);
+                    chatRoom.setReceiverName(receiverName);
+
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            adapter.notifyDataSetChanged();
+                        }
+                    });
                 }else{     // 로그인 실패
                     System.out.println("상대방 이름을 불러오는데 오류가 발생했습니다.");
                     System.out.println(result);
