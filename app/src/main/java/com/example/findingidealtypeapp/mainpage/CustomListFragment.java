@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.findingidealtypeapp.R;
 import com.example.findingidealtypeapp.userServiceApi.UserService;
 import com.example.findingidealtypeapp.userServiceApi.myPageService.MyPageResponse;
+import com.example.findingidealtypeapp.utility.TokenDTO;
 import com.google.android.gms.common.util.concurrent.HandlerExecutor;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -86,7 +87,7 @@ public class CustomListFragment extends Fragment {
         });
 
 
-        setUserList();    //회원목록을 불러옴
+        getListOfMembersExceptMe();    //회원목록을 불러옴
 
         return rootView;
     }
@@ -114,11 +115,28 @@ public class CustomListFragment extends Fragment {
     private void getListOfMembersExceptMe(){
         setRetrofit();
 
-        Call<List<MyPageResponse>> call = userService.getProfileList();
+        Call<MyPageResponse> call = userService.getProfile(TokenDTO.Token);
 
+        call.enqueue(new Callback<MyPageResponse>() {
+            @Override
+            public void onResponse(Call<MyPageResponse> call, Response<MyPageResponse> response) {
+                MyPageResponse result = response.body();    // 웹서버로부터 응답받은 데이터
+                String myId;
+
+                if(result != null){
+                    myId = result.getEmail();
+                    setUserList(myId);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<MyPageResponse> call, Throwable t) { // 이거는 걍 통신에서 실패
+                System.out.println(t);
+            }
+        });
     }
 
-    private void setUserList(){
+    private void setUserList(String myId){
 
         Call<List<MyPageResponse>> call = userService.getProfileList();
 
@@ -131,6 +149,8 @@ public class CustomListFragment extends Fragment {
                 if(result != null){ //
                     for(int index = 0; index < result.size(); index++){
                         user = result.get(index);
+                        if(user.getEmail().equals(myId)) continue;
+
                         userList.add(new MyPageResponse(user.getImage(), user.getEmail(),
                                 user.getPassword(), user.getName(), user.getFollowing(),
                                 user.getFollowing(), user.getAnimalFace()));
