@@ -6,8 +6,6 @@ import com.example.findingidealtypeapp.userServiceApi.loginService.LoginResponse
 import java.io.File;
 
 import okhttp3.MultipartBody;
-import okhttp3.RequestBody;
-import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
@@ -24,7 +22,7 @@ public interface UserService {
 
     @GET("user/getPassword")
     Call<MyPageResponse> getPassword(
-      @Query("email") String email
+            @Query("email") String email
     );
 
     @GET("user/getProfile")
@@ -40,14 +38,13 @@ public interface UserService {
     Call<String> editProrfile(
             @Query("image") String image, @Query("name") String name, @Query("email") String email, @Query("password") String password);
 
-    @GET("user/getName")
-    Call<String> getName(@Query("email") String email);
-
-
     @PUT("user/create")
     Call<String> createUser(
-            @Query("email") String email, @Query("password") String password, @Query("name") String name, @Query("follow") String follow, @Query("following") String following
+            @Query("Image") String Image, @Query("email") String email, @Query("password") String password, @Query("name") String name, @Query("follow") String follow, @Query("following") String following
     );
+
+    @GET("user/getName")
+    Call<String> getName(@Query("email") String email);
 
     @POST("user/insertImage")
     Call<String> insertImage(
@@ -57,5 +54,4 @@ public interface UserService {
     Call<String> createProfile(
             @Query("Image") String Image, @Query("email") String email, @Query("password") String password, @Query("name") String name, @Query("follow") String follow, @Query("following") String following, @Query("animalFace") String animalFace
     );
-
 }
