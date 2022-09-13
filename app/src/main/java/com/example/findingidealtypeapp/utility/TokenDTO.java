@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 public class TokenDTO {
 
     public static String Token = null;
+    public static boolean isImage = false;
     /*
     private static final String PREFS = "prefs";
     private static final String Token = "Access_Token";

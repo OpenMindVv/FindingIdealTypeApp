@@ -53,7 +53,7 @@ public class JoinFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 if(!emailValidateCheck()) return;
-                if(!nameValidateCheck()) return;
+                //if(!nameValidateCheck()) return;
                 if(!passwordValidateCheck()) return;
                 setRetrofit();
                 join();
