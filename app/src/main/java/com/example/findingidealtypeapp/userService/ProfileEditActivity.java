@@ -137,6 +137,7 @@ public class ProfileEditActivity extends AppCompatActivity {
                                 Bundle bundle = result.getData().getExtras();
                                 bitMap = (Bitmap) bundle.get("data");
                                 profileImage.setImageBitmap(processing.rotate(bitMap, 90));
+                                TokenDTO.isImage = true;
                             }
                             else {
                                 Intent intent = result.getData();
@@ -146,7 +147,7 @@ public class ProfileEditActivity extends AppCompatActivity {
                                 try {
                                     bitMap = MediaStore.Images.Media.getBitmap(getApplicationContext().getContentResolver(), uri);
                                     profileImage.setImageBitmap(bitMap);
-
+                                    TokenDTO.isImage = true;
                                 } catch (IOException e) {
                                     e.printStackTrace();
                                 }
