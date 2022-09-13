@@ -81,6 +81,7 @@ public class ProfileFragment extends Fragment {
     private ArrayAdapter arrayAdapter;
     private Context mContext;
     private ActivityResultLauncher<Intent> activityResultLauncher;
+    MyPageResponse myPageResponse = new MyPageResponse();
     private DataProcessing processing = new DataProcessing();
     private boolean isCamera = true;
 
@@ -153,12 +154,10 @@ public class ProfileFragment extends Fragment {
                         switch (menuItem.getItemId()) {
                             case R.id.one:
                                 // 실제 카메라 구동 코드는 함수로 처리
-                                //Toast.makeText(getApplicationContext(), "popup_menu 처리"+ menuItem.getTitle(),Toast.LENGTH_SHORT).show();
                                 sendTakePhotoIntent();
                                 break;
                             case R.id.two:
                                 //갤러리에 관한 권한을 받아오는 코드
-                                //Toast.makeText(getApplicationContext(), "popup_menu 처리"+ menuItem.getTitle(),Toast.LENGTH_SHORT).show();
                                 getAlbum();
                                 break;
                         }
@@ -182,7 +181,7 @@ public class ProfileFragment extends Fragment {
                                 Bundle bundle = result.getData().getExtras();
                                 bitMap = (Bitmap) bundle.get("data");
                                 profileImage.setImageBitmap(processing.rotate(bitMap, 90));
-                                //sendImage(imageURI);
+                                TokenDTO.isImage = true;
                             }
                             else {
                                 Intent intent = result.getData();
@@ -192,6 +191,7 @@ public class ProfileFragment extends Fragment {
                                 try {
                                     bitMap = MediaStore.Images.Media.getBitmap(mContext.getContentResolver(), uri);
                                     profileImage.setImageBitmap(bitMap);
+                                    TokenDTO.isImage = true;
 
                                 } catch (IOException e) {
                                     e.printStackTrace();
@@ -294,6 +294,9 @@ public class ProfileFragment extends Fragment {
                     profileName.setText(result.getName());
                     numberFollow.setText(result.getFollow());
                     numberFollowing.setText(result.getFollowing());
+                    System.out.println(result.getImage());
+                    if(result.getImage().equals("0")) TokenDTO.isImage = false;
+                    else TokenDTO.isImage = true;
                 }
             }
 

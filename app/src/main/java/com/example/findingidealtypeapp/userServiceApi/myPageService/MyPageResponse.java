@@ -35,6 +35,8 @@ public class MyPageResponse {
     @Expose
     public String animalFace;
 
+    public MyPageResponse(){
+    }
     public MyPageResponse(String Image, String email, String password, String name, String follow, String following, String animalFace){
         this.Image = Image;
         this.email = email;

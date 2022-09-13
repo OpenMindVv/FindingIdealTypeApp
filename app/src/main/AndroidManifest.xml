@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.example.findingidealtypeapp" >
+    package="com.example.findingidealtypeapp">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -24,8 +24,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.FindingIdealTypeApp"
         android:usesCleartextTraffic="true"
-        tools:targetApi="31" >
-
+        tools:targetApi="31">
+        <activity
+            android:name=".MainPageBeforeLogin"
+            android:exported="false" />
         <activity
             android:name=".userService.ProfileEditActivity"
             android:exported="false"
@@ -54,17 +56,16 @@
             android:name="androidx.core.content.FileProvider"
             android:authorities="com.example.findingidealtypeapp"
             android:exported="false"
-            android:grantUriPermissions="true" >
+            android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
-        <activity android:name=".chattingroom.ChatRoomActivity"
+
+        <activity
+            android:name=".chattingroom.ChatRoomActivity"
             android:parentActivityName=".chatting.ChatListFragment"
-            android:windowSoftInputMode="adjustResize"/>
-
-
-
+            android:windowSoftInputMode="adjustResize" />
     </application>
 
 </manifest>
