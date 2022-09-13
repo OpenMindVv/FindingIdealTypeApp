@@ -22,7 +22,7 @@ public interface UserService {
 
     @GET("user/getPassword")
     Call<MyPageResponse> getPassword(
-      @Query("email") String email
+            @Query("email") String email
     );
 
     @GET("user/getProfile")
@@ -36,19 +36,22 @@ public interface UserService {
 
     @POST("user/editProfile")
     Call<String> editProrfile(
-            @Query("name") String name, @Query("email") String email, @Query("password") String password);
+            @Query("image") String image, @Query("name") String name, @Query("email") String email, @Query("password") String password);
 
     @PUT("user/create")
     Call<String> createUser(
-            @Query("email") String email, @Query("password") String password, @Query("name") String name, @Query("follow") String follow, @Query("following") String following
+            @Query("Image") String Image, @Query("email") String email, @Query("password") String password, @Query("name") String name, @Query("follow") String follow, @Query("following") String following
     );
 
-    @PUT("user/ProfileImage")
-    Call<String> ProfileImage(
+    @GET("user/getName")
+    Call<String> getName(@Query("email") String email);
+
+    @POST("user/insertImage")
+    Call<String> insertImage(
             @Query("imageFile") String imageFile);
 
-    @Multipart
-    @PUT("user/test")
-    Call<String> test(
-            @Part("imageFile") MultipartBody.Part imageFile);
+    @PUT("user/insert")
+    Call<String> createProfile(
+            @Query("Image") String Image, @Query("email") String email, @Query("password") String password, @Query("name") String name, @Query("follow") String follow, @Query("following") String following, @Query("animalFace") String animalFace
+    );
 }

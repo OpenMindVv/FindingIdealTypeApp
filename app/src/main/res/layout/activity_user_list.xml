@@ -123,6 +123,7 @@
             android:backgroundTint="#FFCAE3"
             android:layout_margin="10dp"/>
     </LinearLayout>
+
     <ListView
         android:id="@+id/listView_custom"
         android:layout_width="match_parent"
@@ -135,6 +136,6 @@
         android:id="@+id/imageView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:src="@drawable/defaultprofile" />
+        android:src="@drawable/jennie" />
 
 </LinearLayout>
