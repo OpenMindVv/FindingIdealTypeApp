@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.findingidealtypeapp.R;
+import com.example.findingidealtypeapp.chatting.ChatRoom;
 import com.example.findingidealtypeapp.chatting.ViewHolder;
 import com.example.findingidealtypeapp.utility.Constants;
 import com.google.firebase.database.DataSnapshot;
@@ -25,8 +26,7 @@ import java.util.List;
 public class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private FirebaseDatabase firebaseDatabase;
-    private String myId;
-    private String destId;
+    private ChatRoom chatRoom;
     private User destUser;
     private Handler handler;
     private RecyclerView recyclerView;
@@ -34,7 +34,7 @@ public class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private List<ChatModel.Comment> comments = new ArrayList<>();
     private List<String> dateList = new ArrayList<>();
 
-    public Adapter(FirebaseDatabase firebaseDatabase, String myId, String destId,
+    public Adapter(FirebaseDatabase firebaseDatabase, ChatRoom chatRoom,
                    RecyclerView recyclerView){
 
         chattingDataList = new ArrayList<>();
@@ -42,8 +42,7 @@ public class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         dateList = new ArrayList<>();
 
         this.firebaseDatabase = firebaseDatabase;
-        this.myId = myId;
-        this.destId = destId;
+        this.chatRoom = chatRoom;
         this.recyclerView = recyclerView;
 
         getReceiverId();
@@ -73,14 +72,14 @@ public class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private void reflectChatContents(ChatModel.Comment comment){
         setDateToChatWindow(comment.getDate());
 
-        if(comment.getUid().equals(myId)){
+        if(comment.getUid().equals(chatRoom.getMyId())){
             setChattingData(new ChattingData(
-                    myId, comment.getMessage(),
+                    chatRoom.getMyId(), comment.getMessage(),
                     getTime(comment.date), Constants.RIGHT_CONTENT));
         }
         else{
             setChattingData(new ChattingData(
-                    destId, comment.getMessage(),
+                    chatRoom.getReceiverName(), comment.getMessage(),
                     getTime(comment.date), Constants.LEFT_CONTENT));
         }
 
@@ -139,7 +138,8 @@ public class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private void getReceiverId()
     {
-        firebaseDatabase.getReference().child("users").child(destId).addListenerForSingleValueEvent(new ValueEventListener() {
+        firebaseDatabase.getReference().child("users").child(chatRoom.getReceiverId())
+                .addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 destUser = snapshot.getValue(User.class);
