@@ -1,19 +1,24 @@
 package com.example.findingidealtypeapp.chattingroom;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.findingidealtypeapp.R;
+import com.example.findingidealtypeapp.chatting.ChatRoom;
 import com.example.findingidealtypeapp.utility.Constants;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -36,10 +41,12 @@ import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
-import okhttp3.Response;
 import okhttp3.WebSocket;
 import okhttp3.WebSocketListener;
 import okio.ByteString;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class ChatRoomActivity extends AppCompatActivity {
 
@@ -47,9 +54,11 @@ public class ChatRoomActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private EditText input;  //message
 
+    private ChatRoom chatRoom;
     private String chatRoomId; //채팅방 id
     private String myId;       //나의 id
     private String receiverId; //상대방 id
+    private String receiverName; //상대방 이름
     private FirebaseDatabase firebaseDatabase;
 
     @Override
@@ -62,9 +71,9 @@ public class ChatRoomActivity extends AppCompatActivity {
         //대화상자를 보여주는 뷰
         recyclerView = findViewById(R.id.recyclerview_chat_data);
 
-        init();
+        initUserInformation();
 
-        adapter = new Adapter(firebaseDatabase, myId, receiverId,
+        adapter = new Adapter(firebaseDatabase, chatRoom,
                 recyclerView);
         recyclerView.setAdapter(adapter);
 
@@ -101,9 +110,14 @@ public class ChatRoomActivity extends AppCompatActivity {
         });
     }
 
-    private void init(){
-        myId = "you";//FirebaseAuth.getInstance().getCurrentUser().getUid();
-        receiverId = "ming";//getIntent().getStringExtra("");
+    private void initUserInformation(){
+        Intent intent = getIntent();
+        ChatRoom chatRoom = (ChatRoom) intent.getSerializableExtra("chatRoom");
+
+        myId = chatRoom.getMyId();
+        receiverId = chatRoom.getReceiverId();
+        chatRoomId = chatRoom.getChatRoomId();
+        receiverName = chatRoom.getReceiverName();
 
         firebaseDatabase = FirebaseDatabase.getInstance();
 
@@ -189,12 +203,7 @@ public class ChatRoomActivity extends AppCompatActivity {
                 .child("comments").push().setValue(comment).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void unused) {
-                        adapter.setChattingData(new ChattingData(
-                                myId, comment.getMessage(),
-                                getCurrentTime(), Constants.RIGHT_CONTENT));
-
                         input.setText(""); //입력창 초기화
-                        recyclerView.scrollToPosition(adapter.getItemCount() - 1);
                     }
                 });
     }

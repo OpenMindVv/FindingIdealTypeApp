@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.findingidealtypeapp.R;
+import com.example.findingidealtypeapp.chatting.ChatRoom;
 import com.example.findingidealtypeapp.chatting.ViewHolder;
 import com.example.findingidealtypeapp.utility.Constants;
 import com.google.firebase.database.DataSnapshot;
@@ -25,26 +26,26 @@ import java.util.List;
 public class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private FirebaseDatabase firebaseDatabase;
-    private String myId;
-    private String destId;
+    private ChatRoom chatRoom;
     private User destUser;
     private Handler handler;
     private RecyclerView recyclerView;
     public ArrayList<ChattingData> chattingDataList;
     private List<ChatModel.Comment> comments = new ArrayList<>();
+    private List<String> dateList = new ArrayList<>();
 
-    public Adapter(FirebaseDatabase firebaseDatabase, String myId, String destId,
+    public Adapter(FirebaseDatabase firebaseDatabase, ChatRoom chatRoom,
                    RecyclerView recyclerView){
 
         chattingDataList = new ArrayList<>();
         handler = new Handler();
+        dateList = new ArrayList<>();
 
         this.firebaseDatabase = firebaseDatabase;
-        this.myId = myId;
-        this.destId = destId;
+        this.chatRoom = chatRoom;
         this.recyclerView = recyclerView;
 
-        getDestUid();
+        getReceiverId();
     }
 
     //채팅 대화상자 옆에 현재 시각을 표시하기 위해 데이터 저장
@@ -59,25 +60,32 @@ public class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         return dateFormat.format(date);
     }
 
-    private void reflectChatContents(ChatModel.Comment comment){
-
-        if(comment.getUid().equals(myId)){
-            setChattingData(new ChattingData(
-                    myId, comment.getMessage(),
-                    getTime(comment.date), Constants.RIGHT_CONTENT));
-        }
-        else{
-            setChattingData(new ChattingData(
-                    destId, comment.getMessage(),
-                    getTime(comment.date), Constants.LEFT_CONTENT));
-        }
-
+    private void reflectOnChatWindow(){
         handler.post(new Runnable() {
             @Override
             public void run() {
                 notifyItemInserted(getItemCount());
             }
         });
+    }
+
+    private void reflectChatContents(ChatModel.Comment comment){
+        setDateToChatWindow(comment.getDate());
+
+        if(comment.getUid().equals(chatRoom.getMyId())){
+            setChattingData(new ChattingData(
+                    chatRoom.getMyId(), comment.getMessage(),
+                    getTime(comment.date), Constants.RIGHT_CONTENT));
+        }
+        else{
+            setChattingData(new ChattingData(
+                    chatRoom.getReceiverName(), comment.getMessage(),
+                    getTime(comment.date), Constants.LEFT_CONTENT));
+        }
+
+        reflectOnChatWindow();
+        //입력 후 최하단으로 이동
+        recyclerView.scrollToPosition(getItemCount() - 1);
     }
 
     private void getAllMessageComment(DataSnapshot snapshot){
@@ -90,14 +98,7 @@ public class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             reflectChatContents(comment);
         }
 
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                notifyItemInserted(getItemCount());
-                //입력 후 최하단으로 이동
-                recyclerView.scrollToPosition(getItemCount() - 1);
-            }
-        });
+        reflectOnChatWindow();
     }
 
     private void getLastMessageComment(DataSnapshot snapshot){
@@ -109,8 +110,6 @@ public class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             comment = dataSnapshot.getValue(ChatModel.Comment.class);
             if(index++ > lastIndex) break;
         }
-
-        if(comment.getUid().equals(myId)) return;
 
         reflectChatContents(comment);
     }
@@ -137,9 +136,10 @@ public class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 });
     }
 
-    private void getDestUid()
+    private void getReceiverId()
     {
-        firebaseDatabase.getReference().child("users").child(destId).addListenerForSingleValueEvent(new ValueEventListener() {
+        firebaseDatabase.getReference().child("users").child(chatRoom.getReceiverId())
+                .addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 destUser = snapshot.getValue(User.class);
@@ -161,19 +161,17 @@ public class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         View view;
 
         switch (viewType){
-            case Constants.LEFT_CONTENT:
+            case Constants.LEFT_CONTENT:     //상대방 대화내용
                 view = inflater.inflate(R.layout.item_left_content, parent, false);
                 return new LeftViewHolder(view);
-            case Constants.RIGHT_CONTENT:
+            case Constants.RIGHT_CONTENT:   //나의 대화내용
                 view = inflater.inflate(R.layout.item_right_content, parent, false);
                 return new RightViewHolder(view);
+            default:
+                view = inflater.inflate(R.layout.item_date, parent, false);
+                return new CenterViewHolder(view);
+
         }
-
-        //임시 코드
-        view = inflater.inflate(R.layout.item_chat_list, parent, false);
-        ViewHolder viewHolder = new ViewHolder(context, view);
-
-        return viewHolder;
     }
 
     private String getTime(String date){
@@ -182,6 +180,21 @@ public class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
 
         return date.substring(date.indexOf("오후"));
+    }
+
+    private void setDateToChatWindow(String dateOfLastMessage){
+        int size = dateList.size();
+
+        //채팅화면의 가장 처음 or 날짜가 바뀐 시점에 날짜정보를 화면에 보여줌
+        if(size == 0 || dateOfLastMessage.equals(dateList.get(size - 1))
+                == !Constants.MESSAGE_RECEIVED_ON_SAME_DAY){
+
+            dateList.add(dateOfLastMessage);
+            chattingDataList.add(new ChattingData("", "",
+                    dateOfLastMessage, Constants.CENTER_CONTENT));
+        }
+
+        reflectOnChatWindow();
     }
 
     //각 뷰홀더에 데이터 연결
@@ -196,11 +209,15 @@ public class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             ((LeftViewHolder) holder).time
                     .setText(getTime(chattingDataList.get(position).getTime()));
         }
-        else{
+        else if(holder instanceof RightViewHolder){
             ((RightViewHolder) holder).content
                     .setText(chattingDataList.get(position).getContent());
             ((RightViewHolder) holder).time
                     .setText(getTime(chattingDataList.get(position).getTime()));
+        }
+        else{
+            ((CenterViewHolder) holder).date
+                    .setText(chattingDataList.get(position).getTime());
         }
     }
 
