@@ -10,6 +10,7 @@ import android.view.MenuItem;
 import android.widget.TextView;
 
 import com.example.findingidealtypeapp.chatting.ChatListFragment;
+import com.example.findingidealtypeapp.mainpage.CustomListFragment;
 import com.example.findingidealtypeapp.mainpage.MainPage;
 import com.example.findingidealtypeapp.mainpage.MainPageBeforeImage;
 import com.example.findingidealtypeapp.mainpage.MainPageBeforeLogin;
@@ -32,6 +33,10 @@ public class MainActivity extends AppCompatActivity {
     private MainPageBeforeLogin mainPageBeforeLogin = new MainPageBeforeLogin();
     private MainPageBeforeImage mainPageBeforeImage = new MainPageBeforeImage();
     private ChatListFragment chatListFragment = new ChatListFragment();
+<<<<<<< HEAD
+=======
+    private CustomListFragment customListFragment = new CustomListFragment();
+>>>>>>> 20b8bbcfe2d4a59c9b90e80450c12e29977f2936
     FragmentTransaction transaction;
 
     @Override
@@ -88,3 +93,4 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 }
+         

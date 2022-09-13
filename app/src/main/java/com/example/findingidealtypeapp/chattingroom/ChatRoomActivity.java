@@ -1,10 +1,13 @@
 package com.example.findingidealtypeapp.chattingroom;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -14,6 +17,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.findingidealtypeapp.R;
+import com.example.findingidealtypeapp.chatting.ChatRoom;
 import com.example.findingidealtypeapp.utility.Constants;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -102,8 +106,12 @@ public class ChatRoomActivity extends AppCompatActivity {
     }
 
     private void init(){
-        myId = "you";//FirebaseAuth.getInstance().getCurrentUser().getUid();
-        receiverId = "ming";//getIntent().getStringExtra("");
+        Intent intent = getIntent();
+        ChatRoom chatRoom = (ChatRoom) intent.getSerializableExtra("chatRoom");
+
+        myId = chatRoom.getMyId();
+        receiverId = chatRoom.getReceiverId();
+        chatRoomId = chatRoom.getChatRoomId();
 
         firebaseDatabase = FirebaseDatabase.getInstance();
 
@@ -189,12 +197,7 @@ public class ChatRoomActivity extends AppCompatActivity {
                 .child("comments").push().setValue(comment).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void unused) {
-                        adapter.setChattingData(new ChattingData(
-                                myId, comment.getMessage(),
-                                getCurrentTime(), Constants.RIGHT_CONTENT));
-
                         input.setText(""); //입력창 초기화
-                        recyclerView.scrollToPosition(adapter.getItemCount() - 1);
                     }
                 });
     }
