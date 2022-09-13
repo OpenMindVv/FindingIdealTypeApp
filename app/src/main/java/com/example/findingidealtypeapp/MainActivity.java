@@ -5,8 +5,17 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.app.Activity;
+import android.content.Intent;
+import android.content.res.AssetFileDescriptor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.example.findingidealtypeapp.chatting.ChatListFragment;
 import com.example.findingidealtypeapp.mainpage.CustomListFragment;
@@ -18,6 +27,14 @@ import com.example.findingidealtypeapp.utility.Constants;
 import com.example.findingidealtypeapp.utility.TokenDTO;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import org.tensorflow.lite.Interpreter;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.MappedByteBuffer;
+import java.nio.channels.FileChannel;
+
 public class MainActivity extends AppCompatActivity {
 
     MainActivity mainActivity=this;
@@ -28,6 +45,29 @@ public class MainActivity extends AppCompatActivity {
     private ChatListFragment chatListFragment = new ChatListFragment();
     private CustomListFragment customListFragment = new CustomListFragment();
     FragmentTransaction transaction;
+
+    //tflite
+    private Interpreter getTfliteInterpreter(String modelPath) {
+        try {
+            return new Interpreter(loadModelFile(MainActivity.this, modelPath));
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
+
+
+    public MappedByteBuffer loadModelFile(Activity activity, String modelPath) throws IOException {
+        AssetFileDescriptor fileDescriptor = activity.getAssets().openFd(modelPath);
+        FileInputStream inputStream = new FileInputStream(fileDescriptor.getFileDescriptor());
+        FileChannel fileChannel = inputStream.getChannel();
+        long startOffset = fileDescriptor.getStartOffset();
+        long declaredLength = fileDescriptor.getDeclaredLength();
+        return fileChannel.map(FileChannel.MapMode.READ_ONLY, startOffset, declaredLength);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
