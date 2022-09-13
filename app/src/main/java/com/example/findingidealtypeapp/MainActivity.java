@@ -17,6 +17,7 @@ import com.example.findingidealtypeapp.userService.ProfileFragment;
 import com.example.findingidealtypeapp.utility.Constants;
 import com.example.findingidealtypeapp.utility.TokenDTO;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.navigation.NavigationBarView;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -40,7 +41,30 @@ public class MainActivity extends AppCompatActivity {
         //transaction.replace(R.id.menu_frame_layout, profileFragment).commitAllowingStateLoss();
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.menu_bottom_navigation);
-        bottomNavigationView.setOnNavigationItemSelectedListener(new ItemSelectedListener());
+        bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+                FragmentTransaction transaction = fragmentManager.beginTransaction();
+
+                switch (menuItem.getItemId()) {
+                    case R.id.menu_home:
+                        transaction.replace(R.id.menu_frame_layout, profileFragment).commitAllowingStateLoss();
+                        break;
+                    case R.id.menu_dm:
+                        transaction.replace(R.id.menu_frame_layout, chatListFragment).commitAllowingStateLoss();
+                        break;
+                    case R.id.menu_mypage:
+                        if(TokenDTO.Token == null){
+                            transaction.replace(R.id.menu_frame_layout, loginFragment).commitAllowingStateLoss();
+                        }
+                        else{
+                            transaction.replace(R.id.menu_frame_layout, profileFragment).commitAllowingStateLoss();
+                        }
+                        break;
+                }
+                return true;
+            }
+        });
     }
 
     public void onFragmentChange(int index){
@@ -53,30 +77,5 @@ public class MainActivity extends AppCompatActivity {
             break;
         }
     }
-
-    class ItemSelectedListener implements BottomNavigationView.OnNavigationItemSelectedListener {
-        @Override
-        public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-            FragmentTransaction transaction = fragmentManager.beginTransaction();
-
-            switch (menuItem.getItemId()) {
-                case R.id.menu_home:
-                    transaction.replace(R.id.menu_frame_layout, customListFragment).commitAllowingStateLoss();
-                    break;
-                case R.id.menu_dm:
-                    transaction.replace(R.id.menu_frame_layout, chatListFragment).commitAllowingStateLoss();
-                    break;
-                case R.id.menu_mypage:
-                    if(TokenDTO.Token == null){
-                        transaction.replace(R.id.menu_frame_layout, loginFragment).commitAllowingStateLoss();
-                    }
-                    else{
-                        transaction.replace(R.id.menu_frame_layout, profileFragment).commitAllowingStateLoss();
-                    }
-                    break;
-            }
-            return true;
-        }
-    }
-
 }
+         

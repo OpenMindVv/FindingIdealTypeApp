@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -53,25 +54,13 @@ import com.example.findingidealtypeapp.R;
 import com.example.findingidealtypeapp.userServiceApi.myPageService.MyPageResponse;
 import com.example.findingidealtypeapp.userServiceApi.UserService;
 import com.example.findingidealtypeapp.utility.Constants;
+import com.example.findingidealtypeapp.utility.DataProcessing;
 import com.example.findingidealtypeapp.utility.TokenDTO;
-
-import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-
-
-import okhttp3.MediaType;
-import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
-import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -89,20 +78,14 @@ public class ProfileFragment extends Fragment {
     private MainActivity activity;
     private ViewGroup rootView;
     private Retrofit retrofit;
-    private String email, name, follow, following;
     private ArrayAdapter arrayAdapter;
     private Context mContext;
-    private static final int REQUEST_IMAGE_CAPTURE = 672;
-    private String imageFilePath;
     private ActivityResultLauncher<Intent> activityResultLauncher;
+    private DataProcessing processing = new DataProcessing();
     private boolean isCamera = true;
-    private File destFile;
-    String AbsolutePhotoPath;
-    Uri imageURI;
-    Uri photoURI, albumURI;
 
     private List<String> menus = Arrays.asList(
-            "도움말","안내","로그아웃","로그아웃","로그아웃","로그아웃"
+            "도움말","안내","로그아웃"
     );
 
     @Override
@@ -138,7 +121,6 @@ public class ProfileFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 String data = (String) adapterView.getItemAtPosition(position); // 데이터에 클릭 정보가 담김
-                System.out.println(data);
                 switch(data) {
                     case "로그아웃":logoutDialog();
                         break;
@@ -199,7 +181,7 @@ public class ProfileFragment extends Fragment {
                             if(isCamera == true) {
                                 Bundle bundle = result.getData().getExtras();
                                 bitMap = (Bitmap) bundle.get("data");
-                                profileImage.setImageBitmap(rotate(bitMap, 90));
+                                profileImage.setImageBitmap(processing.rotate(bitMap, 90));
                                 //sendImage(imageURI);
                             }
                             else {
@@ -217,8 +199,9 @@ public class ProfileFragment extends Fragment {
                                 //sendImagePath(uri);
                             }
                             //bitmap -> base64 -> utf로 변경 후 서버로 통신
-                            System.out.println("확인");
-                            BitMapToString(bitMap);
+                            bitMap = resize(bitMap);
+                            String image = processing.bitmapToByteArray(bitMap);
+                            storeImageToDatabase(image);
                         }
                     }
                 }
@@ -232,6 +215,23 @@ public class ProfileFragment extends Fragment {
             ActivityCompat.requestPermissions((Activity) mContext,new String[]{Manifest.permission.CAMERA},0);
         }
     }
+
+    // popup_menu에서 gallery를 클릭하면 getAlbum함수 호출
+    private void getAlbum(){
+        isCamera = false;
+        Intent intent = new Intent(Intent.ACTION_PICK);
+        intent.setType("image/*");
+        intent.setType(MediaStore.Images.Media.CONTENT_TYPE);
+        activityResultLauncher.launch(intent);
+    }
+
+    private void sendTakePhotoIntent() {
+        isCamera = true;
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        activityResultLauncher.launch(takePictureIntent);
+    }
+
+
     //Permission에 대한 승인 완료확인 코드
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -245,145 +245,36 @@ public class ProfileFragment extends Fragment {
         }
     }
 
-    //사진 각도 알아내는 함수
-    private int exifOrientationToDegrees(int exifOrientation) {
-        if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_90) {
-            return 90;
-        } else if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_180) {
-            return 180;
-        } else if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_270) {
-            return 270;
-        }
-        return 0;
+    //비트맵 사이즈 변경
+    private Bitmap resize(Bitmap bm){
+        Configuration config=getResources().getConfiguration();
+        if(config.smallestScreenWidthDp>=800)
+            bm = Bitmap.createScaledBitmap(bm, 400, 240, true);
+        else if(config.smallestScreenWidthDp>=600)
+            bm = Bitmap.createScaledBitmap(bm, 300, 180, true);
+        else if(config.smallestScreenWidthDp>=400)
+            bm = Bitmap.createScaledBitmap(bm, 200, 120, true);
+        else if(config.smallestScreenWidthDp>=360)
+            bm = Bitmap.createScaledBitmap(bm, 180, 108, true);
+        else
+            bm = Bitmap.createScaledBitmap(bm, 160, 96, true);
+        return bm;
     }
 
-    // 사진 회전하는 함수
-    private Bitmap rotate(Bitmap bitmap, float degree) {
-        Matrix matrix = new Matrix();
-        matrix.postRotate(degree);
-        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
-    }
-
-    // popup_menu에서 gallery를 클릭하면 getAlbum함수 호출
-    private void getAlbum(){
-        isCamera = false;
-        Intent intent = new Intent(Intent.ACTION_PICK);
-        intent.setType("image/*");
-        intent.setType(MediaStore.Images.Media.CONTENT_TYPE);
-        activityResultLauncher.launch(intent);
-        createFile(intent);
-    }
-
-    private void sendTakePhotoIntent() {
-        isCamera = true;
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        activityResultLauncher.launch(takePictureIntent);
-        createFile(takePictureIntent);
-    }
-
-    private void createFile(Intent intent){
-        String state = Environment.getExternalStorageState();
-        if(Environment.MEDIA_MOUNTED.equals(state)){
-
-            if(intent.resolveActivity(rootView.getContext().getPackageManager()) != null){
-                File photoFile = null;
-                try {
-                    photoFile = createImageFile(); // 여기에 절대경로 있음?
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                if(photoFile != null){
-                    Uri providerUri = FileProvider.getUriForFile(mContext,getContext().getPackageName(),photoFile);
-                    imageURI = providerUri;
-                    intent.putExtra(MediaStore.EXTRA_OUTPUT,providerUri);
-                }
-            }else{
-                Toast.makeText(mContext,"접근 불가능 합니다",Toast.LENGTH_SHORT).show();
-                return;
-            }
-        }
-    }
-
-    private File createImageFile() throws IOException {
-
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = "Image_" + timeStamp + ".jpg";
-        File imageFile = null;
-        File storageDir = new File(Environment.getExternalStorageDirectory() + "/Pictures");
-
-        if(!storageDir.exists()){
-            storageDir.mkdirs();
-        }
-        imageFile = new File(storageDir, imageFileName); // 아래랑 출력이 같음
-        AbsolutePhotoPath = imageFile.getAbsolutePath(); // 절대 경로
-        //storeImageToDatabase(imageFile);
-
-        RequestBody requestBody = RequestBody.create(MediaType.parse("image/jpeg"), imageFile);
-        MultipartBody.Part fileToUpload = MultipartBody.Part.createFormData("image", imageFile.getName(), requestBody);
-        test(fileToUpload);
-
-        //System.out.println("requestBody=================="+requestBody);
-        //System.out.println("fileToUpload=================="+fileToUpload);
-        System.out.println("imageFile=================="+imageFile);
-        System.out.println("mCurrentPhotoPath=================="+AbsolutePhotoPath);
-        return imageFile;
-
-    }
-    private void test(MultipartBody.Part temp) {
-        Call<String> call = userService.test(temp);
+    private void storeImageToDatabase(String image) {
+        Call<String> call = userService.insertImage(image);
 
         call.enqueue(new Callback<String>() {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
                 String result = response.body();    // 웹서버로부터 응답받은 데이터가 들어있다.
                 if (result != null) {
-                    System.out.println("성공ddd");
+                    System.out.println("Sucess");
                 }
             }
 
             @Override
             public void onFailure(Call<String> call, Throwable t) { // 이거는 걍 통신에서 실패
-                System.out.println("통신실패");
-                System.out.println(t);
-            }
-        });
-    }
-
-    //비트맵을 스트링으로 바꾸는 코드
-    private void BitMapToString(Bitmap bitmap){
-        ByteArrayOutputStream baos = new  ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG,10, baos);    //bitmap compress
-        byte [] imageBytes = baos.toByteArray();
-        // Sending side
-        String image= Base64.encodeToString(imageBytes, Base64.NO_WRAP);
-        String temp="";
-        try{
-            //System.out.println("ddd");
-            temp=URLEncoder.encode(image,"utf-8");
-            //System.out.println(temp);
-            //System.out.println(image);
-            storeImageToDatabase(image);
-            //storeImageToDatabase(temp);
-        }catch (Exception e){
-            Log.e("exception",e.toString());
-        }
-    }
-
-
-    private void storeImageToDatabase(String temp) {
-        Call<String> call = userService.ProfileImage(temp);
-
-        call.enqueue(new Callback<String>() {
-            @Override
-            public void onResponse(Call<String> call, Response<String> response) {
-                String result = response.body();    // 웹서버로부터 응답받은 데이터가 들어있다.
-                if (result != null) {
-                    System.out.println("성공ddd");
-                }
-            }
-            @Override
-            public void onFailure(Call<String> call, Throwable t) { // 이거는 걍 통신에서 실패
-                System.out.println("통신실패");
                 System.out.println(t);
             }
         });
@@ -397,6 +288,9 @@ public class ProfileFragment extends Fragment {
             public void onResponse(Call<MyPageResponse> call, Response<MyPageResponse> response) {
                 MyPageResponse result = response.body();    // 웹서버로부터 응답받은 데이터가 들어있다.
                 if(result != null){
+                    byte[] Image = null;
+                    Image = processing.binaryStringToByteArray(result.getImage()); //이미지 바이트로 가져오기
+                    if(!result.getImage().equals("0")) profileImage.setImageBitmap(processing.byteArrayToBitmap(Image)); // 프로필 이미지 비트맵으로 가져와서 저장
                     profileName.setText(result.getName());
                     numberFollow.setText(result.getFollow());
                     numberFollowing.setText(result.getFollowing());
@@ -405,7 +299,6 @@ public class ProfileFragment extends Fragment {
 
             @Override
             public void onFailure(Call<MyPageResponse> call, Throwable t) { // 이거는 걍 통신에서 실패
-                System.out.println("통신실패");
                 System.out.println(t);
             }
         });
