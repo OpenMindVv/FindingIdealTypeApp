@@ -1,5 +1,6 @@
 package com.example.findingidealtypeapp.mainpage;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
@@ -128,6 +129,7 @@ public class CustomAdapter extends ArrayAdapter implements AdapterView.OnItemCli
         return convertView;
     }
 
+<<<<<<< Updated upstream
     private void setRetrofit() {
         OkHttpClient okHttpClient = new OkHttpClient().newBuilder()
                 .connectTimeout(1, TimeUnit.MINUTES)
@@ -206,4 +208,6 @@ public class CustomAdapter extends ArrayAdapter implements AdapterView.OnItemCli
             }
         });
     }
+=======
+>>>>>>> Stashed changes
 }

@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -40,11 +41,19 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class CustomListFragment extends Fragment {
 
+<<<<<<< Updated upstream
     ArrayList<MyPageResponse> userList;
     ListView customListView;
     ConstraintLayout todayLayout;
     TextView todayId;
     CircleImageView todayImage;
+=======
+    private ArrayList<User> userList;
+    private ListView customListView;
+    private ConstraintLayout todayLayout;
+    private TextView todayId;
+    private CircleImageView todayImage;
+>>>>>>> Stashed changes
     private static CustomAdapter customAdapter;
 
     private Retrofit retrofit;
@@ -66,7 +75,6 @@ public class CustomListFragment extends Fragment {
 
         customListView.setAdapter(customAdapter);
 
-
         todayLayout = (ConstraintLayout) rootView.findViewById(R.id.today_layout);
         todayId = (TextView) rootView.findViewById(R.id.today_id);
         todayImage = (CircleImageView) rootView.findViewById(R.id.today_image);
@@ -80,10 +88,13 @@ public class CustomListFragment extends Fragment {
                 OnClickShowAlert(rootView);
             }
         });
+<<<<<<< Updated upstream
 
 
  getListOfMembersExceptMe();    //회원목록을 불러옴
 
+=======
+>>>>>>> Stashed changes
         return rootView;
     }
 
