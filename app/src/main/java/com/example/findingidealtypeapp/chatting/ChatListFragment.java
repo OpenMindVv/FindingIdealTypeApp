@@ -184,30 +184,14 @@ public class ChatListFragment extends Fragment {
     }
 
     private void setReceiverName(String email, ChatRoom chatRoom){
-<<<<<<< Updated upstream
-        Call<String> call = userService.getName(getEmail(email));
-<<<<<<< HEAD
-        Log.v("ㅌㅌㅌ", getEmail(email));
-=======
         Call<MyPageResponse> call = userService.getName(getEmail(email));
->>>>>>> Stashed changes
-=======
->>>>>>> 968a86d258f7eec6910065ae2f49ba193a55fee1
 
         call.enqueue(new Callback<MyPageResponse>() {
             @Override
             public void onResponse(Call<MyPageResponse> call, Response<MyPageResponse> response) {
                 MyPageResponse result = response.body();    // 웹서버로부터 응답받은 데이터가 들어있다.
-                if(result != null){ //
-<<<<<<< Updated upstream
-                    receiverName = result;
-<<<<<<< HEAD
-                    Log.v("ㅌㅌㅌㅌㅌㅌㅌㅌ", receiverName);
-=======
+                if(result != null){
                     receiverName = result.getName();
->>>>>>> Stashed changes
-=======
->>>>>>> 968a86d258f7eec6910065ae2f49ba193a55fee1
                     chatRoom.setReceiverName(receiverName);
                     chatRoom.setProfileImage(result.getImage());
                     handler.post(new Runnable() {
