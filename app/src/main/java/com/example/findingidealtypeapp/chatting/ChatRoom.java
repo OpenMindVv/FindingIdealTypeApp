@@ -59,7 +59,9 @@ public class ChatRoom implements Serializable {
     public String toString() {
         return "ChatRoom{" +
                 "chatRoomId='" + chatRoomId + '\'' +
+                ", myId='" + myId + '\'' +
                 ", receiverId='" + receiverId + '\'' +
+                ", receiverName='" + receiverName + '\'' +
                 ", lastMessage='" + lastMessage + '\'' +
                 ", date='" + date + '\'' +
                 '}';
