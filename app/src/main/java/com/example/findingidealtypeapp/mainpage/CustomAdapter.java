@@ -13,11 +13,8 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.findingidealtypeapp.R;
-<<<<<<< Updated upstream
-=======
 import com.example.findingidealtypeapp.userServiceApi.myPageService.MyPageResponse;
 import com.example.findingidealtypeapp.utility.DataProcessing;
->>>>>>> Stashed changes
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,12 +54,9 @@ public class CustomAdapter extends ArrayAdapter implements AdapterView.OnItemCli
         viewHolder.tv_name = (TextView) convertView.findViewById(R.id.textView_name);
         viewHolder.iv_thumb = (ImageView) convertView.findViewById(R.id.imageView_thumb);
 
-<<<<<<< Updated upstream
-        final User user = (User) list.get(position);
-=======
         final MyPageResponse user = (MyPageResponse) list.get(position);
 
->>>>>>> Stashed changes
+
         viewHolder.tv_name.setText(user.getName());
 
         byte[] Image = null;
@@ -74,7 +68,7 @@ public class CustomAdapter extends ArrayAdapter implements AdapterView.OnItemCli
 
         Glide
                 .with(context)
-                .load(user.getThumb_url())
+                .load(user.getImage())
                 .centerCrop()
                 .apply(new RequestOptions().override(250, 350));
                 //.into(viewHolder.iv_thumb);

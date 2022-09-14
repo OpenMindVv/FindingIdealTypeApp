@@ -158,7 +158,7 @@ public class ChatListFragment extends Fragment {
                     myId = result.getEmail();
                     myId = myId.replace("@", "-");
                     myId = myId.replace(".", "-");
-                    Log.v("ㅌㅌㅌㅌ", myId);
+
                     setChattingListView(recyclerView, txNoChattingList);
                 }
             }
@@ -184,7 +184,6 @@ public class ChatListFragment extends Fragment {
 
     private void setReceiverName(String email, ChatRoom chatRoom){
         Call<String> call = userService.getName(getEmail(email));
-        Log.v("ㅌㅌㅌ", getEmail(email));
 
         call.enqueue(new Callback<String>() {
             @Override
@@ -192,7 +191,6 @@ public class ChatListFragment extends Fragment {
                 String result = response.body();    // 웹서버로부터 응답받은 데이터가 들어있다.
                 if(result != null){ //
                     receiverName = result;
-                    Log.v("ㅌㅌㅌㅌㅌㅌㅌㅌ", receiverName);
                     chatRoom.setReceiverName(receiverName);
 
                     handler.post(new Runnable() {
