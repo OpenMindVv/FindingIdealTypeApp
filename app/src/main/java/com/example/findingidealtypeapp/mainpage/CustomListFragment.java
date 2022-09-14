@@ -1,13 +1,16 @@
 package com.example.findingidealtypeapp.mainpage;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -39,11 +42,13 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class CustomListFragment extends Fragment {
 
-    ArrayList<MyPageResponse> userList;
-    ListView customListView;
-    ConstraintLayout todayLayout;
-    TextView todayId;
-    CircleImageView todayImage;
+
+    private ArrayList<MyPageResponse> userList;
+    private ListView customListView;
+    private ConstraintLayout todayLayout;
+    private TextView todayId;
+    private CircleImageView todayImage;
+
     private static CustomAdapter customAdapter;
 
     private Retrofit retrofit;
@@ -64,14 +69,6 @@ public class CustomListFragment extends Fragment {
         customAdapter = new CustomAdapter(getContext(),userList);
 
         customListView.setAdapter(customAdapter);
-        customListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long l) {
-                //각 아이템을 분간 할 수 있는 position과 뷰
-                String selectedItem = (String) view.findViewById(R.id.textView_name).getTag().toString();
-                Toast.makeText(getContext(), "Clicked: " + position +" " + selectedItem, Toast.LENGTH_SHORT).show();
-            }
-        });
 
         todayLayout = (ConstraintLayout) rootView.findViewById(R.id.today_layout);
         todayId = (TextView) rootView.findViewById(R.id.today_id);
@@ -83,15 +80,26 @@ public class CustomListFragment extends Fragment {
         todayLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.v("오늘의 이상형", todayId.toString());
+                OnClickShowAlert(rootView);
             }
         });
-
 
         getListOfMembersExceptMe();    //회원목록을 불러옴
 
         return rootView;
     }
+
+    public void OnClickShowAlert(View rootView) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(rootView.getContext());
+        builder.setTitle("오늘의 이상형");
+        builder.setMessage("JENNIERUBYJANE" +" 님은 " + "토끼상" + "입니다.");
+        builder.setPositiveButton("채팅하기", null);
+        builder.setNeutralButton("닫기", null);
+
+        builder.show();
+    }
+
+
 
     private void setRetrofit() {
         OkHttpClient okHttpClient = new OkHttpClient().newBuilder()
@@ -110,7 +118,6 @@ public class CustomListFragment extends Fragment {
                 .build();
         userService = retrofit.create(UserService.class);
     }
-
     private void getListOfMembersExceptMe(){
         setRetrofit();
 

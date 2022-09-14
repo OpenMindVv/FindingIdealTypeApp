@@ -1,5 +1,6 @@
 package com.example.findingidealtypeapp.mainpage;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
@@ -61,6 +62,8 @@ public class CustomAdapter extends ArrayAdapter implements AdapterView.OnItemCli
     class ViewHolder {
         public TextView tv_name;
         public ImageView iv_thumb;
+        public TextView tv_animal;
+
         public ImageButton message_button;
     }
 
@@ -84,11 +87,13 @@ public class CustomAdapter extends ArrayAdapter implements AdapterView.OnItemCli
         viewHolder = new ViewHolder();
         viewHolder.tv_name = (TextView) convertView.findViewById(R.id.textView_name);
         viewHolder.iv_thumb = (ImageView) convertView.findViewById(R.id.imageView_thumb);
+        viewHolder.tv_animal = (TextView) convertView.findViewById(R.id.textView_animal);
         viewHolder.message_button = (ImageButton) convertView.findViewById(R.id.message_button);
 
         final MyPageResponse user = (MyPageResponse) list.get(position);
 
         viewHolder.tv_name.setText(user.getName());
+        viewHolder.tv_animal.setText(user.getAnimalFace());
 
         byte[] Image = null;
         if(!user.getImage().equals("0")) {
@@ -104,6 +109,7 @@ public class CustomAdapter extends ArrayAdapter implements AdapterView.OnItemCli
                 .apply(new RequestOptions().override(250, 350));
                 //.into(viewHolder.iv_thumb);
         viewHolder.tv_name.setTag(user.getName());
+        viewHolder.tv_animal.setTag(user.getAnimalFace());
 
 
 //        //아이템 클릭 방법2 - 클릭시 아이템 반전 효과가 안 먹힘
@@ -167,8 +173,8 @@ public class CustomAdapter extends ArrayAdapter implements AdapterView.OnItemCli
                         receiverId = receiverId.replace("@", "-");
                         receiverId = receiverId.replace(".", "-");
 
-                        ChatRoom chatRoom = new ChatRoom(chatRoomId, myId, receiverId,
-                                receiverName,"", "");
+                        ChatRoom chatRoom = new ChatRoom("", chatRoomId, myId, receiverId,
+                                receiverName ,"", "");
 
                         Intent intent = new Intent(context, ChatRoomActivity.class);
                         intent.putExtra("chatRoom", chatRoom);

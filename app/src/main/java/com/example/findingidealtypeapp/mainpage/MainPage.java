@@ -23,7 +23,7 @@ public class MainPage extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.activity_user_list, container, false);
 
-        //Button todayButton = (Button) view.findViewById(R.id.today_button);
+        //Button toddsdButton = (Button) view.findViewById(R.id.today_button);
         Button rabbitButton = (Button) view.findViewById(R.id.rabbit_button);
         Button dogButton = (Button) view.findViewById(R.id.dog_button);
         Button catButton = (Button) view.findViewById(R.id.cat_button);

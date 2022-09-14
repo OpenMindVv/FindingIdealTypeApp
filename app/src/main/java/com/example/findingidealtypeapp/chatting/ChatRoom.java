@@ -3,7 +3,7 @@ package com.example.findingidealtypeapp.chatting;
 import java.io.Serializable;
 
 public class ChatRoom implements Serializable {
-
+    String profileImage;
     String chatRoomId;
     String myId;
     String receiverId;
@@ -11,7 +11,8 @@ public class ChatRoom implements Serializable {
     String lastMessage;   //마지막 대화내용
     String date;
 
-    public ChatRoom(String chatRoomId, String myId, String receiverId, String receiverName, String lastMessage, String date){
+    public ChatRoom(String profileImage, String chatRoomId, String myId, String receiverId, String receiverName, String lastMessage, String date){
+        this.profileImage = profileImage;
         this.chatRoomId = chatRoomId;
         this.myId = myId;
         this.receiverId = receiverId;
@@ -20,6 +21,13 @@ public class ChatRoom implements Serializable {
         this.date = date;
     }
 
+    public String getProfileImage() {
+        return profileImage;
+    }
+
+    public void setProfileImage(String profileImage) {
+        this.profileImage = profileImage;
+    }
     public String getMyId() {
         return myId;
     }
