@@ -47,7 +47,7 @@
         android:text="오후 6:57"
         app:layout_constraintStart_toEndOf="@id/content"
         app:layout_constraintBottom_toBottomOf="@id/content"
-        android:paddingLeft="20dp"
+        android:paddingLeft="10dp"
         tools:ignore="MissingConstraints" />
 
 

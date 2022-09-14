@@ -30,6 +30,7 @@
             android:layout_weight="1" />
 
         <TextView
+            android:id="@+id/tx_receiverUser"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
@@ -45,15 +46,9 @@
             android:layout_height="0dp"
             android:layout_weight="1" />
 
-        <ImageButton
-            android:id="@+id/btn_menu"
+        <TextView
             android:layout_width="50dp"
-            android:layout_height="match_parent"
-            android:src="@drawable/menu"
-            android:scaleType="fitCenter"
-            android:background="@android:color/transparent"
-            android:layout_gravity="right"
-            android:padding="10dp"/>
+            android:layout_height="match_parent"/>
 
     </LinearLayout>
 
@@ -77,27 +72,18 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintVertical_weight="1">
 
-        <ImageButton
-            android:id="@+id/btn_gallery"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_gravity="left"
-            android:layout_marginHorizontal="10dp"
-            android:layout_weight="1"
-            android:background="@android:color/transparent"
-            android:scaleType="fitCenter"
-            android:src="@drawable/gallery" />
 
         <EditText
             android:id="@+id/editText_input"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_weight="8"
+            android:layout_weight="9"
+            android:inputType="textMultiLine|textNoSuggestions"
             android:background="@drawable/bg_chat_input"
-            android:inputType="textNoSuggestions|textVisiblePassword"
             android:paddingHorizontal="15dp"
-            android:paddingVertical="10dp" />
+            android:paddingVertical="10dp"
+            android:layout_marginLeft="10dp"/>
 
         <ImageButton
             android:id="@+id/btn_send"

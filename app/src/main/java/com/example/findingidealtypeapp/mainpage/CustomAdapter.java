@@ -23,6 +23,7 @@ import com.example.findingidealtypeapp.chattingroom.ChatModel;
 import com.example.findingidealtypeapp.chattingroom.ChatRoomActivity;
 import com.example.findingidealtypeapp.userServiceApi.UserService;
 import com.example.findingidealtypeapp.userServiceApi.myPageService.MyPageResponse;
+import com.example.findingidealtypeapp.utility.Constants;
 import com.example.findingidealtypeapp.utility.DataProcessing;
 import com.example.findingidealtypeapp.utility.TokenDTO;
 import com.google.firebase.database.DataSnapshot;
@@ -50,6 +51,8 @@ public class CustomAdapter extends ArrayAdapter implements AdapterView.OnItemCli
     private DataProcessing processing = new DataProcessing();
     private Retrofit retrofit;
     private UserService userService;
+    private String receiverId;
+    private String receiverName;
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -121,7 +124,9 @@ public class CustomAdapter extends ArrayAdapter implements AdapterView.OnItemCli
         viewHolder.message_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                setChatRoom(user.getEmail());
+                receiverId = user.getEmail();
+                receiverName = user.getName();
+                setChatRoom();
             }
         });
 
@@ -141,15 +146,13 @@ public class CustomAdapter extends ArrayAdapter implements AdapterView.OnItemCli
                 .create();
 
         retrofit = new Retrofit.Builder()
-                //.baseUrl("https://2fc39d2c-748a-42b0-8fda-cc926df84d08.mock.pstmn.io/")
-                //.client(okHttpClient)
-                .baseUrl("http://10.0.2.2:8080/")
+                .baseUrl(Constants.SERVER_ADDRESS)
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();
         userService = retrofit.create(UserService.class);
     }
 
-    private void checkChatRoom(String myId, String receiverId){
+    private void checkChatRoom(String myId){
         FirebaseDatabase.getInstance().getReference().child("chatrooms")
                 .orderByChild("users/" + myId)
                 .equalTo(true)
@@ -167,8 +170,11 @@ public class CustomAdapter extends ArrayAdapter implements AdapterView.OnItemCli
                             }
                         }
 
+                        receiverId = receiverId.replace("@", "-");
+                        receiverId = receiverId.replace(".", "-");
+
                         ChatRoom chatRoom = new ChatRoom("", chatRoomId, myId, receiverId,
-                                "","", "");
+                                receiverName ,"", "");
 
                         Intent intent = new Intent(context, ChatRoomActivity.class);
                         intent.putExtra("chatRoom", chatRoom);
@@ -183,7 +189,7 @@ public class CustomAdapter extends ArrayAdapter implements AdapterView.OnItemCli
                 });
     }
 
-    private void setChatRoom(String receiverId){
+    private void setChatRoom(){
         Call<MyPageResponse> call = userService.getProfile(TokenDTO.Token);
 
         call.enqueue(new Callback<MyPageResponse>() {
@@ -198,7 +204,7 @@ public class CustomAdapter extends ArrayAdapter implements AdapterView.OnItemCli
                     myId = myId.replace("@", "-");
                     myId = myId.replace(".", "-");
 
-                    checkChatRoom(myId, receiverId);
+                    checkChatRoom(myId);
                 }
             }
             @Override
@@ -207,5 +213,4 @@ public class CustomAdapter extends ArrayAdapter implements AdapterView.OnItemCli
             }
         });
     }
-
 }
