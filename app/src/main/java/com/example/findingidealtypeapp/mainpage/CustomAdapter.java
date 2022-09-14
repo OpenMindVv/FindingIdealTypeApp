@@ -56,6 +56,7 @@ public class CustomAdapter extends ArrayAdapter implements AdapterView.OnItemCli
 
         final MyPageResponse user = (MyPageResponse) list.get(position);
 
+
         viewHolder.tv_name.setText(user.getName());
 
         byte[] Image = null;
