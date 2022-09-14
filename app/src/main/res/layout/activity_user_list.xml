@@ -19,7 +19,8 @@
         android:layout_height="120dp"
         android:id="@+id/today_layout"
         android:layout_marginHorizontal="10dp"
-        android:background="@drawable/today_button_shape">
+        android:background="@drawable/today_button_shape"
+        android:onClick="OnClickShowAlert">
 
         <TextView
             android:id="@+id/textView2"
