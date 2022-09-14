@@ -44,7 +44,7 @@ public interface UserService {
     );
 
     @GET("user/getName")
-    Call<String> getName(@Query("email") String email);
+    Call<MyPageResponse> getName(@Query("email") String email);
 
     @POST("user/insertImage")
     Call<String> insertImage(
