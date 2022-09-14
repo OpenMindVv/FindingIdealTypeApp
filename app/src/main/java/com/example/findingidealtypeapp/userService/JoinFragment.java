@@ -106,8 +106,7 @@ public class JoinFragment extends Fragment {
 
     private void setRetrofit() {
         retrofit = new Retrofit.Builder()
-                //.baseUrl("https://2fc39d2c-748a-42b0-8fda-cc926df84d08.mock.pstmn.io/")
-                .baseUrl("http://10.0.2.2:8080/")
+                .baseUrl(Constants.SERVER_ADDRESS)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         userService = retrofit.create(UserService.class);

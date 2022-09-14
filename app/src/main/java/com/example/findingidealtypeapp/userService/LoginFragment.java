@@ -175,9 +175,7 @@ public class LoginFragment extends Fragment {
                 .create();
 
         retrofit = new Retrofit.Builder()
-                //.baseUrl("https://2fc39d2c-748a-42b0-8fda-cc926df84d08.mock.pstmn.io/")
-                //.client(okHttpClient)
-                .baseUrl("http://10.0.2.2:8080/")
+                .baseUrl(Constants.SERVER_ADDRESS)
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();
         userService = retrofit.create(UserService.class);

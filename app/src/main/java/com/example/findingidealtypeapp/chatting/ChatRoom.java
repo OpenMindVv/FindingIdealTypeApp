@@ -3,6 +3,7 @@ package com.example.findingidealtypeapp.chatting;
 import java.io.Serializable;
 
 public class ChatRoom implements Serializable {
+
     String chatRoomId;
     String myId;
     String receiverId;
