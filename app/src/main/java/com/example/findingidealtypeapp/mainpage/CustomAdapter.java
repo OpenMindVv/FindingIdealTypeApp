@@ -58,6 +58,8 @@ public class CustomAdapter extends ArrayAdapter implements AdapterView.OnItemCli
     class ViewHolder {
         public TextView tv_name;
         public ImageView iv_thumb;
+        public TextView tv_animal;
+
         public ImageButton message_button;
     }
 
@@ -81,11 +83,13 @@ public class CustomAdapter extends ArrayAdapter implements AdapterView.OnItemCli
         viewHolder = new ViewHolder();
         viewHolder.tv_name = (TextView) convertView.findViewById(R.id.textView_name);
         viewHolder.iv_thumb = (ImageView) convertView.findViewById(R.id.imageView_thumb);
+        viewHolder.tv_animal = (TextView) convertView.findViewById(R.id.textView_animal);
         viewHolder.message_button = (ImageButton) convertView.findViewById(R.id.message_button);
 
         final MyPageResponse user = (MyPageResponse) list.get(position);
 
         viewHolder.tv_name.setText(user.getName());
+        viewHolder.tv_animal.setText(user.getAnimal());
 
         byte[] Image = null;
         if(!user.getImage().equals("0")) {
@@ -101,6 +105,7 @@ public class CustomAdapter extends ArrayAdapter implements AdapterView.OnItemCli
                 .apply(new RequestOptions().override(250, 350));
                 //.into(viewHolder.iv_thumb);
         viewHolder.tv_name.setTag(user.getName());
+        viewHolder.tv_animal.setTag(user.getAnimal());
 
 
 //        //아이템 클릭 방법2 - 클릭시 아이템 반전 효과가 안 먹힘
