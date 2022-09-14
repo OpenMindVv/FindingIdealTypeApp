@@ -101,12 +101,13 @@ public class ChatListFragment extends Fragment {
 
                             if(chatModel.users.containsKey(receiverId)) {
                                 chatRoomId = dataSnapshot.getKey();
-                                chatRoom = new ChatRoom(chatRoomId, myId, receiverId,
+                                chatRoom = new ChatRoom("", chatRoomId, myId, receiverId,
                                         "","", "");
                                 adapter.addChatRoom(chatRoom);
 
                                 int index = adapter.getItemCount() - 1;
                                 setReceiverName(receiverId, adapter.chatRoomList.get(index));
+                                System.out.println(chatRoom.getProfileImage());
                             }
                         }
 
@@ -186,16 +187,16 @@ public class ChatListFragment extends Fragment {
     }
 
     private void setReceiverName(String email, ChatRoom chatRoom){
-        Call<String> call = userService.getName(getEmail(email));
+        Call<MyPageResponse> call = userService.getName(getEmail(email));
 
-        call.enqueue(new Callback<String>() {
+        call.enqueue(new Callback<MyPageResponse>() {
             @Override
-            public void onResponse(Call<String> call, Response<String> response) {
-                String result = response.body();    // 웹서버로부터 응답받은 데이터가 들어있다.
-                if(result != null){ //
-                    receiverName = result;
+            public void onResponse(Call<MyPageResponse> call, Response<MyPageResponse> response) {
+                MyPageResponse result = response.body();    // 웹서버로부터 응답받은 데이터가 들어있다.
+                if(result != null){
+                    receiverName = result.getName();
                     chatRoom.setReceiverName(receiverName);
-
+                    chatRoom.setProfileImage(result.getImage());
                     handler.post(new Runnable() {
                         @Override
                         public void run() {
@@ -209,7 +210,7 @@ public class ChatListFragment extends Fragment {
             }
 
             @Override
-            public void onFailure(Call<String> call, Throwable t) { // 이거는 걍 통신에서 실패
+            public void onFailure(Call<MyPageResponse> call, Throwable t) { // 이거는 걍 통신에서 실패
                 System.out.println("통신실패");
                 System.out.println(t);
             }

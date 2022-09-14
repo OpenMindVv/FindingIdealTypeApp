@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.findingidealtypeapp.R;
 import com.example.findingidealtypeapp.chattingroom.ChatRoomActivity;
+import com.example.findingidealtypeapp.utility.DataProcessing;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.io.Serializable;
@@ -20,6 +21,7 @@ import java.util.ArrayList;
 public class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public ArrayList<ChatRoom> chatRoomList;
     private Context context;
+    private DataProcessing processing = new DataProcessing();
 
     public Adapter(Context context){
 
@@ -47,6 +49,12 @@ public class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         ViewHolder viewHolder = (ViewHolder)holder;
 
         ChatRoom chatRoom = chatRoomList.get(position);
+
+        if(!chatRoom.getProfileImage().equals("0")) {
+            byte[] Image = processing.binaryStringToByteArray(chatRoom.getProfileImage());
+            viewHolder.profileImage.setImageBitmap(processing.byteArrayToBitmap(Image)); // 프로필 이미지 비트맵으로 가져와서 저장
+        }
+        else viewHolder.profileImage.setImageResource(R.drawable.profile_image);
 
         viewHolder.userId.setText(chatRoom.getReceiverName());
         viewHolder.content.setText(chatRoom.getLastMessage());

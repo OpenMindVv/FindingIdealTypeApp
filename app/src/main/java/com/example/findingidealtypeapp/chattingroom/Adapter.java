@@ -72,11 +72,13 @@ public class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         if(comment.getUid().equals(chatRoom.getMyId())){
             setChattingData(new ChattingData(
+                    chatRoom.getProfileImage(),
                     chatRoom.getMyId(), comment.getMessage(),
                     getTime(comment.date), Constants.RIGHT_CONTENT));
         }
         else{
             setChattingData(new ChattingData(
+                    chatRoom.getProfileImage(),
                     chatRoom.getReceiverName(), comment.getMessage(),
                     getTime(comment.date), Constants.LEFT_CONTENT));
         }
@@ -199,7 +201,7 @@ public class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 == !Constants.MESSAGE_RECEIVED_ON_SAME_DAY){
 
             dateList.add(dateOfLastMessage);
-            chattingDataList.add(new ChattingData("", "",
+            chattingDataList.add(new ChattingData("", "", "",
                     dateOfLastMessage, Constants.CENTER_CONTENT));
         }
 
