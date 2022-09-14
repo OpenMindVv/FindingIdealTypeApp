@@ -4,6 +4,7 @@ import com.example.findingidealtypeapp.userServiceApi.myPageService.MyPageRespon
 import com.example.findingidealtypeapp.userServiceApi.loginService.LoginResponse;
 
 import java.io.File;
+import java.util.List;
 
 import okhttp3.MultipartBody;
 import retrofit2.Call;
@@ -18,11 +19,11 @@ import retrofit2.http.Query;
 public interface UserService {
     // @GET( EndPoint-자원위치(URI) )
     @GET("user/all")
-    Call<MyPageResponse> getProfileList();
+    Call<List<MyPageResponse>> getProfileList();
 
     @GET("user/getPassword")
     Call<MyPageResponse> getPassword(
-      @Query("email") String email
+            @Query("email") String email
     );
 
     @GET("user/getProfile")
@@ -36,19 +37,22 @@ public interface UserService {
 
     @POST("user/editProfile")
     Call<String> editProrfile(
-            @Query("name") String name, @Query("email") String email, @Query("password") String password);
+            @Query("image") String image, @Query("name") String name, @Query("email") String email, @Query("password") String password);
 
     @PUT("user/create")
     Call<String> createUser(
-            @Query("email") String email, @Query("password") String password, @Query("name") String name, @Query("follow") String follow, @Query("following") String following
+            @Query("Image") String Image, @Query("email") String email, @Query("password") String password, @Query("name") String name, @Query("follow") String follow, @Query("following") String following
     );
 
-    @PUT("user/ProfileImage")
-    Call<String> ProfileImage(
+    @GET("user/getName")
+    Call<MyPageResponse> getName(@Query("email") String email);
+
+    @POST("user/insertImage")
+    Call<String> insertImage(
             @Query("imageFile") String imageFile);
 
-    @Multipart
-    @PUT("user/test")
-    Call<String> test(
-            @Part("imageFile") MultipartBody.Part imageFile);
+    @PUT("user/insert")
+    Call<String> createProfile(
+            @Query("Image") String Image, @Query("email") String email, @Query("password") String password, @Query("name") String name, @Query("follow") String follow, @Query("following") String following, @Query("animalFace") String animalFace
+    );
 }

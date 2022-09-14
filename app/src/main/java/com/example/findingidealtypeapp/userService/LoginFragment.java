@@ -18,9 +18,9 @@ import androidx.fragment.app.FragmentTransaction;
 import com.example.findingidealtypeapp.MainActivity;
 import com.example.findingidealtypeapp.R;
 import com.example.findingidealtypeapp.userServiceApi.UserService;
-import com.example.findingidealtypeapp.userServiceApi.loginApi.GoogleLogin;
 import com.example.findingidealtypeapp.userServiceApi.loginService.LoginRequest;
 import com.example.findingidealtypeapp.userServiceApi.loginService.LoginResponse;
+import com.example.findingidealtypeapp.userServiceApi.myPageService.MyPageResponse;
 import com.example.findingidealtypeapp.utility.Constants;
 import com.example.findingidealtypeapp.utility.TokenDTO;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -137,20 +137,17 @@ public class LoginFragment extends Fragment {
                     inputPassword.setText("");
 
                     //토큰 저장
-                    System.out.println("성공");
-                    //System.out.println(result);
+                    System.out.println("sucess");
                     TokenDTO.Token = response.body();
 
                 }else{     // 로그인 실패
                     Toast.makeText(rootView.getContext(), "회원정보가 일치하지 않습니다.", Toast.LENGTH_SHORT).show();
-                    System.out.println("실패");
-                    System.out.println(result);
+                    System.out.println("fail");
                 }
             }
 
             @Override
             public void onFailure(Call<String> call, Throwable t) { // 이거는 걍 통신에서 실패
-                System.out.println("통신실패");
                 System.out.println(t);
             }
         });

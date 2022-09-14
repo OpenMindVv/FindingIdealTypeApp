@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -40,10 +41,12 @@ import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
-import okhttp3.Response;
 import okhttp3.WebSocket;
 import okhttp3.WebSocketListener;
 import okio.ByteString;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class ChatRoomActivity extends AppCompatActivity {
 
@@ -51,9 +54,11 @@ public class ChatRoomActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private EditText input;  //message
 
+    private ChatRoom chatRoom;
     private String chatRoomId; //채팅방 id
     private String myId;       //나의 id
     private String receiverId; //상대방 id
+    private String receiverName; //상대방 이름
     private FirebaseDatabase firebaseDatabase;
 
     @Override
@@ -66,9 +71,9 @@ public class ChatRoomActivity extends AppCompatActivity {
         //대화상자를 보여주는 뷰
         recyclerView = findViewById(R.id.recyclerview_chat_data);
 
-        init();
+        initUserInformation();
 
-        adapter = new Adapter(firebaseDatabase, myId, receiverId,
+        adapter = new Adapter(firebaseDatabase, chatRoom,
                 recyclerView);
         recyclerView.setAdapter(adapter);
 
@@ -105,13 +110,14 @@ public class ChatRoomActivity extends AppCompatActivity {
         });
     }
 
-    private void init(){
+    private void initUserInformation(){
         Intent intent = getIntent();
-        ChatRoom chatRoom = (ChatRoom) intent.getSerializableExtra("chatRoom");
+        chatRoom = (ChatRoom) intent.getSerializableExtra("chatRoom");
 
         myId = chatRoom.getMyId();
         receiverId = chatRoom.getReceiverId();
         chatRoomId = chatRoom.getChatRoomId();
+        receiverName = chatRoom.getReceiverName();
 
         firebaseDatabase = FirebaseDatabase.getInstance();
 

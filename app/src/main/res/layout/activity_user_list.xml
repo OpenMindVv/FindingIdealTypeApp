@@ -124,6 +124,7 @@
             android:backgroundTint="#FFCAE3"
             android:layout_margin="10dp"/>
     </LinearLayout>
+
     <ListView
         android:id="@+id/listView_custom"
         android:layout_width="match_parent"
@@ -131,11 +132,5 @@
         android:layout_margin="10dp"
         android:divider="#FFF"
         android:dividerHeight="10dp"></ListView>
-
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:src="@drawable/defaultprofile" />
 
 </LinearLayout>
