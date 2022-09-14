@@ -90,7 +90,7 @@ public class CustomAdapter extends ArrayAdapter implements AdapterView.OnItemCli
         final MyPageResponse user = (MyPageResponse) list.get(position);
 
         viewHolder.tv_name.setText(user.getName());
-        viewHolder.tv_animal.setText(user.getAnimal());
+        viewHolder.tv_animal.setText(user.getAnimalFace());
 
         byte[] Image = null;
         if(!user.getImage().equals("0")) {
@@ -106,7 +106,7 @@ public class CustomAdapter extends ArrayAdapter implements AdapterView.OnItemCli
                 .apply(new RequestOptions().override(250, 350));
                 //.into(viewHolder.iv_thumb);
         viewHolder.tv_name.setTag(user.getName());
-        viewHolder.tv_animal.setTag(user.getAnimal());
+        viewHolder.tv_animal.setTag(user.getAnimalFace());
 
 
 //        //아이템 클릭 방법2 - 클릭시 아이템 반전 효과가 안 먹힘
@@ -129,7 +129,6 @@ public class CustomAdapter extends ArrayAdapter implements AdapterView.OnItemCli
         return convertView;
     }
 
-<<<<<<< Updated upstream
     private void setRetrofit() {
         OkHttpClient okHttpClient = new OkHttpClient().newBuilder()
                 .connectTimeout(1, TimeUnit.MINUTES)
@@ -208,6 +207,5 @@ public class CustomAdapter extends ArrayAdapter implements AdapterView.OnItemCli
             }
         });
     }
-=======
->>>>>>> Stashed changes
+
 }
