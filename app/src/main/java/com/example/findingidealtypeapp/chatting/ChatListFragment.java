@@ -61,8 +61,6 @@ public class ChatListFragment extends Fragment {
 
         setRetrofit();
 
-
-
         //채팅 목록을 보여주는 view
         recyclerView = rootView.findViewById(R.id.chat_list);
         recyclerView.setLayoutManager(new LinearLayoutManager
@@ -97,9 +95,9 @@ public class ChatListFragment extends Fragment {
 
                             Iterator<String> keys = chatModel.users.keySet().iterator();
 
-
                             receiverId = keys.next();
                             receiverId = receiverId.equals(myId) ? keys.next() : receiverId;
+                            receiverId = changeIdToFirebaseFormat(receiverId);
 
                             if(chatModel.users.containsKey(receiverId)) {
                                 chatRoomId = dataSnapshot.getKey();
@@ -146,6 +144,13 @@ public class ChatListFragment extends Fragment {
         userService = retrofit.create(UserService.class);
     }
 
+    private String changeIdToFirebaseFormat(String id){
+        id = id.replace("@", "-");
+        id = id.replace(".", "-");
+
+        return id;
+    }
+
     private void setMyId(){
         System.out.println(TokenDTO.Token);
         Call<MyPageResponse> call = userService.getProfile(TokenDTO.Token);
@@ -155,9 +160,7 @@ public class ChatListFragment extends Fragment {
             public void onResponse(Call<MyPageResponse> call, Response<MyPageResponse> response) {
                 MyPageResponse result = response.body();    // 웹서버로부터 응답받은 데이터가 들어있다.
                 if(result != null){
-                    myId = result.getEmail();
-                    myId = myId.replace("@", "-");
-                    myId = myId.replace(".", "-");
+                    myId = changeIdToFirebaseFormat(result.getEmail());
 
                     setChattingListView(recyclerView, txNoChattingList);
                 }
@@ -213,6 +216,19 @@ public class ChatListFragment extends Fragment {
         });
     }
 
+    /*private String getDate(String date){
+        LocalDate now = LocalDate.now();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        String nowDate = simpleDateFormat.format(now);
+        int lastIndex = nowDate.indexOf(" ");
+
+        nowDate = nowDate.substring(0, lastIndex);
+
+        if(date.equals(nowDate)){
+            return
+        }
+    }*/
+
     private void setLastMessageComment(ChatRoom chatRoom){
         firebaseDatabase.getReference().child("chatrooms")
                 .child(chatRoom.getChatRoomId()).child("comments").addValueEventListener(new ValueEventListener() {
@@ -251,14 +267,4 @@ public class ChatListFragment extends Fragment {
         }
     }
 
-    private String getFormattedDate(String formate){
-
-        long currentTime = System.currentTimeMillis();
-        Date date = new Date(currentTime);
-
-        SimpleDateFormat dateFormat =
-                new SimpleDateFormat(formate);//"yyyy-MM-dd aa hh:mm");
-
-        return dateFormat.format(date);
-    }
 }

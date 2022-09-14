@@ -112,7 +112,7 @@ public class ChatRoomActivity extends AppCompatActivity {
 
     private void initUserInformation(){
         Intent intent = getIntent();
-        ChatRoom chatRoom = (ChatRoom) intent.getSerializableExtra("chatRoom");
+        chatRoom = (ChatRoom) intent.getSerializableExtra("chatRoom");
 
         myId = chatRoom.getMyId();
         receiverId = chatRoom.getReceiverId();

@@ -2,6 +2,7 @@ package com.example.findingidealtypeapp.chattingroom;
 
 import android.content.Context;
 import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,7 +28,6 @@ public class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private FirebaseDatabase firebaseDatabase;
     private ChatRoom chatRoom;
-    private User destUser;
     private Handler handler;
     private RecyclerView recyclerView;
     public ArrayList<ChattingData> chattingDataList;
@@ -44,8 +44,6 @@ public class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         this.firebaseDatabase = firebaseDatabase;
         this.chatRoom = chatRoom;
         this.recyclerView = recyclerView;
-
-        getReceiverId();
     }
 
     //채팅 대화상자 옆에 현재 시각을 표시하기 위해 데이터 저장
@@ -136,21 +134,6 @@ public class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 });
     }
 
-    private void getReceiverId()
-    {
-        firebaseDatabase.getReference().child("users").child(chatRoom.getReceiverId())
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                destUser = snapshot.getValue(User.class);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-            }
-        });
-    }
-
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -182,11 +165,37 @@ public class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         return date.substring(date.indexOf("오후"));
     }
 
+    private String getDateNotation(String date){
+        StringBuilder dateBuilder = new StringBuilder();
+
+        int year = date.indexOf("-");
+        int month = date.lastIndexOf("-");
+        int day = date.indexOf(" ");
+
+        if(date.indexOf("-") == -1) return date;
+
+        dateBuilder.append(date.substring(0, year))
+                .append("년 ")
+                .append(date.substring(year + 1, month))
+                .append("월 ")
+                .append(date.substring(month + 1, day))
+                .append("일");
+
+       return dateBuilder.toString();
+    }
+
     private void setDateToChatWindow(String dateOfLastMessage){
         int size = dateList.size();
 
+        dateOfLastMessage = getDateNotation(dateOfLastMessage);
+        String dateDisplayedOnScreen="";
+
+        if(size > 0) {
+            dateDisplayedOnScreen = getDateNotation(dateList.get(size - 1));
+        }
+
         //채팅화면의 가장 처음 or 날짜가 바뀐 시점에 날짜정보를 화면에 보여줌
-        if(size == 0 || dateOfLastMessage.equals(dateList.get(size - 1))
+        if(size == 0 || dateOfLastMessage.equals(dateDisplayedOnScreen)
                 == !Constants.MESSAGE_RECEIVED_ON_SAME_DAY){
 
             dateList.add(dateOfLastMessage);

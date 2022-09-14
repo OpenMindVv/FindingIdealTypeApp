@@ -2,6 +2,7 @@ package com.example.findingidealtypeapp.chatting;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -56,6 +57,7 @@ public class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             public void onViewHolderItemClick() {
                 Intent intent = new Intent(context, ChatRoomActivity.class);
                 intent.putExtra("chatRoom", chatRoom);
+
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(intent);
             }
