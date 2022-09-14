@@ -22,6 +22,7 @@ import com.example.findingidealtypeapp.chattingroom.ChatModel;
 import com.example.findingidealtypeapp.chattingroom.ChatRoomActivity;
 import com.example.findingidealtypeapp.userServiceApi.UserService;
 import com.example.findingidealtypeapp.userServiceApi.myPageService.MyPageResponse;
+import com.example.findingidealtypeapp.utility.DataProcessing;
 import com.example.findingidealtypeapp.utility.TokenDTO;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -44,6 +45,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class CustomAdapter extends ArrayAdapter implements AdapterView.OnItemClickListener {
     private Context context;
     private List list;
+    private Context mContext;
+    private DataProcessing processing = new DataProcessing();
     private Retrofit retrofit;
     private UserService userService;
 
@@ -83,12 +86,20 @@ public class CustomAdapter extends ArrayAdapter implements AdapterView.OnItemCli
         final MyPageResponse user = (MyPageResponse) list.get(position);
 
         viewHolder.tv_name.setText(user.getName());
+
+        byte[] Image = null;
+        if(!user.getImage().equals("0")) {
+            Image = processing.binaryStringToByteArray(user.getImage()); //이미지 바이트로 가져오기
+            viewHolder.iv_thumb.setImageBitmap(processing.byteArrayToBitmap(Image)); // 프로필 이미지 비트맵으로 가져와서 저장
+        }
+        else viewHolder.iv_thumb.setImageResource(R.drawable.profile_image);
+
         Glide
                 .with(context)
                 .load(user.getImage())
                 .centerCrop()
-                .apply(new RequestOptions().override(250, 350))
-                .into(viewHolder.iv_thumb);
+                .apply(new RequestOptions().override(250, 350));
+                //.into(viewHolder.iv_thumb);
         viewHolder.tv_name.setTag(user.getName());
 
 
