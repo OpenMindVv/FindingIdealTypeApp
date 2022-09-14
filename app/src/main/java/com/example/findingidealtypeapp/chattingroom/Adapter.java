@@ -14,6 +14,7 @@ import com.example.findingidealtypeapp.R;
 import com.example.findingidealtypeapp.chatting.ChatRoom;
 import com.example.findingidealtypeapp.chatting.ViewHolder;
 import com.example.findingidealtypeapp.utility.Constants;
+import com.example.findingidealtypeapp.utility.DataProcessing;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
@@ -33,6 +34,7 @@ public class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public ArrayList<ChattingData> chattingDataList;
     private List<ChatModel.Comment> comments = new ArrayList<>();
     private List<String> dateList = new ArrayList<>();
+    private DataProcessing processing = new DataProcessing();
 
     public Adapter(FirebaseDatabase firebaseDatabase, ChatRoom chatRoom,
                    RecyclerView recyclerView){
@@ -213,8 +215,14 @@ public class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
 
         if(holder instanceof LeftViewHolder){
-            ((LeftViewHolder) holder).userId
-                    .setText(chattingDataList.get(position).getUserId());
+
+            if(!chattingDataList.get(position).getProfileImage().equals("0")) {
+                byte[] Image = processing.binaryStringToByteArray(chattingDataList.get(position).getProfileImage());
+                ((LeftViewHolder) holder).propfileImage.setImageBitmap(processing.byteArrayToBitmap(Image)); // 프로필 이미지 비트맵으로 가져와서 저장
+            }
+            else ((LeftViewHolder) holder).propfileImage.setImageResource(R.drawable.profile_image);
+
+            ((LeftViewHolder) holder).userId.setText(chattingDataList.get(position).getUserId());
             ((LeftViewHolder) holder).content
                     .setText(chattingDataList.get(position).getContent());
             ((LeftViewHolder) holder).time

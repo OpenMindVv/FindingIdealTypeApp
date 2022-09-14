@@ -161,7 +161,7 @@ public class CustomAdapter extends ArrayAdapter implements AdapterView.OnItemCli
                             }
                         }
 
-                        ChatRoom chatRoom = new ChatRoom(chatRoomId, myId, receiverId,
+                        ChatRoom chatRoom = new ChatRoom("", chatRoomId, myId, receiverId,
                                 "","", "");
 
                         Intent intent = new Intent(context, ChatRoomActivity.class);
