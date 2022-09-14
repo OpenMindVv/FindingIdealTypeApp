@@ -41,19 +41,13 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class CustomListFragment extends Fragment {
 
-<<<<<<< Updated upstream
-    ArrayList<MyPageResponse> userList;
-    ListView customListView;
-    ConstraintLayout todayLayout;
-    TextView todayId;
-    CircleImageView todayImage;
-=======
-    private ArrayList<User> userList;
+
+    private ArrayList<MyPageResponse> userList;
     private ListView customListView;
     private ConstraintLayout todayLayout;
     private TextView todayId;
     private CircleImageView todayImage;
->>>>>>> Stashed changes
+
     private static CustomAdapter customAdapter;
 
     private Retrofit retrofit;
@@ -88,13 +82,9 @@ public class CustomListFragment extends Fragment {
                 OnClickShowAlert(rootView);
             }
         });
-<<<<<<< Updated upstream
 
+        getListOfMembersExceptMe();    //회원목록을 불러옴
 
- getListOfMembersExceptMe();    //회원목록을 불러옴
-
-=======
->>>>>>> Stashed changes
         return rootView;
     }
 
@@ -107,7 +97,7 @@ public class CustomListFragment extends Fragment {
 
         builder.show();
     }
-}
+
 
 
     private void setRetrofit() {
@@ -193,6 +183,4 @@ public class CustomListFragment extends Fragment {
             }
         });
     }
-
-    public String getAnimal() { return animal; }
 }
