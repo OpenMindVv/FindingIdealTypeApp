@@ -3,7 +3,15 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/sec/AndroidStudioProjects/FindingIdealTypeApp/app/src/main/res/layout/activity_chat_list.xml" value="0.264" />
+        <entry key="..\:/Users/sec/AndroidStudioProjects/FindingIdealTypeApp/app/src/main/res/layout/activity_chat_room.xml" value="0.264" />
         <entry key="..\:/Users/sec/AndroidStudioProjects/FindingIdealTypeApp/app/src/main/res/layout/activity_main.xml" value="0.12635869565217392" />
+        <entry key="..\:/Users/sec/AndroidStudioProjects/FindingIdealTypeApp/app/src/main/res/layout/activity_user_list.xml" value="0.1" />
+        <entry key="..\:/Users/sec/AndroidStudioProjects/FindingIdealTypeApp/app/src/main/res/layout/item_chat_list.xml" value="0.264" />
+        <entry key="..\:/Users/sec/AndroidStudioProjects/FindingIdealTypeApp/app/src/main/res/layout/item_date.xml" value="0.264" />
+        <entry key="..\:/Users/sec/AndroidStudioProjects/FindingIdealTypeApp/app/src/main/res/layout/item_left_content.xml" value="0.264" />
+        <entry key="..\:/Users/sec/AndroidStudioProjects/FindingIdealTypeApp/app/src/main/res/layout/item_right_content.xml" value="0.17980072463768115" />
+        <entry key="..\:/Users/sec/AndroidStudioProjects/FindingIdealTypeApp/app/src/main/res/layout/item_user_list.xml" value="0.2" />
         <entry key="app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.21" />
         <entry key="app/src/main/res/drawable/animal_button_shape.xml" value="0.136" />
         <entry key="app/src/main/res/drawable/list_shape.xml" value="0.2275" />
@@ -21,7 +29,8 @@
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.26245880126953125" />
         <entry key="app/src/main/res/layout/activity_main_page.xml" value="0.22747955322265623" />
         <entry key="app/src/main/res/layout/activity_profile_edit.xml" value="0.14311043566362716" />
-        <entry key="app/src/main/res/layout/activity_user_list.xml" value="0.23214285714285715" />
+        <entry key="app/src/main/res/layout/activity_today_ideal.xml" value="0.14990942028985507" />
+        <entry key="app/src/main/res/layout/activity_user_list.xml" value="0.2217573221757322" />
         <entry key="app/src/main/res/layout/item_chat_list.xml" value="0.5615391385728035" />
         <entry key="app/src/main/res/layout/item_left_content.xml" value="0.19882246376811594" />
         <entry key="app/src/main/res/layout/item_right_content.xml" value="0.19882246376811594" />

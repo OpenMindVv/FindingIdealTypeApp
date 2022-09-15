@@ -18,6 +18,7 @@ import com.example.findingidealtypeapp.R;
 import com.example.findingidealtypeapp.chattingroom.ChatModel;
 import com.example.findingidealtypeapp.userServiceApi.UserService;
 import com.example.findingidealtypeapp.userServiceApi.myPageService.MyPageResponse;
+import com.example.findingidealtypeapp.utility.Constants;
 import com.example.findingidealtypeapp.utility.TokenDTO;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
@@ -61,8 +62,6 @@ public class ChatListFragment extends Fragment {
 
         setRetrofit();
 
-
-
         //채팅 목록을 보여주는 view
         recyclerView = rootView.findViewById(R.id.chat_list);
         recyclerView.setLayoutManager(new LinearLayoutManager
@@ -97,18 +96,19 @@ public class ChatListFragment extends Fragment {
 
                             Iterator<String> keys = chatModel.users.keySet().iterator();
 
-
                             receiverId = keys.next();
                             receiverId = receiverId.equals(myId) ? keys.next() : receiverId;
+                            receiverId = changeIdToFirebaseFormat(receiverId);
 
                             if(chatModel.users.containsKey(receiverId)) {
                                 chatRoomId = dataSnapshot.getKey();
-                                chatRoom = new ChatRoom(chatRoomId, myId, receiverId,
+                                chatRoom = new ChatRoom("", chatRoomId, myId, receiverId,
                                         "","", "");
                                 adapter.addChatRoom(chatRoom);
 
                                 int index = adapter.getItemCount() - 1;
                                 setReceiverName(receiverId, adapter.chatRoomList.get(index));
+                                System.out.println(chatRoom.getProfileImage());
                             }
                         }
 
@@ -138,12 +138,17 @@ public class ChatListFragment extends Fragment {
                 .create();
 
         retrofit = new Retrofit.Builder()
-                //.baseUrl("https://2fc39d2c-748a-42b0-8fda-cc926df84d08.mock.pstmn.io/")
-                //.client(okHttpClient)
-                .baseUrl("http://10.0.2.2:8080/")
+                .baseUrl(Constants.SERVER_ADDRESS)
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();
         userService = retrofit.create(UserService.class);
+    }
+
+    private String changeIdToFirebaseFormat(String id){
+        id = id.replace("@", "-");
+        id = id.replace(".", "-");
+
+        return id;
     }
 
     private void setMyId(){
@@ -155,9 +160,7 @@ public class ChatListFragment extends Fragment {
             public void onResponse(Call<MyPageResponse> call, Response<MyPageResponse> response) {
                 MyPageResponse result = response.body();    // 웹서버로부터 응답받은 데이터가 들어있다.
                 if(result != null){
-                    myId = result.getEmail();
-                    myId = myId.replace("@", "-");
-                    myId = myId.replace(".", "-");
+                    myId = changeIdToFirebaseFormat(result.getEmail());
 
                     setChattingListView(recyclerView, txNoChattingList);
                 }
@@ -183,16 +186,16 @@ public class ChatListFragment extends Fragment {
     }
 
     private void setReceiverName(String email, ChatRoom chatRoom){
-        Call<String> call = userService.getName(getEmail(email));
+        Call<MyPageResponse> call = userService.getName(getEmail(email));
 
-        call.enqueue(new Callback<String>() {
+        call.enqueue(new Callback<MyPageResponse>() {
             @Override
-            public void onResponse(Call<String> call, Response<String> response) {
-                String result = response.body();    // 웹서버로부터 응답받은 데이터가 들어있다.
-                if(result != null){ //
-                    receiverName = result;
+            public void onResponse(Call<MyPageResponse> call, Response<MyPageResponse> response) {
+                MyPageResponse result = response.body();    // 웹서버로부터 응답받은 데이터가 들어있다.
+                if(result != null){
+                    receiverName = result.getName();
                     chatRoom.setReceiverName(receiverName);
-
+                    chatRoom.setProfileImage(result.getImage());
                     handler.post(new Runnable() {
                         @Override
                         public void run() {
@@ -206,12 +209,25 @@ public class ChatListFragment extends Fragment {
             }
 
             @Override
-            public void onFailure(Call<String> call, Throwable t) { // 이거는 걍 통신에서 실패
+            public void onFailure(Call<MyPageResponse> call, Throwable t) { // 이거는 걍 통신에서 실패
                 System.out.println("통신실패");
                 System.out.println(t);
             }
         });
     }
+
+    /*private String getDate(String date){
+        LocalDate now = LocalDate.now();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        String nowDate = simpleDateFormat.format(now);
+        int lastIndex = nowDate.indexOf(" ");
+
+        nowDate = nowDate.substring(0, lastIndex);
+
+        if(date.equals(nowDate)){
+            return
+        }
+    }*/
 
     private void setLastMessageComment(ChatRoom chatRoom){
         firebaseDatabase.getReference().child("chatrooms")
@@ -251,14 +267,4 @@ public class ChatListFragment extends Fragment {
         }
     }
 
-    private String getFormattedDate(String formate){
-
-        long currentTime = System.currentTimeMillis();
-        Date date = new Date(currentTime);
-
-        SimpleDateFormat dateFormat =
-                new SimpleDateFormat(formate);//"yyyy-MM-dd aa hh:mm");
-
-        return dateFormat.format(date);
-    }
 }

@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -99,6 +100,10 @@ public class ChatRoomActivity extends AppCompatActivity {
             }
         });
 
+        //현재 채팅 상대방 이름
+        TextView txReceiverUser = (TextView) findViewById(R.id.tx_receiverUser);
+        txReceiverUser.setText(receiverName);
+
         //뒤로가기 버튼 -> 채팅목록으로 돌아감
         ImageButton btnBack = (ImageButton) findViewById(R.id.btn_back);
 
@@ -112,7 +117,7 @@ public class ChatRoomActivity extends AppCompatActivity {
 
     private void initUserInformation(){
         Intent intent = getIntent();
-        ChatRoom chatRoom = (ChatRoom) intent.getSerializableExtra("chatRoom");
+        chatRoom = (ChatRoom) intent.getSerializableExtra("chatRoom");
 
         myId = chatRoom.getMyId();
         receiverId = chatRoom.getReceiverId();

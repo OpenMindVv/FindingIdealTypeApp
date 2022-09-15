@@ -13,6 +13,7 @@ import android.widget.Toast;
 import com.example.findingidealtypeapp.R;
 import com.example.findingidealtypeapp.userServiceApi.myPageService.MyPageResponse;
 import com.example.findingidealtypeapp.userServiceApi.UserService;
+import com.example.findingidealtypeapp.utility.Constants;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 
@@ -78,9 +79,7 @@ public class idSearchActivity extends AppCompatActivity {
                 .build();
 
         retrofit = new Retrofit.Builder()
-                //.baseUrl("https://2fc39d2c-748a-42b0-8fda-cc926df84d08.mock.pstmn.io/")
-                //.client(okHttpClient)
-                .baseUrl("http://10.0.2.2:8080/")
+                .baseUrl(Constants.SERVER_ADDRESS)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         userService = retrofit.create(UserService.class);

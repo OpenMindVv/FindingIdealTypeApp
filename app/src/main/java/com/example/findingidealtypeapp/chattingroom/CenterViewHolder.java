@@ -14,6 +14,6 @@ public class CenterViewHolder extends RecyclerView.ViewHolder {
     public CenterViewHolder(@NonNull View itemView) {
         super(itemView);
 
-        date = itemView.findViewById(R.id.date);
+        date = itemView.findViewById(R.id.tx_date);
     }
 }

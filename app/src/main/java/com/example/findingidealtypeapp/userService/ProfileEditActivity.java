@@ -4,13 +4,16 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.AssetFileDescriptor;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
@@ -38,8 +41,13 @@ import com.example.findingidealtypeapp.utility.TokenDTO;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import org.tensorflow.lite.Interpreter;
+
 import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.MappedByteBuffer;
+import java.nio.channels.FileChannel;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
@@ -136,6 +144,7 @@ public class ProfileEditActivity extends AppCompatActivity {
                             if(isCamera == true) {
                                 Bundle bundle = result.getData().getExtras();
                                 bitMap = (Bitmap) bundle.get("data");
+                                camera(bitMap);
                                 profileImage.setImageBitmap(processing.rotate(bitMap, 90));
                                 TokenDTO.isImage = true;
                             }
@@ -146,6 +155,7 @@ public class ProfileEditActivity extends AppCompatActivity {
                                 // uri 비트맵으로 변경
                                 try {
                                     bitMap = MediaStore.Images.Media.getBitmap(getApplicationContext().getContentResolver(), uri);
+                                    camera(bitMap);
                                     profileImage.setImageBitmap(bitMap);
                                     TokenDTO.isImage = true;
                                 } catch (IOException e) {
@@ -155,6 +165,8 @@ public class ProfileEditActivity extends AppCompatActivity {
                             //bitmap -> base64 -> utf로 변경 후 서버로 통신
                             bitMap = resize(bitMap);
                             image = processing.bitmapToByteArray(bitMap);
+                            storeImageToDatabase(image);
+                            //image = processing.bitmapToByteArray(bitMap);
                         }
                     }
                 }
@@ -260,11 +272,121 @@ public class ProfileEditActivity extends AppCompatActivity {
                 .create();
 
         retrofit = new Retrofit.Builder()
-                //.baseUrl("https://2fc39d2c-748a-42b0-8fda-cc926df84d08.mock.pstmn.io/")
-                //.client(okHttpClient)
-                .baseUrl("http://10.0.2.2:8080/")
+                .baseUrl(Constants.SERVER_ADDRESS)
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();
         userService = retrofit.create(UserService.class);
+    }
+
+    private void storeImageToDatabase(String image) {
+        Call<String> call = userService.insertImage(image);
+
+        call.enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+                String result = response.body();    // 웹서버로부터 응답받은 데이터가 들어있다.
+                if (result != null) {
+                    System.out.println("Sucess");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t) { // 이거는 걍 통신에서 실패
+                System.out.println(t);
+            }
+        });
+    }
+
+    private Interpreter getTfliteInterpreter(String modelPath) {
+        try {
+            return new Interpreter(loadModelFile(this, modelPath));
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public MappedByteBuffer loadModelFile(Activity activity, String modelPath) throws IOException {
+        AssetFileDescriptor fileDescriptor = activity.getAssets().openFd(modelPath);
+        FileInputStream inputStream = new FileInputStream(fileDescriptor.getFileDescriptor());
+        FileChannel fileChannel = inputStream.getChannel();
+        long startOffset = fileDescriptor.getStartOffset();
+        long declaredLength = fileDescriptor.getDeclaredLength();
+        return fileChannel.map(FileChannel.MapMode.READ_ONLY, startOffset, declaredLength);
+    }
+
+
+    public void camera(Bitmap bitmap){
+        //각 모델에 따른 input , output shape 각자 맞게 변환
+        // 인풋값 1 150 150 3
+        float[][][][] input = new float[1][150][150][3];
+        float[][] output = new float[1][4]; // 종류 4개
+
+        try {
+            int batchNum = 0;
+
+            //이미지 뷰에 선택한 사진 띄우기
+            //ImageView iv = findViewById(R.id.image);
+            //iv.setScaleType(ImageView.ScaleType.FIT_XY);
+            //iv.setImageBitmap(bitmap);
+
+            // x,y 최댓값 사진 크기에 따라 달라짐 (조절 해줘야함)
+            for (int x = 0; x < 150; x++) {
+                for (int y = 0; y < 150; y++) {
+                    int pixel = bitmap.getPixel(x, y);
+                    input[batchNum][x][y][0] = Color.red(pixel) / 1.0f;
+                    input[batchNum][x][y][1] = Color.green(pixel) / 1.0f;
+                    input[batchNum][x][y][2] = Color.blue(pixel) / 1.0f;
+                }
+            }
+
+            // 자신의 tflite 이름 써주기
+            Interpreter lite = getTfliteInterpreter("converted_ver2_model.tflite");
+            Log.d("myTag", "This is my message");
+            lite.run(input, output);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+        int i;
+        float max = 0;
+
+        for (i = 0; i < 4; i++) {
+            if (output[0][i] * 100 > 0) {
+                if (i == 0) {
+                    if(max<output[0][0]* 100){
+                        max = output[0][0]* 100;
+                        System.out.println(String.format("고양이상,%d, %.5f", i, max));
+                    }
+                    System.out.println(output[0][0] * 100);
+                } else if (i == 1) {
+
+                    if(max<output[0][1]* 100)
+                    {
+                        max = output[0][1]* 100;
+                        System.out.println(String.format("강아지상,%d, %.5f", i, max));
+                    }
+                    System.out.println(output[0][1] * 100);
+                } else if (i == 2) {
+                    if(max<output[0][2]* 100)
+                    {
+                        max = output[0][2]* 100;
+                        System.out.println(String.format("공룡상,%d, %.5f", i, max));
+                    }
+                    System.out.println(output[0][2] * 100);
+                } else if (i == 3) {
+                    if(max<output[0][3]* 100) {
+                        max = output[0][3]* 100;
+                        System.out.println(String.format("토끼상,%d, %.5f", i, max));
+                    }
+                    System.out.println(output[0][3] * 100);
+                }
+            } else
+                System.out.println(String.format("%d", i));
+            continue;
+        }
     }
 }
