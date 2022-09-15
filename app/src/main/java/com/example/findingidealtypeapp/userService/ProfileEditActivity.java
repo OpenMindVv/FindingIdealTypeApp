@@ -153,7 +153,7 @@ public class ProfileEditActivity extends AppCompatActivity {
                                 }
                             }
                             //bitmap -> base64 -> utf로 변경 후 서버로 통신
-                            bitMap = resize(bitMap);
+                            //bitMap = resize(bitMap);
                             image = processing.bitmapToByteArray(bitMap);
                         }
                     }
@@ -187,9 +187,9 @@ public class ProfileEditActivity extends AppCompatActivity {
     // popup_menu에서 gallery를 클릭하면 getAlbum함수 호출
     private void getAlbum(){
         isCamera = false;
-        Intent intent = new Intent(Intent.ACTION_PICK);
-        intent.setType("image/*");
-        intent.setType(MediaStore.Images.Media.CONTENT_TYPE);
+        Intent intent = new Intent();
+        intent.setType("image/*");                      // 이미지만
+        intent.setAction(Intent.ACTION_GET_CONTENT);    // 카메라(ACTION_IMAGE_CAPTURE)
         activityResultLauncher.launch(intent);
     }
 
@@ -205,7 +205,8 @@ public class ProfileEditActivity extends AppCompatActivity {
         String email = emailEditText.getText().toString();
         String password = passwordEditText.getText().toString();
 
-        Call<String> call = userService.editProrfile(image, name, email, password);
+        System.out.println(name);
+        Call<String> call = userService.editProrfile(profileImage.toString(), name, email, password);
         call.enqueue(new Callback<String>() {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
