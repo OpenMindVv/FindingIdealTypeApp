@@ -9,8 +9,10 @@
 
 
     <SearchView
+        android:id="@+id/search_view_"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        app:queryHint="이상형의 이름을 입력하세요.">
 
     </SearchView>
 
