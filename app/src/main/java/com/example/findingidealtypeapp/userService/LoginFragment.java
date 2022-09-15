@@ -61,8 +61,6 @@ public class LoginFragment extends Fragment {
         textSearchPassowrd = rootView.findViewById(R.id.textSearchPassowrd);
         googleLogin = rootView.findViewById(R.id.googleLogin);
 
-        //TokenDTO.init(activity.getApplicationContext());
-
 
         //로그인 버튼 눌렀을 때 수행
         loginButton.setOnClickListener(new View.OnClickListener() { // 로그인 버튼 눌렀을 때 이벤트

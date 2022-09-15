@@ -398,7 +398,7 @@ public class ProfileFragment extends Fragment {
         // 인풋값 1 150 150 3
         float[][][][] input = new float[1][150][150][3];
         float[][] output = new float[1][4]; // 종류 4개
-        String anmialFace = "";
+        String animalFace = "";
 
         try {
             int batchNum = 0;
@@ -437,7 +437,7 @@ public class ProfileFragment extends Fragment {
                     if (max < output[0][0] * 100) {
                         max = output[0][0] * 100;
                         System.out.println(String.format("고양이상,%d, %.5f", i, max));
-                        anmialFace = "고양이상";
+                        animalFace = "고양이상";
                     }
                     System.out.println(output[0][0] * 100);
                 } else if (i == 1) {
@@ -445,21 +445,21 @@ public class ProfileFragment extends Fragment {
                     if (max < output[0][1] * 100) {
                         max = output[0][1] * 100;
                         System.out.println(String.format("강아지상,%d, %.5f", i, max));
-                        anmialFace = "강아지상";
+                        animalFace = "강아지상";
                     }
                     System.out.println(output[0][1] * 100);
                 } else if (i == 2) {
                     if (max < output[0][2] * 100) {
                         max = output[0][2] * 100;
                         System.out.println(String.format("공룡상,%d, %.5f", i, max));
-                        anmialFace = "공룡상";
+                        animalFace = "공룡상";
                     }
                     System.out.println(output[0][2] * 100);
                 } else if (i == 3) {
                     if (max < output[0][3] * 100) {
                         max = output[0][3] * 100;
                         System.out.println(String.format("토끼상,%d, %.5f", i, max));
-                        anmialFace = "토끼상";
+                        animalFace = "토끼상";
                     }
                     System.out.println(output[0][3] * 100);
                 }
@@ -467,7 +467,23 @@ public class ProfileFragment extends Fragment {
                 System.out.println(String.format("%d", i));
             continue;
         }
-        return anmialFace;
+        //dialog(animalFace);
+        return animalFace;
+    }
+    public void dialog(String animalFace){
+        AlertDialog.Builder menu = new AlertDialog.Builder(mContext);
+        menu.setIcon(R.mipmap.ic_launcher);
+        menu.setTitle("동물상"); // 제목
+        menu.setMessage("동물상은 "+ "'"+animalFace+"'" + " 입니다"); // 문구
+
+        menu.setPositiveButton("확인", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // dialog 제거
+                dialog.dismiss();
+            }
+        });
+        menu.show();
     }
     }
 
