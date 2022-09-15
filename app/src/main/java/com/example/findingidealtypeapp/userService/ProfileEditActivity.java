@@ -2,15 +2,20 @@ package com.example.findingidealtypeapp.userService;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.AssetFileDescriptor;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
@@ -38,8 +43,13 @@ import com.example.findingidealtypeapp.utility.TokenDTO;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import org.tensorflow.lite.Interpreter;
+
 import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.MappedByteBuffer;
+import java.nio.channels.FileChannel;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
@@ -58,6 +68,7 @@ public class ProfileEditActivity extends AppCompatActivity {
     private ImageView profileImage;
     private ActivityResultLauncher<Intent> activityResultLauncher;
     private String image;
+    private String myEmail;
     private boolean isCamera = true;
     private DataProcessing processing = new DataProcessing();
     MainActivity mainActivity = new MainActivity();
@@ -130,12 +141,14 @@ public class ProfileEditActivity extends AppCompatActivity {
                 new ActivityResultCallback<ActivityResult>() {
                     @Override
                     public void onActivityResult(ActivityResult result) {
+                        String animalFace = "";
                         if(result.getResultCode() == RESULT_OK) {
                             Bitmap bitMap = null;
                             Uri uri = null;
                             if(isCamera == true) {
                                 Bundle bundle = result.getData().getExtras();
                                 bitMap = (Bitmap) bundle.get("data");
+                                camera(bitMap);
                                 profileImage.setImageBitmap(processing.rotate(bitMap, 90));
                                 TokenDTO.isImage = true;
                             }
@@ -146,6 +159,7 @@ public class ProfileEditActivity extends AppCompatActivity {
                                 // uri 비트맵으로 변경
                                 try {
                                     bitMap = MediaStore.Images.Media.getBitmap(getApplicationContext().getContentResolver(), uri);
+                                    camera(bitMap);
                                     profileImage.setImageBitmap(bitMap);
                                     TokenDTO.isImage = true;
                                 } catch (IOException e) {
@@ -153,8 +167,10 @@ public class ProfileEditActivity extends AppCompatActivity {
                                 }
                             }
                             //bitmap -> base64 -> utf로 변경 후 서버로 통신
-                            bitMap = resize(bitMap);
+                            //bitMap = resize(bitMap);
                             image = processing.bitmapToByteArray(bitMap);
+                            storeImageToDatabase(image, animalFace);
+                            //image = processing.bitmapToByteArray(bitMap);
                         }
                     }
                 }
@@ -187,9 +203,9 @@ public class ProfileEditActivity extends AppCompatActivity {
     // popup_menu에서 gallery를 클릭하면 getAlbum함수 호출
     private void getAlbum(){
         isCamera = false;
-        Intent intent = new Intent(Intent.ACTION_PICK);
-        intent.setType("image/*");
-        intent.setType(MediaStore.Images.Media.CONTENT_TYPE);
+        Intent intent = new Intent();
+        intent.setType("image/*");                      // 이미지만
+        intent.setAction(Intent.ACTION_GET_CONTENT);    // 카메라(ACTION_IMAGE_CAPTURE)
         activityResultLauncher.launch(intent);
     }
 
@@ -205,7 +221,8 @@ public class ProfileEditActivity extends AppCompatActivity {
         String email = emailEditText.getText().toString();
         String password = passwordEditText.getText().toString();
 
-        Call<String> call = userService.editProrfile(image, name, email, password);
+        System.out.println(name);
+        Call<String> call = userService.editProrfile(profileImage.toString(), name, email, password);
         call.enqueue(new Callback<String>() {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
@@ -239,6 +256,7 @@ public class ProfileEditActivity extends AppCompatActivity {
                     nameEditText.setText(result.getName());
                     emailEditText.setText(result.getEmail());
                     passwordEditText.setText(result.getPassword());
+                    myEmail = result.getEmail();
                 }
             }
             @Override
@@ -264,5 +282,140 @@ public class ProfileEditActivity extends AppCompatActivity {
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();
         userService = retrofit.create(UserService.class);
+    }
+
+    private void storeImageToDatabase(String image, String animalFace) {
+        Call<String> call = userService.insertImage(image, animalFace, myEmail);
+
+        call.enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+                String result = response.body();    // 웹서버로부터 응답받은 데이터가 들어있다.
+                if (result != null) {
+                    System.out.println("Sucess");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t) { // 이거는 걍 통신에서 실패
+                System.out.println(t);
+            }
+        });
+    }
+
+    private Interpreter getTfliteInterpreter(String modelPath) {
+        try {
+            return new Interpreter(loadModelFile(this, modelPath));
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public MappedByteBuffer loadModelFile(Activity activity, String modelPath) throws IOException {
+        AssetFileDescriptor fileDescriptor = activity.getAssets().openFd(modelPath);
+        FileInputStream inputStream = new FileInputStream(fileDescriptor.getFileDescriptor());
+        FileChannel fileChannel = inputStream.getChannel();
+        long startOffset = fileDescriptor.getStartOffset();
+        long declaredLength = fileDescriptor.getDeclaredLength();
+        return fileChannel.map(FileChannel.MapMode.READ_ONLY, startOffset, declaredLength);
+    }
+
+
+    public String camera(Bitmap bitmap){
+        //각 모델에 따른 input , output shape 각자 맞게 변환
+        // 인풋값 1 150 150 3
+        float[][][][] input = new float[1][150][150][3];
+        float[][] output = new float[1][4]; // 종류 4개
+        String animalFace = "";
+
+        try {
+            int batchNum = 0;
+
+            //이미지 뷰에 선택한 사진 띄우기
+            //ImageView iv = findViewById(R.id.image);
+            //iv.setScaleType(ImageView.ScaleType.FIT_XY);
+            //iv.setImageBitmap(bitmap);
+
+            // x,y 최댓값 사진 크기에 따라 달라짐 (조절 해줘야함)
+            for (int x = 0; x < 150; x++) {
+                for (int y = 0; y < 150; y++) {
+                    int pixel = bitmap.getPixel(x, y);
+                    input[batchNum][x][y][0] = Color.red(pixel) / 1.0f;
+                    input[batchNum][x][y][1] = Color.green(pixel) / 1.0f;
+                    input[batchNum][x][y][2] = Color.blue(pixel) / 1.0f;
+                }
+            }
+
+            // 자신의 tflite 이름 써주기
+            Interpreter lite = getTfliteInterpreter("converted_ver2_model.tflite");
+            Log.d("myTag", "This is my message");
+            lite.run(input, output);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+        int i;
+        float max = 0;
+
+        for (i = 0; i < 4; i++) {
+            if (output[0][i] * 100 > 0) {
+                if (i == 0) {
+                    if(max<output[0][0]* 100){
+                        max = output[0][0]* 100;
+                        System.out.println(String.format("고양이상,%d, %.5f", i, max));
+                        animalFace = "고양이상";
+                    }
+                    System.out.println(output[0][0] * 100);
+                } else if (i == 1) {
+
+                    if(max<output[0][1]* 100)
+                    {
+                        max = output[0][1]* 100;
+                        System.out.println(String.format("강아지상,%d, %.5f", i, max));
+                        animalFace = "강아지상";
+                    }
+                    System.out.println(output[0][1] * 100);
+                } else if (i == 2) {
+                    if(max<output[0][2]* 100)
+                    {
+                        max = output[0][2]* 100;
+                        System.out.println(String.format("공룡상,%d, %.5f", i, max));
+                        animalFace = "공룡상";
+                    }
+                    System.out.println(output[0][2] * 100);
+                } else if (i == 3) {
+                    if(max<output[0][3]* 100) {
+                        max = output[0][3]* 100;
+                        System.out.println(String.format("토끼상,%d, %.5f", i, max));
+                        animalFace = "토끼상";
+                    }
+                    System.out.println(output[0][3] * 100);
+                }
+            } else
+                System.out.println(String.format("%d", i));
+            continue;
+        }
+        dialog(animalFace);
+        return animalFace;
+    }
+
+    public void dialog(String animalFace){
+        AlertDialog.Builder menu = new AlertDialog.Builder(this);
+        menu.setIcon(R.drawable.send);
+        menu.setTitle("동물상"); // 제목
+        menu.setMessage("동물상은 "+ "'"+animalFace+"'" + " 입니다"); // 문구
+
+        menu.setPositiveButton("확인", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // dialog 제거
+                dialog.dismiss();
+            }
+        });
+        menu.show();
     }
 }

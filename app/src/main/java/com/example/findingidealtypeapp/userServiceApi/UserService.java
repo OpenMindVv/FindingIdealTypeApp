@@ -49,7 +49,7 @@ public interface UserService {
 
     @POST("user/insertImage")
     Call<String> insertImage(
-            @Query("imageFile") String imageFile);
+            @Query("imageFile") String imageFile, @Query("animalFace") String animalFace, @Query("email") String email);
 
     @PUT("user/insert")
     Call<String> createProfile(
