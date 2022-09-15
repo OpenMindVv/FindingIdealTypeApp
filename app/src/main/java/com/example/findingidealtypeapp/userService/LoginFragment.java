@@ -128,6 +128,7 @@ public class LoginFragment extends Fragment {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
                 String result = response.body();    // 웹서버로부터 응답받은 데이터가 들어있다.
+                System.out.println(result);
                 if(result != null){ // 여기에 서버에서 받아온 값으로 로그인 판단 --> 로그인
                     // 프래그먼트에 데이터 전달
                     transData();

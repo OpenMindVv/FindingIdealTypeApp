@@ -467,12 +467,12 @@ public class ProfileFragment extends Fragment {
                 System.out.println(String.format("%d", i));
             continue;
         }
-        //dialog(animalFace);
+        dialog(animalFace);
         return animalFace;
     }
     public void dialog(String animalFace){
         AlertDialog.Builder menu = new AlertDialog.Builder(mContext);
-        menu.setIcon(R.mipmap.ic_launcher);
+        menu.setIcon(R.drawable.send);
         menu.setTitle("동물상"); // 제목
         menu.setMessage("동물상은 "+ "'"+animalFace+"'" + " 입니다"); // 문구
 
@@ -485,5 +485,5 @@ public class ProfileFragment extends Fragment {
         });
         menu.show();
     }
-    }
+}
 

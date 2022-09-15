@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.findingidealtypeapp.R;
 import com.example.findingidealtypeapp.userServiceApi.UserService;
 import com.example.findingidealtypeapp.userServiceApi.myPageService.MyPageResponse;
+import com.example.findingidealtypeapp.utility.Constants;
 import com.example.findingidealtypeapp.utility.TokenDTO;
 import com.google.android.gms.common.util.concurrent.HandlerExecutor;
 import com.google.gson.Gson;
@@ -48,12 +49,18 @@ public class CustomListFragment extends Fragment {
     private Retrofit retrofit;
     private UserService userService;
     private Handler handler;
+    private Button rabbitButton, dogButton, catButton, dinoButton;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.activity_user_list, container, false);
+
+        rabbitButton =  rootView.findViewById(R.id.rabbit_button);
+        dogButton =  rootView.findViewById(R.id.dog_button);
+        catButton =  rootView.findViewById(R.id.cat_button);
+        dinoButton =  rootView.findViewById(R.id.dinosaur_button);
 
         userList = new ArrayList<>();
         handler = new Handler();
@@ -85,7 +92,6 @@ public class CustomListFragment extends Fragment {
                 Log.v("오늘의 이상형", todayId.toString());
             }
         });
-
 
         getListOfMembersExceptMe();    //회원목록을 불러옴
 
