@@ -26,6 +26,7 @@
 ### Back
 * Spring
 * AWS
+* Firebase
 
 ### AI
 * Python
@@ -34,7 +35,7 @@
 
 ### DB
 * Mysql
-* Firebase
+* Realtimebase
 
 
 ## 🖥 시스템 아키텍처
