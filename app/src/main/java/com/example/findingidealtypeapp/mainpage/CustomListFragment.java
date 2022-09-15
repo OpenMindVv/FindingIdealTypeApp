@@ -58,7 +58,6 @@ public class CustomListFragment extends Fragment {
     private Retrofit retrofit;
     private UserService userService;
     private Handler handler;
-    private Button rabbitButton, dogButton, catButton, dinoButton;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -66,10 +65,6 @@ public class CustomListFragment extends Fragment {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.activity_user_list, container, false);
 
-        rabbitButton =  rootView.findViewById(R.id.rabbit_button);
-        dogButton =  rootView.findViewById(R.id.dog_button);
-        catButton =  rootView.findViewById(R.id.cat_button);
-        dinoButton =  rootView.findViewById(R.id.dinosaur_button);
 
         userList = new ArrayList<>();
         handler = new Handler();
