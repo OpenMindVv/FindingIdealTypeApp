@@ -9,5 +9,5 @@ public class Constants {
     public static final int PROFILE_PAGE = 2;
 
     public static final boolean MESSAGE_RECEIVED_ON_SAME_DAY = true;
-    public static final String SERVER_ADDRESS = "http://10.0.2.2:8080/";
+    public static final String SERVER_ADDRESS = "http://ec2-13-209-17-247.ap-northeast-2.compute.amazonaws.com:8080/";
 }

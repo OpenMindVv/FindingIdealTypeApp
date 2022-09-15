@@ -162,6 +162,13 @@ public class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     private String getTime(String date){
+        if(date.indexOf("PM") != -1){
+            date = date.replace("PM", "오후");
+        }
+        if(date.indexOf("AM") != -1){
+            date = date.replace("AM", "오전");
+        }
+
         if(date.indexOf("오전") != -1){
             return date.substring(date.indexOf("오전"));
         }
