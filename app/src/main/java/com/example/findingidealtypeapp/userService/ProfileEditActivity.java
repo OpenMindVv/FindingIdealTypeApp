@@ -2,6 +2,8 @@ package com.example.findingidealtypeapp.userService;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.AssetFileDescriptor;
@@ -66,6 +68,7 @@ public class ProfileEditActivity extends AppCompatActivity {
     private ImageView profileImage;
     private ActivityResultLauncher<Intent> activityResultLauncher;
     private String image;
+    private String myEmail;
     private boolean isCamera = true;
     private DataProcessing processing = new DataProcessing();
     MainActivity mainActivity = new MainActivity();
@@ -138,6 +141,7 @@ public class ProfileEditActivity extends AppCompatActivity {
                 new ActivityResultCallback<ActivityResult>() {
                     @Override
                     public void onActivityResult(ActivityResult result) {
+                        String animalFace = "";
                         if(result.getResultCode() == RESULT_OK) {
                             Bitmap bitMap = null;
                             Uri uri = null;
@@ -165,7 +169,7 @@ public class ProfileEditActivity extends AppCompatActivity {
                             //bitmap -> base64 -> utf로 변경 후 서버로 통신
                             //bitMap = resize(bitMap);
                             image = processing.bitmapToByteArray(bitMap);
-                            storeImageToDatabase(image);
+                            storeImageToDatabase(image, animalFace);
                             //image = processing.bitmapToByteArray(bitMap);
                         }
                     }
@@ -252,6 +256,7 @@ public class ProfileEditActivity extends AppCompatActivity {
                     nameEditText.setText(result.getName());
                     emailEditText.setText(result.getEmail());
                     passwordEditText.setText(result.getPassword());
+                    myEmail = result.getEmail();
                 }
             }
             @Override
@@ -279,8 +284,8 @@ public class ProfileEditActivity extends AppCompatActivity {
         userService = retrofit.create(UserService.class);
     }
 
-    private void storeImageToDatabase(String image) {
-        Call<String> call = userService.insertImage(image);
+    private void storeImageToDatabase(String image, String animalFace) {
+        Call<String> call = userService.insertImage(image, animalFace, myEmail);
 
         call.enqueue(new Callback<String>() {
             @Override
@@ -318,11 +323,12 @@ public class ProfileEditActivity extends AppCompatActivity {
     }
 
 
-    public void camera(Bitmap bitmap){
+    public String camera(Bitmap bitmap){
         //각 모델에 따른 input , output shape 각자 맞게 변환
         // 인풋값 1 150 150 3
         float[][][][] input = new float[1][150][150][3];
         float[][] output = new float[1][4]; // 종류 4개
+        String animalFace = "";
 
         try {
             int batchNum = 0;
@@ -361,6 +367,7 @@ public class ProfileEditActivity extends AppCompatActivity {
                     if(max<output[0][0]* 100){
                         max = output[0][0]* 100;
                         System.out.println(String.format("고양이상,%d, %.5f", i, max));
+                        animalFace = "고양이상";
                     }
                     System.out.println(output[0][0] * 100);
                 } else if (i == 1) {
@@ -369,6 +376,7 @@ public class ProfileEditActivity extends AppCompatActivity {
                     {
                         max = output[0][1]* 100;
                         System.out.println(String.format("강아지상,%d, %.5f", i, max));
+                        animalFace = "강아지상";
                     }
                     System.out.println(output[0][1] * 100);
                 } else if (i == 2) {
@@ -376,12 +384,14 @@ public class ProfileEditActivity extends AppCompatActivity {
                     {
                         max = output[0][2]* 100;
                         System.out.println(String.format("공룡상,%d, %.5f", i, max));
+                        animalFace = "공룡상";
                     }
                     System.out.println(output[0][2] * 100);
                 } else if (i == 3) {
                     if(max<output[0][3]* 100) {
                         max = output[0][3]* 100;
                         System.out.println(String.format("토끼상,%d, %.5f", i, max));
+                        animalFace = "토끼상";
                     }
                     System.out.println(output[0][3] * 100);
                 }
@@ -389,5 +399,23 @@ public class ProfileEditActivity extends AppCompatActivity {
                 System.out.println(String.format("%d", i));
             continue;
         }
+        dialog(animalFace);
+        return animalFace;
+    }
+
+    public void dialog(String animalFace){
+        AlertDialog.Builder menu = new AlertDialog.Builder(this);
+        menu.setIcon(R.drawable.send);
+        menu.setTitle("동물상"); // 제목
+        menu.setMessage("동물상은 "+ "'"+animalFace+"'" + " 입니다"); // 문구
+
+        menu.setPositiveButton("확인", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // dialog 제거
+                dialog.dismiss();
+            }
+        });
+        menu.show();
     }
 }
