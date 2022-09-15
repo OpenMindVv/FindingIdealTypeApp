@@ -48,6 +48,10 @@ public class CustomListFragment extends Fragment {
     private ConstraintLayout todayLayout;
     private TextView todayId;
     private CircleImageView todayImage;
+    private Button rabbitButton;
+    private Button dogButton;
+    private Button catButton;
+    private Button dinosaurButton;
 
     private static CustomAdapter customAdapter;
 
@@ -92,6 +96,47 @@ public class CustomListFragment extends Fragment {
 
         getListOfMembersExceptMe();    //회원목록을 불러옴
 
+        rabbitButton = (Button) rootView.findViewById(R.id.rabbit_button);
+        dogButton = (Button) rootView.findViewById(R.id.dog_button);
+        catButton = (Button) rootView.findViewById(R.id.cat_button);
+        dinosaurButton = (Button) rootView.findViewById(R.id.dinosaur_button);
+
+        rabbitButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                userList.clear();
+                getAnimalListOfMembersExceptMe("토끼상");
+            }
+        });
+
+        dogButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                userList.clear();
+                getAnimalListOfMembersExceptMe("강아지상");
+            }
+        });
+
+        catButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                userList.clear();
+                getAnimalListOfMembersExceptMe("고양이상");
+
+            }
+        });
+
+        dinosaurButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                userList.clear();
+                getAnimalListOfMembersExceptMe("공룡상");
+
+            }
+        });
+
+
+
         return rootView;
     }
 
@@ -124,6 +169,31 @@ public class CustomListFragment extends Fragment {
                 .build();
         userService = retrofit.create(UserService.class);
     }
+
+    private void getAnimalListOfMembersExceptMe(String animalFace){
+        setRetrofit();
+
+        Call<MyPageResponse> call = userService.getProfile(TokenDTO.Token);
+
+        call.enqueue(new Callback<MyPageResponse>() {
+            @Override
+            public void onResponse(Call<MyPageResponse> call, Response<MyPageResponse> response) {
+                MyPageResponse result = response.body();    // 웹서버로부터 응답받은 데이터
+                String myId;
+
+                if(result != null){
+                    myId = result.getEmail();
+                    setUserAnimalList(myId, animalFace);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<MyPageResponse> call, Throwable t) { // 이거는 걍 통신에서 실패
+                System.out.println(t);
+            }
+        });
+    }
+
     private void getListOfMembersExceptMe(){
         setRetrofit();
 
@@ -146,6 +216,50 @@ public class CustomListFragment extends Fragment {
                 System.out.println(t);
             }
         });
+    }
+
+    private void setUserAnimalList(String myId, String animalFace) {
+
+        Call<List<MyPageResponse>> call = userService.getProfileList();
+
+        call.enqueue(new Callback<List<MyPageResponse>>() {
+            @Override
+            public void onResponse(Call<List<MyPageResponse>> call, Response<List<MyPageResponse>> response) {
+                List<MyPageResponse> result = response.body();    // 웹서버로부터 응답받은 데이터가 들어있다.
+                MyPageResponse user;
+
+                if(result != null){ //
+                    for(int index = 0; index < result.size(); index++){
+                        user = result.get(index);
+                        if(user.getEmail().equals(myId)) continue;
+
+                        if(user.getAnimalFace().equals(animalFace)) {
+                            userList.add(new MyPageResponse(user.getImage(), user.getEmail(),
+                                    user.getPassword(), user.getName(), user.getFollowing(),
+                                    user.getFollowing(), user.getAnimalFace()));
+                        }
+                    }
+
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            customAdapter.notifyDataSetChanged();
+                        }
+                    });
+
+                }else{     // 로그인 실패
+                    System.out.println("회원목록을 가져오는데 오류가 발생했습니다.");
+                    System.out.println(result);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<MyPageResponse>> call, Throwable t) {
+                System.out.println("통신실패");
+                System.out.println(t);
+            }
+        });
+
     }
 
     private void setUserList(String myId){
