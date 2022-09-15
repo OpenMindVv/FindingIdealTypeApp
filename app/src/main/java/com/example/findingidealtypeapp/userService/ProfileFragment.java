@@ -89,6 +89,7 @@ public class ProfileFragment extends Fragment {
     private Retrofit retrofit;
     private ArrayAdapter arrayAdapter;
     private Context mContext;
+    private String myEmail;
     private ActivityResultLauncher<Intent> activityResultLauncher;
     MyPageResponse myPageResponse = new MyPageResponse();
     private DataProcessing processing = new DataProcessing();
@@ -183,13 +184,14 @@ public class ProfileFragment extends Fragment {
                 new ActivityResultCallback<ActivityResult>() {
                     @Override
                     public void onActivityResult(ActivityResult result) {
+                        String animalFace = "";
                         if(result.getResultCode() == RESULT_OK) {
                             Bitmap bitMap = null;
                             Uri uri = null;
                             if(isCamera == true) {
                                 Bundle bundle = result.getData().getExtras();
                                 bitMap = (Bitmap) bundle.get("data");
-                                camera(bitMap);
+                                animalFace = camera(bitMap);
                                 profileImage.setImageBitmap(processing.rotate(bitMap, 90));
                                 TokenDTO.isImage = true;
                             }
@@ -200,7 +202,7 @@ public class ProfileFragment extends Fragment {
                                 // uri 비트맵으로 변경
                                 try {
                                     bitMap = MediaStore.Images.Media.getBitmap(mContext.getContentResolver(), uri);
-                                    camera(bitMap);
+                                    animalFace = camera(bitMap);
                                     profileImage.setImageBitmap(bitMap);
                                     TokenDTO.isImage = true;
 
@@ -210,9 +212,9 @@ public class ProfileFragment extends Fragment {
                                 //sendImagePath(uri);
                             }
                             //bitmap -> base64 -> utf로 변경 후 서버로 통신
-                            bitMap = resize(bitMap);
+                            //bitMap = resize(bitMap);
                             String image = processing.bitmapToByteArray(bitMap);
-                            storeImageToDatabase(image);
+                            storeImageToDatabase(image, animalFace);
                         }
                     }
                 }
@@ -276,8 +278,8 @@ public class ProfileFragment extends Fragment {
         return bm;
     }
 
-    private void storeImageToDatabase(String image) {
-        Call<String> call = userService.insertImage(image);
+    private void storeImageToDatabase(String image, String animalFace) {
+        Call<String> call = userService.insertImage(image, animalFace, myEmail);
 
         call.enqueue(new Callback<String>() {
             @Override
@@ -309,7 +311,7 @@ public class ProfileFragment extends Fragment {
                     profileName.setText(result.getName());
                     numberFollow.setText(result.getFollow());
                     numberFollowing.setText(result.getFollowing());
-                    System.out.println(result.getImage());
+                    myEmail = result.getEmail();
                     if(result.getImage().equals("0")) TokenDTO.isImage = false;
                     else TokenDTO.isImage = true;
                 }
@@ -369,12 +371,6 @@ public class ProfileFragment extends Fragment {
     }
 
 
-
-
-
-
-
-
     private Interpreter getTfliteInterpreter(String modelPath) {
         try {
             return new Interpreter(loadModelFile((Activity) mContext, modelPath));
@@ -395,11 +391,12 @@ public class ProfileFragment extends Fragment {
     }
 
 
-    public void camera(Bitmap bitmap){
+    public String camera(Bitmap bitmap) {
         //각 모델에 따른 input , output shape 각자 맞게 변환
         // 인풋값 1 150 150 3
         float[][][][] input = new float[1][150][150][3];
         float[][] output = new float[1][4]; // 종류 4개
+        String animalFace = "";
 
         try {
             int batchNum = 0;
@@ -435,30 +432,32 @@ public class ProfileFragment extends Fragment {
         for (i = 0; i < 4; i++) {
             if (output[0][i] * 100 > 0) {
                 if (i == 0) {
-                    if(max<output[0][0]* 100){
-                        max = output[0][0]* 100;
+                    if (max < output[0][0] * 100) {
+                        max = output[0][0] * 100;
                         System.out.println(String.format("고양이상,%d, %.5f", i, max));
+                        animalFace = "고양이상";
                     }
                     System.out.println(output[0][0] * 100);
                 } else if (i == 1) {
 
-                    if(max<output[0][1]* 100)
-                    {
-                        max = output[0][1]* 100;
+                    if (max < output[0][1] * 100) {
+                        max = output[0][1] * 100;
                         System.out.println(String.format("강아지상,%d, %.5f", i, max));
+                        animalFace = "강아지상";
                     }
                     System.out.println(output[0][1] * 100);
                 } else if (i == 2) {
-                    if(max<output[0][2]* 100)
-                    {
-                        max = output[0][2]* 100;
+                    if (max < output[0][2] * 100) {
+                        max = output[0][2] * 100;
                         System.out.println(String.format("공룡상,%d, %.5f", i, max));
+                        animalFace = "공룡상";
                     }
                     System.out.println(output[0][2] * 100);
                 } else if (i == 3) {
-                    if(max<output[0][3]* 100) {
-                        max = output[0][3]* 100;
+                    if (max < output[0][3] * 100) {
+                        max = output[0][3] * 100;
                         System.out.println(String.format("토끼상,%d, %.5f", i, max));
+                        animalFace = "토끼상";
                     }
                     System.out.println(output[0][3] * 100);
                 }
@@ -466,6 +465,23 @@ public class ProfileFragment extends Fragment {
                 System.out.println(String.format("%d", i));
             continue;
         }
+        dialog(animalFace);
+        return animalFace;
     }
+    public void dialog(String animalFace){
+        AlertDialog.Builder menu = new AlertDialog.Builder(mContext);
+        menu.setIcon(R.drawable.send);
+        menu.setTitle("동물상"); // 제목
+        menu.setMessage("동물상은 "+ "'"+animalFace+"'" + " 입니다"); // 문구
+
+        menu.setPositiveButton("확인", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // dialog 제거
+                dialog.dismiss();
+            }
+        });
+        menu.show();
     }
+}
 

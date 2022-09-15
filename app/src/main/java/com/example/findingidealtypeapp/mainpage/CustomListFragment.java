@@ -14,6 +14,7 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.SearchView;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
@@ -65,6 +66,7 @@ public class CustomListFragment extends Fragment {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.activity_user_list, container, false);
 
+
         userList = new ArrayList<>();
         handler = new Handler();
 
@@ -88,7 +90,10 @@ public class CustomListFragment extends Fragment {
             }
         });
 
+
         getListOfMembersExceptMe();    //회원목록을 불러옴
+
+        searchIdeal(rootView);
 
         rabbitButton = (Button) rootView.findViewById(R.id.rabbit_button);
         dogButton = (Button) rootView.findViewById(R.id.dog_button);
@@ -144,7 +149,22 @@ public class CustomListFragment extends Fragment {
         builder.show();
     }
 
+    private void searchIdeal(View view) {
+        SearchView idealSearchView = view.findViewById(R.id.search_view_);
+        idealSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
 
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                userList.clear();
+                getListOfChosenMemberExceptMe(newText);
+                return false;
+            }
+        });
+    }
 
     private void setRetrofit() {
         OkHttpClient okHttpClient = new OkHttpClient().newBuilder()
@@ -163,6 +183,7 @@ public class CustomListFragment extends Fragment {
                 .build();
         userService = retrofit.create(UserService.class);
     }
+
 
     private void getAnimalListOfMembersExceptMe(String animalFace){
         setRetrofit();
@@ -210,6 +231,75 @@ public class CustomListFragment extends Fragment {
                 System.out.println(t);
             }
         });
+    }
+
+    private void getListOfChosenMemberExceptMe(String text){
+        setRetrofit();
+
+        Call<MyPageResponse> call = userService.getProfile(TokenDTO.Token);
+
+        call.enqueue(new Callback<MyPageResponse>() {
+            @Override
+            public void onResponse(Call<MyPageResponse> call, Response<MyPageResponse> response) {
+                MyPageResponse result = response.body();    // 웹서버로부터 응답받은 데이터
+                String myId;
+
+                if(result != null){
+                    myId = result.getEmail();
+                    setChosenUserList(myId, text);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<MyPageResponse> call, Throwable t) { // 이거는 걍 통신에서 실패
+                System.out.println(t);
+            }
+        });
+    }
+
+    private void setChosenUserList(String myId, String text) {
+
+        Call<List<MyPageResponse>> call = userService.getProfileList();
+
+        call.enqueue(new Callback<List<MyPageResponse>>() {
+            @Override
+            public void onResponse(Call<List<MyPageResponse>> call, Response<List<MyPageResponse>> response) {
+                List<MyPageResponse> result = response.body();    // 웹서버로부터 응답받은 데이터가 들어있다.
+                MyPageResponse user;
+
+                if(result != null){ //
+                    for(int index = 0; index < result.size(); index++){
+                        user = result.get(index);
+
+                        if(user.getEmail().equals(myId)) continue;
+
+                        if(user.getName().contains(text)) {
+                            userList.add(new MyPageResponse(user.getImage(), user.getEmail(),
+                                    user.getPassword(), user.getName(), user.getFollowing(),
+                                    user.getFollowing(), user.getAnimalFace()));
+                        }
+                    }
+
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            customAdapter.notifyDataSetChanged();
+                        }
+                    });
+
+                }else{     // 로그인 실패
+                    System.out.println("회원목록을 가져오는데 오류가 발생했습니다.");
+                    System.out.println(result);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<MyPageResponse>> call, Throwable t) {
+                System.out.println("통신실패");
+                System.out.println(t);
+            }
+        });
+
     }
 
     private void setUserAnimalList(String myId, String animalFace) {

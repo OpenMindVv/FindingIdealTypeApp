@@ -216,18 +216,12 @@ public class ChatListFragment extends Fragment {
         });
     }
 
-    /*private String getDate(String date){
-        LocalDate now = LocalDate.now();
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        String nowDate = simpleDateFormat.format(now);
-        int lastIndex = nowDate.indexOf(" ");
+    private String getDate(String date){
+        date = date.replace("PM", "오후");
+        date = date.replace("AM", "오전");
 
-        nowDate = nowDate.substring(0, lastIndex);
-
-        if(date.equals(nowDate)){
-            return
-        }
-    }*/
+        return date;
+    }
 
     private void setLastMessageComment(ChatRoom chatRoom){
         firebaseDatabase.getReference().child("chatrooms")
@@ -241,7 +235,7 @@ public class ChatListFragment extends Fragment {
                         }
 
                         chatRoom.setLastMessage(comment.getMessage());
-                        chatRoom.setDate(comment.getDate());
+                        chatRoom.setDate(getDate(comment.getDate()));
 
                         handler.post(new Runnable() {
                             @Override

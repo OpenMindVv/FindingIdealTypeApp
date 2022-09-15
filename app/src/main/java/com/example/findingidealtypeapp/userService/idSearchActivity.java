@@ -95,7 +95,7 @@ public class idSearchActivity extends AppCompatActivity {
 
     public void dialog(String password){
         AlertDialog.Builder menu = new AlertDialog.Builder(idSearchActivity.this);
-        menu.setIcon(R.mipmap.ic_launcher);
+        menu.setIcon(R.drawable.send);
         menu.setTitle("비밀번호 안내"); // 제목
         menu.setMessage("비밀번호는 "+ "'"+password+"'" + " 입니다"); // 문구
 
