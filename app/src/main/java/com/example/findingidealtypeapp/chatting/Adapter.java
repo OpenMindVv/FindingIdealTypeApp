@@ -66,6 +66,11 @@ public class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 Intent intent = new Intent(context, ChatRoomActivity.class);
                 intent.putExtra("chatRoom", chatRoom);
 
+                ////////////////////////////////////////////////////////////
+                Log.v("이미지 용량 테스트", chatRoom.getProfileImage());
+                chatRoom.setProfileImage("");
+                ////////////////////////////////////////////////////////////
+
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(intent);
             }

@@ -55,4 +55,7 @@ public interface UserService {
     Call<String> createProfile(
             @Query("Image") String Image, @Query("email") String email, @Query("password") String password, @Query("name") String name, @Query("follow") String follow, @Query("following") String following, @Query("animalFace") String animalFace
     );
+
+    @GET("user/getImage")
+    Call<String> getUserProfileImage(@Query("email") String email);
 }

@@ -26,8 +26,9 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
-            android:name=".MainPageBeforeLogin"
-            android:exported="false" />
+            android:name="mainpage.MainPageBeforeLogin"
+            android:exported="false"
+            tools:ignore="MissingClass" />
         <activity
             android:name=".userService.ProfileEditActivity"
             android:exported="false"
@@ -38,10 +39,9 @@
             android:exported="false" />
         <activity
             android:name=".mainpage.MainPage"
-            android:exported="false" />
-        <activity
-            android:name=".mainpage.DetailImageActivity"
-            android:exported="false" />
+            android:exported="false"
+            tools:ignore="Instantiatable" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true">
