@@ -20,7 +20,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.findingidealtypeapp.R;
 import com.example.findingidealtypeapp.chatting.ChatRoom;
+import com.example.findingidealtypeapp.userServiceApi.UserService;
+import com.example.findingidealtypeapp.userServiceApi.myPageService.MyPageResponse;
 import com.example.findingidealtypeapp.utility.Constants;
+import com.example.findingidealtypeapp.utility.TokenDTO;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -29,6 +32,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.database.annotations.NotNull;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -48,18 +53,23 @@ import okio.ByteString;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ChatRoomActivity extends AppCompatActivity {
 
     private Adapter adapter;
     private RecyclerView recyclerView;
     private EditText input;  //message
+    private Retrofit retrofit;
+    private UserService userService;
 
     private ChatRoom chatRoom;
     private String chatRoomId; //채팅방 id
     private String myId;       //나의 id
     private String receiverId; //상대방 id
     private String receiverName; //상대방 이름
+    private String userProfileImage; //상대방 프로필 사진
     private FirebaseDatabase firebaseDatabase;
 
     @Override
@@ -76,6 +86,7 @@ public class ChatRoomActivity extends AppCompatActivity {
 
         adapter = new Adapter(firebaseDatabase, chatRoom,
                 recyclerView);
+
         recyclerView.setAdapter(adapter);
 
         //답장 보내기 버튼
@@ -115,6 +126,53 @@ public class ChatRoomActivity extends AppCompatActivity {
         });
     }
 
+    private void setRetrofit() {
+        Gson gson = new GsonBuilder()
+                .setLenient()
+                .create();
+
+        retrofit = new Retrofit.Builder()
+                .baseUrl(Constants.SERVER_ADDRESS)
+                .addConverterFactory(GsonConverterFactory.create(gson))
+                .build();
+        userService = retrofit.create(UserService.class);
+    }
+
+    private void setProfileImageAndChattingWindow(String userId){
+        setRetrofit();
+
+        StringBuilder userIdbuilder = new StringBuilder();
+        userIdbuilder.append(userId);
+
+        int index = userId.indexOf("-");
+        userIdbuilder.setCharAt(index, '@');
+
+        index = userId.lastIndexOf("-");
+        userIdbuilder.setCharAt(index, '.');
+
+        Call<String> call = userService
+                .getUserProfileImage(userIdbuilder.toString());
+
+        call.enqueue(new Callback<String>() {
+
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+
+                String userProfileImage = response.body();    // 웹서버로부터 응답받은 데이터
+
+                if(userProfileImage != null){
+                    adapter.setUserProfileImage(userProfileImage);
+                    adapter.getMessageList(chatRoomId);  //채팅화면 초기화
+                }
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t) { // 이거는 걍 통신에서 실패
+                System.out.println(t);
+            }
+        });
+    }
+
     private void initUserInformation(){
         Intent intent = getIntent();
         chatRoom = (ChatRoom) intent.getSerializableExtra("chatRoom");
@@ -139,7 +197,7 @@ public class ChatRoomActivity extends AppCompatActivity {
             firebaseDatabase.getReference()
                     .child("chatrooms")
                     .push()
-                    .setValue(chatModel)
+                    .   setValue(chatModel)
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void unused) {
@@ -152,6 +210,7 @@ public class ChatRoomActivity extends AppCompatActivity {
         }
     }
 
+    //채팅방이 존재하는지 확인(한 번만 수행)
     private void checkChatRoom(){
         firebaseDatabase.getReference().child("chatrooms")
                 .orderByChild("users/" + myId)
@@ -164,10 +223,10 @@ public class ChatRoomActivity extends AppCompatActivity {
 
                             //상대방 id가 포함되어있는 채팅방 key를 가져옴
                             if(chatModel.users.containsKey(receiverId)){
-                                chatRoomId = dataSnapshot.getKey();
 
-                                sendMessageToDatabase();
-                                adapter.getMessageList(chatRoomId);
+                                chatRoomId = dataSnapshot.getKey();  //채팅방 번호
+                                Log.v("상대방 아이디", receiverId);
+                                setProfileImageAndChattingWindow(receiverId);
                             }
                         }
                     }
@@ -188,7 +247,14 @@ public class ChatRoomActivity extends AppCompatActivity {
         SimpleDateFormat dateFormat =
                 new SimpleDateFormat("yyyy-MM-dd aa hh:mm");
 
-        return dateFormat.format(date);
+        String formattedDate = dateFormat.format(date);
+
+        formattedDate = formattedDate.replace("AM", "오전");
+        formattedDate = formattedDate.replace("PM", "오후");
+
+        Log.v("영어 날짜 테스트", formattedDate);
+
+        return formattedDate;
     }
 
     private void sendMessageToDatabase(){
@@ -202,6 +268,8 @@ public class ChatRoomActivity extends AppCompatActivity {
         comment.uid = myId;
         comment.message = inputText;     //메세지 입력값
         comment.date = getCurrentTime(); //날짜
+
+        Log.v("날짜 테스트", getCurrentTime());
 
         firebaseDatabase.getReference()
                 .child("chatrooms").child(chatRoomId)

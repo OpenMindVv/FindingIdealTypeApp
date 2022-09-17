@@ -29,6 +29,7 @@ public class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private FirebaseDatabase firebaseDatabase;
     private ChatRoom chatRoom;
+    private String userProfileImage;
     private Handler handler;
     private RecyclerView recyclerView;
     public ArrayList<ChattingData> chattingDataList;
@@ -48,18 +49,6 @@ public class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         this.recyclerView = recyclerView;
     }
 
-    //채팅 대화상자 옆에 현재 시각을 표시하기 위해 데이터 저장
-    private String getCurrentTime(){
-
-        long currentTime = System.currentTimeMillis();
-        Date date = new Date(currentTime);
-
-        SimpleDateFormat dateFormat =
-                new SimpleDateFormat("yyyy-MM-dd aa hh:mm");
-
-        return dateFormat.format(date);
-    }
-
     private void reflectOnChatWindow(){
         handler.post(new Runnable() {
             @Override
@@ -74,15 +63,15 @@ public class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         if(comment.getUid().equals(chatRoom.getMyId())){
             setChattingData(new ChattingData(
-                    chatRoom.getProfileImage(),
-                    chatRoom.getMyId(), comment.getMessage(),
-                    getTime(comment.date), Constants.RIGHT_CONTENT));
+                    userProfileImage, chatRoom.getMyId(),
+                    comment.getMessage(), getTime(comment.date),
+                    Constants.RIGHT_CONTENT));
         }
         else{
             setChattingData(new ChattingData(
-                    chatRoom.getProfileImage(),
-                    chatRoom.getReceiverName(), comment.getMessage(),
-                    getTime(comment.date), Constants.LEFT_CONTENT));
+                    userProfileImage, chatRoom.getReceiverName(),
+                    comment.getMessage(), getTime(comment.date),
+                    Constants.LEFT_CONTENT));
         }
 
         reflectOnChatWindow();
@@ -116,6 +105,7 @@ public class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         reflectChatContents(comment);
     }
 
+    //상대방과 기존에 주고 받았던 메세지 기록을 가져옴(메세지가 갱신될때마다 수행)
     public void getMessageList(String chatRoomId){
 
         firebaseDatabase.getReference().child("chatrooms")
@@ -123,10 +113,12 @@ public class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
 
+                        //현재 사용자가 대화방에 있는 경우(화면에 기존에 주고받은 메세지 내용이 보여지는 상황)
+                        //-> 실시간으로 대화내용을 화면에 보여줌(가장 최근에 받은 메세지 하나만 화면에 보여주기 위함)
                         if(comments.size() > 0){
                             getLastMessageComment(snapshot);
                         }
-                        else{
+                        else{ //대화방 클릭시 보여지는 화면 초기화 -> 기존의 메세지 내역을 모두 화면에 보여줌
                             getAllMessageComment(snapshot);
                         }
                     }
@@ -154,21 +146,15 @@ public class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             case Constants.RIGHT_CONTENT:   //나의 대화내용
                 view = inflater.inflate(R.layout.item_right_content, parent, false);
                 return new RightViewHolder(view);
-            default:
+            default:                        //메세지를 주고받은 날짜 표시(하루에 한 번만 표시한다)
                 view = inflater.inflate(R.layout.item_date, parent, false);
                 return new CenterViewHolder(view);
 
         }
     }
 
+    //대화상자 옆에 표시할 현재 시각
     private String getTime(String date){
-        if(date.indexOf("PM") != -1){
-            date = date.replace("PM", "오후");
-        }
-        if(date.indexOf("AM") != -1){
-            date = date.replace("AM", "오전");
-        }
-
         if(date.indexOf("오전") != -1){
             return date.substring(date.indexOf("오전"));
         }
@@ -176,6 +162,7 @@ public class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         return date.substring(date.indexOf("오후"));
     }
 
+    //화면 중앙에 하루에 한 번 표시할 날짜(yyyy년 mm월 dd일)
     private String getDateNotation(String date){
         StringBuilder dateBuilder = new StringBuilder();
 
@@ -195,6 +182,7 @@ public class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
        return dateBuilder.toString();
     }
 
+    //채팅화면에 날짜 정보를 표시
     private void setDateToChatWindow(String dateOfLastMessage){
         int size = dateList.size();
 
@@ -259,5 +247,9 @@ public class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     public void setChattingData(ChattingData chattingData){
         chattingDataList.add(chattingData);
+    }
+
+    public void setUserProfileImage(String userProfileImage){
+        this.userProfileImage = userProfileImage;
     }
 }
